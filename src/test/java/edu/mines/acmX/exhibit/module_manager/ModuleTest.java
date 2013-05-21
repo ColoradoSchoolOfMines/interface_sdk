@@ -5,7 +5,10 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Unit test for simple App.
+ * Unit test for Module.
+ *
+ * TODO cleanup
+ * Module should have methods that can be overridden by child classes.
  */
 public class ModuleTest
     extends TestCase
