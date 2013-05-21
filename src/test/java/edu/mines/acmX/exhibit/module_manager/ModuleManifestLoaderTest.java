@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit;
+package edu.mines.acmX.exhibit.module_manager;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -10,7 +10,7 @@ import junit.framework.TestSuite;
  * TODO cleanup
  * Module should have methods that can be overridden by child classes.
  */
-public class ModuleManifestLoader
+public class ModuleManifestLoaderTest
     extends TestCase
 {
     /**
@@ -18,7 +18,7 @@ public class ModuleManifestLoader
      *
      * @param testName name of the test case
      */
-    public ModuleManifestLoader( String testName )
+    public ModuleManifestLoaderTest( String testName )
     {
         super( testName );
     }
@@ -31,11 +31,4 @@ public class ModuleManifestLoader
         return new TestSuite( ModuleManifestLoader.class );
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
 }

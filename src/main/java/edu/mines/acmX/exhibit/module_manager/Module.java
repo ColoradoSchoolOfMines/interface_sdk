@@ -10,7 +10,7 @@ import processing.core.*;
 
 public abstract class Module extends PApplet {
 
-    private String nextModuleToLoad;
+    private String nextModuleToLoad = null;
 
     public final String getNextModuleToLoad() {
         return nextModuleToLoad;
@@ -18,7 +18,11 @@ public abstract class Module extends PApplet {
 
     protected final void setNextModuleToLoad( String moduleID ) {
         nextModuleToLoad = moduleID;
+        // possibly set a flag in the module manageer as well?
     }
+
+    // possibly override the finish method so that it returnes the
+    // nextModuleToLoad
 
 }
 

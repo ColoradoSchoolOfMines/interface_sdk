@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit;
+package edu.mines.acmX.exhibit.module_manager;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -28,11 +28,4 @@ public class ModuleManagerTest
         return new TestSuite( ModuleManagerTest.class );
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
 }

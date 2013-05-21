@@ -1,8 +1,9 @@
-package edu.mines.acmX.exhibit;
+package edu.mines.acmX.exhibit.module_manager;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import junit.framework.Assert;
 
 /**
  * Unit test for Module.
@@ -31,11 +32,15 @@ public class ModuleTest
         return new TestSuite( ModuleTest.class );
     }
 
+
     /**
-     * Rigourous Test :-)
+     * Test that the module is able to specify which module should be run after
+     * it exits
      */
-    public void testApp()
-    {
-        assertTrue( true );
+    public void testNextModule() {
+        // TODO replace with Logger
+        System.out.println("Running testNextModule");
+        assertTrue(false);
+
     }
 }
