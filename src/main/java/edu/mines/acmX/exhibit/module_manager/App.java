@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit;
+package edu.mines.acmX.exhibit.module_manager;
 
 public class App 
 {
