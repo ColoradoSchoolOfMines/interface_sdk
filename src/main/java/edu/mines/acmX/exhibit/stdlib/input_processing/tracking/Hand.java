@@ -1,12 +1,12 @@
 // TODO: Refactor to a abstract Hand object capaable of holding the hand's position
 
-package edu.mines.csci598.recycler.frontend.hands;
+package edu.mines.acmX.exhibit.stdlib.input_processing.tracking;
+
+import java.awt.geom.Point2D;
 
 import org.apache.log4j.Logger;
 
-import edu.mines.csci598.recycler.frontend.graphics.Coordinate;
-import edu.mines.csci598.recycler.frontend.graphics.Displayable;
-import edu.mines.csci598.recycler.frontend.graphics.Sprite;
+import edu.mines.acmX.exhibit.stdlib.graphics.Sprite;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,18 +15,11 @@ import edu.mines.csci598.recycler.frontend.graphics.Sprite;
  * Time: 5:55 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Hand implements Displayable {
+public abstract class Hand {
     private static final Logger logger = Logger.getLogger(Hand.class);
+    
+    private Point2D location;
 
-    private final Sprite sprite;
-    private int velocityX;
-    private int velocityY;
-    private int x;
-    private int y;
-
-    public Hand() {
-        sprite = new Sprite("src/main/resources/SpriteImages/hand_open.png", x, y);
-    }
     
     /**
      * Talks to whatever form of intelligence makes decisions and discovers the location that the hand
@@ -35,45 +28,19 @@ public abstract class Hand implements Displayable {
      * Used internally by Hand subclasses and is not public.  Use <code>updateLocation</code> instead.
      * @return
      */
-    protected abstract Coordinate getNextPosition();
+    protected abstract Point2D getNextPosition();
 
     /**
      * Moves the hand to a new location.  This is the main method the frontend should be calling.
      */
     public final void updateLocation() {
-    	Coordinate next = getNextPosition();
+    	Point2D next = getNextPosition();
     	
-    	int newX = (int) next.getX();
-    	int newY = (int) next.getY();
-    	
-    	velocityX = (newX - x);
-    	velocityY = (newY - y);
-    	
-    	x = newX;
-    	y = newY;
-    	
-        sprite.setX(x);
-        sprite.setY(y);
+    	location.setLocation(next);
     }
 
-    public final Sprite getSprite() {
-        return sprite;
-    }
-
-    public final int getX() {
-        return x;
-    }
-
-    public final int getY() {
-        return y;
-    }
-
-    public final int getVelocityX() {
-        return velocityX;
-    }
-
-    public final Coordinate getPosition(){
-        return new Coordinate(x, y);
+    public final Point2D getPosition(){
+        return location;
     }
 
 }
