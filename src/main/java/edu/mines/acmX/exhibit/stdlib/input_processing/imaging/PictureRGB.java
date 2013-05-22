@@ -4,20 +4,14 @@ BufferedImage.
 
 */
 
-package edu.mines.csci598.recycler.backend;
-
-import org.OpenNI.*;
+package edu.mines.acmX.exhibit.stdlib.input_processing.imaging;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 
 public class PictureRGB {
-    private Context context;
-    private ImageGenerator imageGen;
-    private BufferedImage bimg;
-    int width, height;
-
+/*
     public BufferedImage getPicture() {
         try {
             context.waitOneUpdateAll(imageGen);
@@ -29,12 +23,8 @@ public class PictureRGB {
             return null;
         }
     }
-
-    public PictureRGB() {
-        configOpenNI();
-    }
-
-    private BufferedImage bufToImage(ByteBuffer pixelsRGB)
+*/
+    private BufferedImage bufToImage(ByteBuffer pixelsRGB, int width, int height)
            {
                int[] pixelInts = new int[width * height];
                for(int i = 0; i < width*height; i++) {
@@ -53,7 +43,7 @@ public class PictureRGB {
                im.setRGB(0, 0, width, height, pixelInts, 0, width);
                return im;
            }
-
+    /*
     private void configOpenNI()
     {
         try {
@@ -83,5 +73,5 @@ public class PictureRGB {
             System.out.println(e);
         }
     }
-
+*/
 }
