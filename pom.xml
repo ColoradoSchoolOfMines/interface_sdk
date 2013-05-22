@@ -38,7 +38,7 @@
     	<artifactId>openni</artifactId>
     	<version>1.5.4,0</version>
     	<scope>system</scope>
-    	<systemPath>${project.basedir}/org.OpenNI.jar</systemPath>
+    	<systemPath>${project.basedir}/lib/org.OpenNI.jar</systemPath>
     </dependency>
   </dependencies>
 	<build>
