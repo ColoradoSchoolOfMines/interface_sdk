@@ -22,6 +22,7 @@
             <module module:package="edu.mines.acmX.some_other_game" />
             <module module:package="edu.mines.acmX.another_game" />
             <!-- possibly include a label for easy typing / remembering -->
+            <!-- how does launcher require modules? maybe a requre-all tag? -->
         </requires-module>
 
     </module>
