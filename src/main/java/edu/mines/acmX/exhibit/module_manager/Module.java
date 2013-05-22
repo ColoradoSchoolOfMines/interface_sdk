@@ -10,19 +10,12 @@ import processing.core.*;
 
 public abstract class Module extends PApplet {
 
-    private String nextModuleToLoad = null;
-
-    public final String getNextModuleToLoad() {
-        return nextModuleToLoad;
+    // just a slim layer for interfacing with a modulemanager and will return a boolean on whether the requested module can be run.
+    protected final boolean setNextModuleToLoad( String moduleName ) {
+        // TODO set nextModule in ModuleManager
     }
 
-    protected final void setNextModuleToLoad( String moduleID ) {
-        nextModuleToLoad = moduleID;
-        // possibly set a flag in the module manageer as well?
-    }
 
-    // possibly override the finish method so that it returnes the
-    // nextModuleToLoad
 
 }
 

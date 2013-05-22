@@ -9,39 +9,23 @@ import org.apache.logging.log4j.Logger;
 /**
  * Unit test for Module.
  *
- * TODO cleanup
- * Module should have methods that can be overridden by child classes.
  */
-public class ModuleTest
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public ModuleTest( String testName )
-    {
-        super( testName );
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( ModuleTest.class );
-    }
-
+public class ModuleTest {
 
     /**
      * Test that the module is able to specify which module should be run after
      * it exits
      */
-    public void testNextModule() {
+    public void testNextValidModule() {
         // TODO replace with Logger
         System.out.println("Running testNextModule");
         assertTrue(false);
-
     }
+
+    public void testNextInvalidModule() {
+        // TODO both required and not required
+        assertTrue(false);
+    }
+
+    
 }
