@@ -1,6 +1,13 @@
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services.mouse;
 
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+
+import edu.mines.acmX.exhibit.input_services.AWTInputDriver;
+import edu.mines.acmX.exhibit.input_services.InputEvent;
 
 /**
  * Input driver which translates mouse motion into pointer and/or body
@@ -14,8 +21,12 @@ public final class ModalMouseMotionInputDriver
     extends AWTInputDriver
     implements MouseMotionListener, MouseWheelListener {
     private boolean pointerMode = true;
-    private GameManager manager = null;
+    private Component manager = null;
     private int pointer = 0;
+    
+    public final float bodies[] = new float[] {-1, -1};
+    public final float pointers[][] = new float[][] {{-1, -1}, {-1, -1},
+    		{-1, -1}, {-1, -1}};
 
     /**
      * Sets the mode to use. True is pointer mode, false is body mode.
@@ -24,28 +35,25 @@ public final class ModalMouseMotionInputDriver
         this.pointerMode = pointerMode;
     }
 
-    public void installInto(GameManager man) {
+    public void installInto(Component man) {
         manager = man;
-        man.getCanvas().addMouseMotionListener(this);
-        man.getFrame ().addMouseWheelListener (this);
+        man.addMouseMotionListener(this);
+        man.addMouseWheelListener (this);
     }
 
     public void mouseMoved(MouseEvent evt) {
-        java.awt.Component canvas = manager.getCanvas();
-        float x = evt.getX() / (float)canvas.getWidth();
-        float y = evt.getY() / (float)canvas.getHeight() * manager.vheight();
+        float x = evt.getX();
+        float y = evt.getY();
         //OpenGL's Y axis is upside-down
-        y = manager.vheight() - y;
-
-        InputStatus is = manager.getSharedInputStatus();
+        y = manager.getHeight() - y;
 
         synchronized (manager) {
             if (pointerMode) {
-                is.pointers[pointer][0] = x;
-                is.pointers[pointer][1] = y;
+                pointers[pointer][0] = x;
+                pointers[pointer][1] = y;
                 enqueue(new InputEvent(InputEvent.TYPE_POINTER_MOVEMENT, 0, x, y));
             } else {
-                is.bodies[0] = x;
+                bodies[0] = x;
                 enqueue(new InputEvent(InputEvent.TYPE_BODY_MOVEMENT, 0, x, y));
             }
         }
@@ -59,8 +67,8 @@ public final class ModalMouseMotionInputDriver
       //      pointerMode = (evt.getWheelRotation() < 0);
       pointer += evt.getWheelRotation();
       //Mod is broken for negative values
-      InputStatus is = manager.getSharedInputStatus();
-      while (pointer < 0) pointer += is.pointers.length;
-      pointer %= is.pointers.length;
+      while (pointer < 0) pointer += pointers.length;
+      pointer %= pointers.length;
     }
+
 }

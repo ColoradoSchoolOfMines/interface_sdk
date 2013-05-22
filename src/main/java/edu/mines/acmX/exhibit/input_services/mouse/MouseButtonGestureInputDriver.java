@@ -1,6 +1,10 @@
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services.mouse;
 
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import edu.mines.acmX.exhibit.input_services.ButtonGestureInputDriver;
 
 /**
  * Input driver which translates mouse button events into gestures.
@@ -11,8 +15,8 @@ import java.awt.event.*;
 public final class MouseButtonGestureInputDriver
     extends ButtonGestureInputDriver
     implements MouseListener {
-    public void installInto(GameManager man) {
-        man.getCanvas().addMouseListener(this);
+    public void installInto(Component man) {
+        man.addMouseListener(this);
     }
 
     public void mousePressed(MouseEvent e) {
