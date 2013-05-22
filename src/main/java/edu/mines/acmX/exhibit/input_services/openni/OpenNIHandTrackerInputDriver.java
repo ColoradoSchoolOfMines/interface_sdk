@@ -81,5 +81,9 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
         pointers[i][0] = pointers[i][1] = -1;
 
   }
+
+	public float[][] getPointers() {
+		return pointers;
+	}
   
 }

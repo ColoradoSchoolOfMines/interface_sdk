@@ -22,4 +22,8 @@ public final class KeyboardGestureInputDriver
 
     public void keyReleased(KeyEvent e) {}
     public void keyTyped(KeyEvent e) {}
+
+	public float[][] getPointers() {
+		return null;
+	}
 }

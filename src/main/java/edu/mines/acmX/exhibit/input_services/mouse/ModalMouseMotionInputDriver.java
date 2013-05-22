@@ -71,4 +71,8 @@ public final class ModalMouseMotionInputDriver
       pointer %= pointers.length;
     }
 
+	public float[][] getPointers() {
+		return pointers;
+	}
+
 }

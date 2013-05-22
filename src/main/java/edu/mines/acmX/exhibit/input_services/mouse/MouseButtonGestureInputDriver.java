@@ -27,4 +27,8 @@ public final class MouseButtonGestureInputDriver
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
+
+	public float[][] getPointers() {
+		return null;
+	}
 }

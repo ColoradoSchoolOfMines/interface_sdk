@@ -1,4 +1,4 @@
-// TODO: Refactor to a abstract Hand object capaable of holding the hand's position
+// TODO: Refactor to a abstract Hand object capable of holding the hand's position
 
 package edu.mines.acmX.exhibit.stdlib.input_processing.tracking;
 
@@ -15,8 +15,8 @@ import edu.mines.acmX.exhibit.stdlib.graphics.Sprite;
  * Time: 5:55 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Hand {
-    private static final Logger logger = Logger.getLogger(Hand.class);
+public abstract class Handv2 {
+    private static final Logger logger = Logger.getLogger(Handv2.class);
     
     private Point2D location;
 

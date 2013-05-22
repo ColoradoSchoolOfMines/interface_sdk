@@ -2,9 +2,6 @@ package edu.mines.acmX.exhibit.stdlib.graphics;
 
 import org.apache.log4j.Logger;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
-
 /**
  * This class keeps track of the sprites location on disk, transforms, position velocity etc.
  * <p/>
@@ -18,11 +15,11 @@ import java.awt.geom.Point2D;
 public class Sprite {
     private static final Logger logger = Logger.getLogger(Sprite.class);
 
-    Point2D location;
+    Coordinate location;
     private String fileName;
 
     public Sprite(String fileName, int x, int y) {
-        this.location = new Point(x,y);
+        this.location = new Coordinate(x,y);
         this.fileName = fileName;
         setImage(fileName);
     }
@@ -75,11 +72,11 @@ public class Sprite {
     }
     */
     
-    public Point2D getPosition(){
+    public Coordinate getPosition(){
     	return location;
     }
 
-	public synchronized void setPosition(Point2D loc) {
+	public synchronized void setPosition(Coordinate loc) {
 		this.location.setLocation(loc);
 	}
 }
