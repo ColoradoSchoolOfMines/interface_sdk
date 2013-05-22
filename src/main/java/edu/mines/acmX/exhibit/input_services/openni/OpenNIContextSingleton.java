@@ -1,4 +1,4 @@
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services.openni;
 import org.OpenNI.*;
 public class OpenNIContextSingleton {
     private static final OpenNIContextSingleton instance = new OpenNIContextSingleton();

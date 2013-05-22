@@ -1,7 +1,13 @@
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services.openni;
 
-import java.util.*;
+import java.awt.Component;
+import java.util.Map;
+
 import org.OpenNI.Point3D;
+
+import edu.mines.acmX.exhibit.input_services.InputDriver;
+import edu.mines.acmX.exhibit.input_services.InputEvent;
+import edu.mines.acmX.exhibit.input_services.InputReceiver;
 
 /**
  * Tracks hands as pointers from OpenNI.
@@ -12,22 +18,20 @@ import org.OpenNI.Point3D;
 public class OpenNIHandTrackerInputDriver implements InputDriver {
   private HandTracker handTracker;
   /* Maps hand IDs to pointer indices, or -1 for none. */
-  private final int pointerMap[] = new int[new InputStatus().pointers.length];
 
-  private InputStatus inputStatus;
-  private GameManager man;
+  public final float bodies[] = new float[] {-1, -1};
+  public final float pointers[][] = new float[][] {{-1, -1}, {-1, -1},
+  		{-1, -1}, {-1, -1}};
 
+  private final int pointerMap[] = new int[pointers.length];
+  
   public OpenNIHandTrackerInputDriver() {
     for (int i = 0; i < pointerMap.length; ++i)
       pointerMap[i] = -1;
   }
 
-  public void installInto(GameManager man) {
+  public void installInto(Component man) {
     handTracker = new HandTracker();
-    inputStatus = man.getSharedInputStatus();
-    man.setDepth( handTracker.getDepthData() );
-    man.setImage( handTracker.getVisualData() );
-    this.man = man;
   }
 
   public void pumpInput(InputReceiver dst) {
@@ -62,13 +66,10 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
 
       float x = (float)point.getValue().getX(),
             y = (float)point.getValue().getY();
-      //Convert to virtual coord system
-      x /= handTracker.getWidth();
-      y = man.vheight() - man.vheight()*y/handTracker.getHeight();
 
       //Update status
-      inputStatus.pointers[pointer][0] = x;
-      inputStatus.pointers[pointer][1] = y;
+      pointers[pointer][0] = x;
+      pointers[pointer][1] = y;
       //Send event
       dst.receiveInput(new InputEvent(InputEvent.TYPE_POINTER_MOVEMENT,
                                       pointer, x, y));
@@ -77,15 +78,8 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
     //Clear pointers which are no longer mapped
     for (int i = 0; i < pointerMap.length; ++i)
       if (pointerMap[i] == -1)
-        inputStatus.pointers[i][0] = inputStatus.pointers[i][1] = -1;
+        pointers[i][0] = pointers[i][1] = -1;
 
   }
-
-    public void pumpImage() {
-        man.setImage( handTracker.getVisualData() );
-    }
-
-    public void pumpDepth() {
-        man.setDepth( handTracker.getDepthData() );
-    }
+  
 }
