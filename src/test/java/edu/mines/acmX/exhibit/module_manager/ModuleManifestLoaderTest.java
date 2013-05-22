@@ -5,30 +5,27 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Unit test for Module.
+ * Unit test for ModuleManifestLoader.
  *
- * TODO cleanup
- * Module should have methods that can be overridden by child classes.
  */
-public class ModuleManifestLoaderTest
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public ModuleManifestLoaderTest( String testName )
-    {
-        super( testName );
+public class ModuleManifestLoaderTest {
+
+    @Test
+    public void testLoadCorrectModule() {
+        // TODO 
+        assertTrue(false);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( ModuleManifestLoaderTest.class );
+    @Test(expected=Exception.class)
+    public void testLoadBadModuleManifest() {
+        // TODO
+        assertTrue(false);
+    }
+
+    @Test(expected=Exception.class)
+    public void testLoadBadJar() {
+        // TODO 
+        assertTrue(false);
     }
 
 }
