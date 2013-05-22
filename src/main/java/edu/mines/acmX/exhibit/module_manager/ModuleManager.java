@@ -86,6 +86,10 @@ public class ModuleManager {
     public ModuleManagerMetaData getMetaData() {
         return metaData;
     }
+
+    public void deleteSingleton() {
+        instance = null;
+    }
 }
 
 
