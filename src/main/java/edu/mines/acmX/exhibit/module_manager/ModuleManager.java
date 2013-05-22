@@ -13,6 +13,8 @@ import java.util.Map;
  * @author Austin Diviness
  */
 
+// TODO be able to query for interfaces here? should maybe be implemented in the input_services?
+
 public class ModuleManager {
 
     // singleton instance
@@ -64,6 +66,7 @@ public class ModuleManager {
     public void run() {
         while (true) {
             nextModule = defaultModule;
+            // TODO read into processing
             currentModule.init();
             currentModule = nextModule;
         }
@@ -75,6 +78,8 @@ public class ModuleManager {
     }
 
     public boolean setNextModule(String name) {
+        // may just be a call to query?
+        // make a test to check that xml is checked as well even if the module exits
         // TODO check configuration for name
         // grab the associated ModuleMetaData
         // instantiate the next module using loadModuleFromMetaData
@@ -87,7 +92,7 @@ public class ModuleManager {
         return metaData;
     }
 
-    public void deleteSingleton() {
+    public void removeInstance() {
         instance = null;
     }
 }

@@ -21,6 +21,7 @@ public class ModuleMetaData {
     private String iconPath, title, author, version;
 
     // inputs
+    // document what boolean means
     Map<String, Boolean> inputTypes;
 
     // required modules

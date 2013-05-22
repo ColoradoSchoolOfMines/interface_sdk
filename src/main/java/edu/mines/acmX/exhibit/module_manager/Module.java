@@ -15,6 +15,12 @@ public abstract class Module extends PApplet {
         // TODO set nextModule in ModuleManager
     }
 
+    // TODO
+    // layer to query modulemanager
+    
+    // TODO
+    // be able to ask about its own or other module metadatas
+
 
 
 }
