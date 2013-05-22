@@ -3,7 +3,7 @@
 resources across multiple modules. -> Should it even be here?
 */
 
-package edu.mines.csci598.recycler.frontend.graphics;
+package edu.mines.acmX.exhibit.stdlib.graphics;
 
 import org.apache.log4j.Logger;
 
@@ -56,8 +56,8 @@ public class ResourceManager {
                 throw new RuntimeException("File error: " + key);
             }
             //Calculate the rounded scaled height
-            int newHeight = (int) Math.round(img.getHeight() * GraphicsConstants.SCALE_FACTOR);
-            int newWidth = (int) Math.round(img.getWidth() * GraphicsConstants.SCALE_FACTOR);
+            int newHeight = (int) Math.round(img.getHeight());
+            int newWidth = (int) Math.round(img.getWidth());
 
             BufferedImage ret = (BufferedImage)img;
             BufferedImage tmp = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);

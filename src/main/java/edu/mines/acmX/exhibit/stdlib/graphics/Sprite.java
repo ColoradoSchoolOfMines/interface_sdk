@@ -1,9 +1,9 @@
-package edu.mines.csci598.recycler.frontend.graphics;
+package edu.mines.acmX.exhibit.stdlib.graphics;
 
-import edu.mines.csci598.recycler.frontend.utils.GameConstants;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * This class keeps track of the sprites location on disk, transforms, position velocity etc.
@@ -18,11 +18,11 @@ import java.awt.*;
 public class Sprite {
     private static final Logger logger = Logger.getLogger(Sprite.class);
 
-    Coordinate location;
+    Point2D location;
     private String fileName;
 
     public Sprite(String fileName, int x, int y) {
-        this.location = new Coordinate(x,y);
+        this.location = new Point(x,y);
         this.fileName = fileName;
         setImage(fileName);
     }
@@ -32,33 +32,15 @@ public class Sprite {
     }
 
     public void setY(int y) {
-        location.setY(y);
+        location.setLocation(location.getX(), y);
     }
 
     public void setX(int x) {
-        location.setX(x);
-    }
-
-    /**
-      * Gets the x position.
-      * Protected because only graphics should care about where it is scaled
-      * return {int}
-      */
-    protected int getScaledX() {
-        return (int) Math.round(location.getX() * GraphicsConstants.SCALE_FACTOR);
+        location.setLocation(x, location.getY());
     }
 
     public int getX() {
         return (int) Math.round(location.getX());
-    }
-
-    /**
-      * Gets the y position.
-      *
-      * return {int}
-      */
-    protected int getScaledY() {
-        return (int) Math.round(location.getY() * GraphicsConstants.SCALE_FACTOR);
     }
 
     public int getY() {
@@ -66,11 +48,11 @@ public class Sprite {
     }
 
     /**
-    * Gets the icon image.
-    * return {Image}
+    * Gets the icon image filename.
+    * return {String}
     */
-    public Image getImage() {
-        return ResourceManager.getInstance().getImage(fileName);
+    public String getImageFilename() {
+        return fileName;
     }
 
     /**
@@ -79,7 +61,7 @@ public class Sprite {
      * @param x
      * @param y
      * @return
-     */
+     
     public boolean isPointInside(int x, int y) {
 
         if (x >= getX() - (GameConstants.SPRITE_X_OFFSET) &&
@@ -91,12 +73,13 @@ public class Sprite {
         }
         return false;
     }
+    */
     
-    public Coordinate getPosition(){
+    public Point2D getPosition(){
     	return location;
     }
 
-	public synchronized void setPosition(Coordinate location) {
-		this.location=location;
+	public synchronized void setPosition(Point2D loc) {
+		this.location.setLocation(loc);
 	}
 }
