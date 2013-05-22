@@ -1,12 +1,6 @@
-/*
-TODO: THis class is also good minus the installINto method.
-The idea is you can register inputReceivers. The game would poll the
-HardwareEventQueue and send it to all the receivers.
+package edu.mines.acmX.exhibit.input_services;
 
-That is done by the module, not in the sdk
-*/
-
-package edu.mines.csci598.recycler.backend;
+import java.awt.Component;
 
 /**
  * Describes an object which can convert external stimuli into InputEvents.
@@ -24,5 +18,5 @@ public interface InputDriver {
      *
      * This method should be protected, but for some reason Java won't allow that.
      */
-    public void installInto(GameManager gm);
+    public void installInto(Component gm);
 }

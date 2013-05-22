@@ -1,10 +1,4 @@
-/* TODO:
-This class is more about queueing up events and not so specific towards the
-mouse/keyboard.
-Best option would to be refactor this into some form of a HardwareEventQueue
-*/
-
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services;
 
 import java.util.HashMap;
 

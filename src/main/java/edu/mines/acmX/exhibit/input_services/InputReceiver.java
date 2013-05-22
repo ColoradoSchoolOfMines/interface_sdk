@@ -1,4 +1,4 @@
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services;
 
 /**
  * Interface for clases which can process input events.

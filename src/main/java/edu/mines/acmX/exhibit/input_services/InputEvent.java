@@ -1,8 +1,8 @@
 /*
-TODO: Make the class a bit more generic so that it can hold any type of event.
+TODO: Make the class a bit more generic (literally, a generic) so that it can hold any type of event.
 */
 
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services;
 
 /**
  * Describes a single input event.
