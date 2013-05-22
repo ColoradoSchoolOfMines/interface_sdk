@@ -55,10 +55,41 @@ public class ModuleManagerTest
         assertTrue( false );
     }
 
-    @Test(expected = Exception.class )
-    public void testException() throws Exception {
-        throw new Exception();
+    @Test
+    public void testLoadModuleFromMetaData() {
+        // TODO
+        assertTrue( false );
     }
 
+    @Test
+    public void testCheckModuleDependencies() {
+        // TODO
+        assertTrue( false );
+    }
+
+    @Test
+    public void testModuleCanRun() {
+        // TODO
+        // may need to check order
+        assertTrue( false );
+    }
+
+    @Test
+    public void testRun() {
+        // TODO
+        assertTrue( false );
+    }
+
+    @Test
+    public void testSetDefaultModule() {
+        // TODO
+        assertTrue( false );
+    }
+
+    @Test
+    public void testSetNextModule() {
+        // TODO
+        assertTrue( false );
+    }
 
 }
