@@ -33,6 +33,13 @@
     	<scope>system</scope>
     	<systemPath>${project.basedir}/lib/mp3spi1.9.5.jar</systemPath>
     </dependency>
+    <dependency>
+    	<groupId>openni</groupId>
+    	<artifactId>openni</artifactId>
+    	<version>1.5.4,0</version>
+    	<scope>system</scope>
+    	<systemPath>${project.basedir}/org.OpenNI.jar</systemPath>
+    </dependency>
   </dependencies>
 	<build>
 		<plugins>
