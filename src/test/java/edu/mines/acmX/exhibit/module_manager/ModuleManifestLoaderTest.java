@@ -28,7 +28,7 @@ public class ModuleManifestLoaderTest
      */
     public static Test suite()
     {
-        return new TestSuite( ModuleManifestLoader.class );
+        return new TestSuite( ModuleManifestLoaderTest.class );
     }
 
 }
