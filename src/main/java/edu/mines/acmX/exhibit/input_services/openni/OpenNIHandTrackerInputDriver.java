@@ -17,6 +17,7 @@ import edu.mines.acmX.exhibit.input_services.InputReceiver;
  */
 public class OpenNIHandTrackerInputDriver implements InputDriver {
   private HandTracker handTracker;
+  private Component manager;
   /* Maps hand IDs to pointer indices, or -1 for none. */
 
   public final float bodies[] = new float[] {-1, -1};
@@ -32,6 +33,7 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
 
   public void installInto(Component man) {
     handTracker = new HandTracker();
+    manager = man;
   }
 
   public void pumpInput(InputReceiver dst) {
@@ -67,6 +69,10 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
       float x = (float)point.getValue().getX(),
             y = (float)point.getValue().getY();
 
+      float vheight = (manager.getHeight() / (float)manager.getWidth());
+      x /= handTracker.getWidth();
+      y = vheight - (vheight * (y/handTracker.getHeight()));
+      
       //Update status
       pointers[pointer][0] = x;
       pointers[pointer][1] = y;

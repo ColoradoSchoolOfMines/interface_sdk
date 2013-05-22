@@ -42,10 +42,11 @@ public final class ModalMouseMotionInputDriver
     }
 
     public void mouseMoved(MouseEvent evt) {
-        float x = evt.getX();
-        float y = evt.getY();
+    	float vheight = (manager.getHeight() / (float)manager.getWidth());
+        float x = evt.getX() / (float)manager.getWidth();
+        float y = evt.getY() / (float)manager.getHeight() * vheight;
         //OpenGL's Y axis is upside-down
-        //y = manager.getHeight() - y;
+        y = vheight - y;
 
         synchronized (manager) {
             if (pointerMode) {
