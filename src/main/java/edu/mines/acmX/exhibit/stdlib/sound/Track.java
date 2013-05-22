@@ -1,4 +1,4 @@
-package edu.mines.csci598.recycler.bettyCrocker;
+package edu.mines.acmX.exhibit.stdlib.sound;
 
 import java.io.File;
 import java.io.IOException;
