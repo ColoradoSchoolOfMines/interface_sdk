@@ -1,5 +1,7 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+import java.util.Map;
+
 /**
  * TODO cleanup
  * This class is the main entry point for the exhibit using the interface sdk
@@ -14,10 +16,10 @@ package edu.mines.acmX.exhibit.module_manager;
 public class ModuleManager {
 
     // singleton instance
-    private ModuleManager instance = null;
+    private static ModuleManager instance = null;
 
     // config variables
-    private String defaultModuleName;
+    private ModuleManagerMetaData metaData;
 
     // core manager data variables
     private Module currentModule;
@@ -30,13 +32,14 @@ public class ModuleManager {
 		
 	}
 
-    public ModuleManager getInstance() {
+    public static ModuleManager getInstance() {
         // TODO fix to properly check for current instance
-        return instance;
+        return null;
     }
 
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
         // TODO use ModuleMetadataManifestLoader to load all configs of modules
+        return null;
     }
 
     public void loadModuleManagerConfig(String path)  {
@@ -45,6 +48,7 @@ public class ModuleManager {
 
     public Module loadModuleFromMetaData(ModuleMetaData data) {
         // TODO implement function
+        return null;
     }
 
     public void checkModuleDependencies() {
@@ -54,6 +58,7 @@ public class ModuleManager {
 
     public boolean canModuleRun(ModuleMetaData data) {
         // TODO check data to ensure dependencies exist
+        return false;
     }
 
     public void run() {
@@ -66,6 +71,7 @@ public class ModuleManager {
 
     public boolean setDefaultModule(String name) {
         // TODO implement function
+        return false;
     }
 
     public boolean setNextModule(String name) {
@@ -73,6 +79,12 @@ public class ModuleManager {
         // grab the associated ModuleMetaData
         // instantiate the next module using loadModuleFromMetaData
         // BE CAREFUL!!!
+        return false;
+    }
+
+    // USED ONLY FOR TESTING BELOW THIS COMMENT
+    public ModuleManagerMetaData getMetaData() {
+        return metaData;
     }
 }
 

@@ -5,9 +5,11 @@
  * All Rights Reserved.
  */
 
+package edu.mines.acmX.exhibit.module_manager;
+
 public class ModuleManagerMetaData
 {
-	public ModuleManagerMetaData() {
+	public ModuleManagerMetaData(String defaultModuleName) {
 		
 	}
 }

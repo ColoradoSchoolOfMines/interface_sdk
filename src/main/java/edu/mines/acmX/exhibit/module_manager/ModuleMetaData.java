@@ -5,8 +5,12 @@
  * All Rights Reserved.
  */
 
-public class ModuleMetaData
-{
+package edu.mines.acmX.exhibit.module_manager;
+
+public class ModuleMetaData {
+    public ModuleMetaData() {
+
+    }
 }
 
 
