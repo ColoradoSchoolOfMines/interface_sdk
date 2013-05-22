@@ -1,7 +1,10 @@
-package edu.mines.csci598.recycler.backend;
+package edu.mines.acmX.exhibit.input_services.keyboard;
 
-import java.awt.event.*;
-import java.util.HashMap;
+import java.awt.Component;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import edu.mines.acmX.exhibit.input_services.ButtonGestureInputDriver;
 
 /**
  * Input driver which maps keyboard press events into gesture events.
@@ -9,8 +12,8 @@ import java.util.HashMap;
 public final class KeyboardGestureInputDriver
     extends ButtonGestureInputDriver
     implements KeyListener {
-    public void installInto(GameManager man) {
-        man.getFrame().addKeyListener(this);
+    public void installInto(Component man) {
+        man.addKeyListener(this);
     }
 
     public void keyPressed(KeyEvent e) {
