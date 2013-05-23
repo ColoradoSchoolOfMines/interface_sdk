@@ -1,5 +1,8 @@
 /**
  * ModuleManagerMetaData.java
+ * Data structure that holds the information found in the ModuleManager's
+ * configuration file.
+ *
  *
  * @author  Andrew DeMaria
  * @author  Austin Diviness

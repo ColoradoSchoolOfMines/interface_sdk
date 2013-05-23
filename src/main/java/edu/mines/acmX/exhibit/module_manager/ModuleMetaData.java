@@ -1,7 +1,7 @@
 /**
  * ModuleMetadata.java
  * <p>
- * A data structure to store xml information found in a Module's
+ * A data structure to store configuration information found in a Module's
  * manifest file.
  *
  * @author  Andrew DeMaria
@@ -30,8 +30,22 @@ public class ModuleMetaData {
     // required modules
     List<String> requiredModules;
 
-
-
+    /**
+     * Creates a ModuleMetaData object
+     *
+     * @param   packageName         Package name of the module.
+     *                              ex. com.example.app
+     * @param   minSdkVersion       Lowest sdk version the module can use
+     * @param   targetSdkVersion    Sdk version app ideally wants
+     * @param   iconPath            File path to icon image
+     * @param   title               Title of module
+     * @param   author              Author of module
+     * @param   version             Module version
+     * @param   inputTypes          Map of Input types used by module. Map 
+     *                              keys indicate input type, boolean value
+     *                              indicates if input type is required
+     * @param   requiredModules     Other modules required by the module
+     */
 	public ModuleMetaData(String packageName, String minSdkVersion,
 			String targetSdkVersion, String iconPath, String title,
 			String author, String version, Map<String, Boolean> inputTypes,
