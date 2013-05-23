@@ -25,10 +25,10 @@ public class ModuleMetaData {
 
     // inputs
     // document what boolean means
-    Map<String, Boolean> inputTypes;
+    Map<String, DependencyType> inputTypes;
 
     // required modules
-    List<String> requiredModules;
+    Map<String, DependencyType> moduleDependencies;
 
     /**
      * Creates a ModuleMetaData object
@@ -44,12 +44,14 @@ public class ModuleMetaData {
      * @param   inputTypes          Map of Input types used by module. Map 
      *                              keys indicate input type, boolean value
      *                              indicates if input type is required
-     * @param   requiredModules     Other modules required by the module
+     * @param   moduleDependencies  Other modules required by the module. A 
+     *                              map that associates the module package
+     *                              names to their optional/required level
      */
 	public ModuleMetaData(String packageName, String minSdkVersion,
 			String targetSdkVersion, String iconPath, String title,
-			String author, String version, Map<String, Boolean> inputTypes,
-			List<String> requiredModules) {
+			String author, String version, Map<String, DependencyType> inputTypes,
+			Map<String, DependencyType> moduleDependencies) {
 		super();
 		this.packageName = packageName;
 		this.minSdkVersion = minSdkVersion;
@@ -59,7 +61,7 @@ public class ModuleMetaData {
 		this.author = author;
 		this.version = version;
 		this.inputTypes = inputTypes;
-		this.requiredModules = requiredModules;
+		this.moduleDependencies = moduleDependencies;
 	}
 
 	public String getPackageName() {
@@ -90,12 +92,12 @@ public class ModuleMetaData {
 		return version;
 	}
 
-	public Map<String, Boolean> getInputTypes() {
+	public Map<String, DependencyType> getInputTypes() {
 		return inputTypes;
 	}
 
-	public List<String> getRequiredModules() {
-		return requiredModules;
+	public Map<String, DependencyType> getModuleDependencies() {
+		return moduleDependencies;
 	}
 
 	// DEBUG PURPOSES ONLY
@@ -128,12 +130,12 @@ public class ModuleMetaData {
 		this.version = version;
 	}
 
-	public void setInputTypes(Map<String, Boolean> inputTypes) {
+	public void setInputTypes(Map<String, DependencyType> inputTypes) {
 		this.inputTypes = inputTypes;
 	}
 
-	public void setRequiredModules(List<String> requiredModules) {
-		this.requiredModules = requiredModules;
+	public void setModuleDependencies(Map<String, DependencyType> moduleDependencies) {
+		this.moduleDependencies = moduleDependencies;
 	}
 }
 
