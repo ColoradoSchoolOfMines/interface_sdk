@@ -4,6 +4,7 @@
  *
  * All Rights Reserved.
  */
+package edu.mines.acmX.exhibit.module_manager;
 
 public interface ModuleInterface {
 

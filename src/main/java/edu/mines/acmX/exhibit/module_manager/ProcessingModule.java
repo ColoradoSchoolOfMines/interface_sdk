@@ -5,20 +5,25 @@
  * All Rights Reserved.
  */
 
-public class ProcessingModule extends PApplet implements ModuleInterface {
+package edu.mines.acmX.exhibit.module_manager;
 
-    @Override
-    protected boolean setNextModuleToLoad( String moduleName ) {
-        module.setNextModuleToLoad( moduleName );
-    }
+import processing.core.*;
 
-    @Override
-    public void init() {
-        super.init();
-    }
-
+public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
     private final Module module;
+
+    ProcessingModule() {
+        super();
+        module = new Module();
+    }
+
+    @Override
+    public boolean setNextModuleToLoad( String moduleName ) {
+        return module.setNextModuleToLoad( moduleName );
+    }
+
+
 
 }
 

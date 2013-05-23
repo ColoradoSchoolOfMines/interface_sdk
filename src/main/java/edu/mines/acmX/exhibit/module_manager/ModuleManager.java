@@ -1,5 +1,6 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+
 import java.util.Map;
 
 /**
@@ -24,9 +25,9 @@ public class ModuleManager {
     private ModuleManagerMetaData metaData;
 
     // core manager data variables
-    private Module currentModule;
-    private Module nextModule;
-    private Module defaultModule;
+    private ModuleInterface currentModule;
+    private ModuleInterface nextModule;
+    private ModuleInterface defaultModule;
     private Map<String, ModuleMetaData> moduleConfigs;
 
 	private ModuleManager() {
@@ -95,6 +96,9 @@ public class ModuleManager {
     public void removeInstance() {
         instance = null;
     }
+    public static void main(String[] args) {
+    	System.out.println("Heeeloo!");
+	}
 }
 
 
