@@ -8,7 +8,7 @@ import processing.core.*;
  * manager will deal with running an instance of this class.
  */
 
-public abstract class Module extends PApplet {
+public abstract class Module implements ModuleInterface {
 
     // just a slim layer for interfacing with a modulemanager and will return a boolean on whether the requested module can be run.
     protected final boolean setNextModuleToLoad( String moduleName ) {
