@@ -13,12 +13,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 
     private final Module module;
 
-    ProcessingModule() {
+    public ProcessingModule() {
         super();
         module = new Module();
     }
 
-    @Override
     public boolean setNextModuleToLoad( String moduleName ) {
         return module.setNextModuleToLoad( moduleName );
     }
