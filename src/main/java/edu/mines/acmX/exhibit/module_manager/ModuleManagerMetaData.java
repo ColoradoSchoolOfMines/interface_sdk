@@ -16,14 +16,16 @@ public class ModuleManagerMetaData {
      * the Module manager
      */
     private String defaultModuleName;
+    private String pathToModules;
     
     /**
      * Creates an instance of ModuleManagerMetaData. 
      *
      * @param   defaultModuleName   package name of defualt module
      */
-	public ModuleManagerMetaData(String defaultModuleName) {
+	public ModuleManagerMetaData(String defaultModuleName, String pathToModules) {
         this.defaultModuleName = defaultModuleName;
+        this.pathToModules = pathToModules;
 	}
 
     public String getDefaultModuleName() {
@@ -35,6 +37,15 @@ public class ModuleManagerMetaData {
     public void setDefaultModuleName(String name) {
         defaultModuleName = name;
     }
+
+    public String getDefaultModule() {
+        return defaultModuleName;
+    }
+
+    public void setPathToModules(String path) {
+        this.pathToModules = path;
+    }
+
 }
 
 

@@ -26,6 +26,7 @@ public class ModuleManager {
 
     // config variables
     private ModuleManagerMetaData metaData;
+    private static String pathToModuleManagerManifest;
 
     // core manager data variables
     private ModuleInterface currentModule;
@@ -36,7 +37,7 @@ public class ModuleManager {
 	private ModuleManager() {
         // TODO add constructor, load defaultModule here, point currentModule to
         // defaultModule
-		
+        // TODO lots more
 	}
 
     /**
@@ -47,6 +48,10 @@ public class ModuleManager {
     public static ModuleManager getInstance() {
         // TODO fix to properly check for current instance
         return null;
+    }
+
+    public static void setPathToManifest(String path) {
+        ModuleManager.pathToModuleManagerManifest = path;
     }
 
     /**
@@ -117,7 +122,7 @@ public class ModuleManager {
      *
      * @return          true if it can be run, false otherwise
      */
-    public boolean canModuleRun(ModuleMetaData data) {
+    private boolean canModuleRun(ModuleMetaData data) {
         // TODO check data to ensure dependencies exist
         // TODO does this check both module dependencies and sensor dependencies?
         return false;
@@ -140,15 +145,14 @@ public class ModuleManager {
     }
 
     /**
-     * Sets the default module for ModuleManager.
+     * Sets the default module for ModuleManager. Throws an exception if 
+     * the default module cannot be loaded.
      *
      * @param   name    Package name of module to be made default.
      *
-     * @return          true if module is set, false otherwise.
      */
-    public boolean setDefaultModule(String name) {
+    private void setDefaultModule(String name) throws Exception {
         // TODO implement function
-        return false;
     }
 
     /**
@@ -160,7 +164,7 @@ public class ModuleManager {
      */
     public boolean setNextModule(String name) {
         // may just be a call to query?
-        // make a test to check that xml is checked as well even if the module exits
+        // make a test to check that xml is checked as well even if the module exists
         // TODO check configuration for name
         // grab the associated ModuleMetaData
         // instantiate the next module using loadModuleFromMetaData
@@ -177,10 +181,17 @@ public class ModuleManager {
         instance = null;
     }
 
-    public static void setModuleMetaDataMap(Map<String, ModuleMetaData> m) {
+    public void setModuleMetaDataMap(Map<String, ModuleMetaData> m) {
         this.moduleConfigs = m;
     }
-
+    
+    public Map<String, ModuleMetaData> getModuleMetaDataMap() {
+    	return this.moduleConfigs;
+    }
+    
+    public void setCurrentModule(ModuleInterface m) {
+    	currentModule = m;
+    }
 
     public static void main(String[] args) {
     	System.out.println("Heeeloo!");
