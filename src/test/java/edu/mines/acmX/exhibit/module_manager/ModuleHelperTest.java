@@ -5,14 +5,14 @@ import org.junit.*;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Unit test for Module.
+ * Unit test for ModuleHelper.
  *
  */
-public class ModuleTest {
+public class ModuleHelperTest {
 
     /**
-     * Test that the module is able to specify which module should be run after
-     * it exits
+     * Test that the module helper is able to specify which module should be run
+     * after it exits
      */
     @Test
     public void testNextValidModule() {

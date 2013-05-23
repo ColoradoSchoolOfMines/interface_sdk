@@ -14,7 +14,8 @@ import java.util.Map;
  * @author Austin Diviness
  */
 
-// TODO be able to query for interfaces here? should maybe be implemented in the input_services?
+// TODO be able to query for interfaces here? should maybe be implemented in the
+// input_services?
 
 public class ModuleManager {
 
@@ -33,7 +34,8 @@ public class ModuleManager {
     private Map<String, ModuleMetaData> moduleConfigs;
 
 	private ModuleManager() {
-        // TODO add constructor, load defaultModule here, point currentModule to defaultModule
+        // TODO add constructor, load defaultModule here, point currentModule to
+        // defaultModule
 		
 	}
 
@@ -72,13 +74,13 @@ public class ModuleManager {
     }
 
     /**
-     * Loads a Module from the associated ModuleMetaData.
+     * Loads an instance of ModuleInterface from the associated ModuleMetaData.
      *
      * @param   data    ModuleMetaData to be loaded
      *
      * @return          loaded Module
      */
-    public Module loadModuleFromMetaData(ModuleMetaData data) {
+    public ModuleInterface loadModuleFromMetaData(ModuleMetaData data) {
         // TODO implement function
         return null;
     }

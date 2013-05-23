@@ -11,11 +11,11 @@ import processing.core.*;
 
 public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
-    private final Module module;
+    private final ModuleHelper module;
 
     public ProcessingModule() {
         super();
-        module = new Module();
+        module = new ModuleHelper();
     }
 
     public boolean setNextModuleToLoad( String moduleName ) {
