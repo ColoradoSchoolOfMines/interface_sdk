@@ -271,15 +271,41 @@ public class ModuleManagerTest {
     // passes because optional module is preset
     @Test
     public void testSetNextModuleOptionalWorks() {
-        // TODO
-        assertTrue( false );
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+        TestModule aModule = new TestModule();
+        
+        Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
+        alist.put("com.test.B",DependencyType.OPTIONAL);
+        a.setModuleDependencies(alist);
+
+        ModuleManager m = ModuleManager.getInstance();
+        Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
+        modConfigs.put(a.getPackageName(), a);
+        modConfigs.put(b.getPackageName(), b);
+
+        m.setModuleMetaDataMap(modConfigs);
+        m.setCurrentModule(aModule);
+        assertTrue(m.setNextModule("com.test.B") == true);
     }
 
     // fails because optional module isn't present
     @Test
     public void testSetNextModuleOptionalFails() {
-        // TODO
-        assertTrue( false );
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        TestModule aModule = new TestModule();
+        
+        Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
+        alist.put("com.test.B",DependencyType.OPTIONAL);
+        a.setModuleDependencies(alist);
+
+        ModuleManager m = ModuleManager.getInstance();
+        Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
+        modConfigs.put(a.getPackageName(), a);
+
+        m.setModuleMetaDataMap(modConfigs);
+        m.setCurrentModule(aModule);
+        assertTrue(m.setNextModule("com.test.B") == false);
     }
 
 }
