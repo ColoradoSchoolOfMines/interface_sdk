@@ -16,6 +16,7 @@ import java.util.Map;
 public class ModuleMetaData {
     // manifest top level
     private String packageName;
+    private String className;
 
     // uses-sdk
     private String minSdkVersion, targetSdkVersion;
@@ -35,6 +36,8 @@ public class ModuleMetaData {
      *
      * @param   packageName         Package name of the module.
      *                              ex. com.example.app
+     * @param   className           Class name of the class that implements one
+     *                              of the ModuleInterface(s)
      * @param   minSdkVersion       Lowest sdk version the module can use
      * @param   targetSdkVersion    Sdk version app ideally wants
      * @param   iconPath            File path to icon image
@@ -48,7 +51,7 @@ public class ModuleMetaData {
      *                              map that associates the module package
      *                              names to their optional/required level
      */
-	public ModuleMetaData(String packageName, String minSdkVersion,
+	public ModuleMetaData(String packageName, String className, String minSdkVersion,
 			String targetSdkVersion, String iconPath, String title,
 			String author, String version, Map<String, DependencyType> inputTypes,
 			Map<String, DependencyType> moduleDependencies) {
@@ -67,6 +70,10 @@ public class ModuleMetaData {
 	public String getPackageName() {
 		return packageName;
 	}
+
+    public String getClassName() {
+        return className;
+    }
 
 	public String getMinSdkVersion() {
 		return minSdkVersion;
@@ -105,6 +112,10 @@ public class ModuleMetaData {
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
 	public void setMinSdkVersion(String minSdkVersion) {
 		this.minSdkVersion = minSdkVersion;

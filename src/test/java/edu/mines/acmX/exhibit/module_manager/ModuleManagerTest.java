@@ -1,9 +1,9 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import static org.junit.Assert.*;
-import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -87,15 +87,16 @@ public class ModuleManagerTest {
         assertTrue( false );
     }
 
-    private ModuleMetaData createEmptyModuleMetaData(String name) {
+    private ModuleMetaData createEmptyModuleMetaData(String packageName, String className) {
         Map<String, DependencyType> inputTypesA = new HashMap<String, DependencyType>();
         Map<String, DependencyType> moduleDepA = new HashMap<String, DependencyType>();
         ModuleMetaData a = new ModuleMetaData(
-                name,
+                packageName,
+                className,
                 "2.3",
                 "2.3",
                 "icon.png",
-                "Title" + name,
+                "Title" + className,
                 "Andrew",
                 "0.1",
                 inputTypesA,
@@ -106,8 +107,8 @@ public class ModuleManagerTest {
 
     @Test
     public void testCheckModuleDependencies() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
-        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
 
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
         alist.put("com.test.B",DependencyType.REQUIRED);
@@ -126,7 +127,7 @@ public class ModuleManagerTest {
 
     @Test
     public void testCheckModuleDependencyMissing() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
 
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
         alist.put("com.test.B",DependencyType.REQUIRED);
@@ -144,7 +145,7 @@ public class ModuleManagerTest {
 
     @Test
     public void testCheckModuleDependencyMissingWhenOptional() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
 
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
         alist.put("com.test.B",DependencyType.OPTIONAL);
@@ -163,8 +164,8 @@ public class ModuleManagerTest {
 
     @Test
     public void testCheckCircularModuleDependencies() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
-        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
 
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
         alist.put("com.test.B",DependencyType.REQUIRED);
@@ -187,8 +188,8 @@ public class ModuleManagerTest {
 
     @Test
     public void testCheckRecursiveMissingModuleDependcies() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
-        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
 
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
         alist.put("com.test.B",DependencyType.REQUIRED);
@@ -234,8 +235,8 @@ public class ModuleManagerTest {
     // default case
     @Test
     public void testSetNextModuleRequired() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
-        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
         TestModule aModule = new TestModule();
         
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
@@ -256,8 +257,8 @@ public class ModuleManagerTest {
     // specify in its manifest
     @Test
     public void testSetNextModuleIllegal() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
-        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
         TestModule aModule = new TestModule();
         
         Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
@@ -274,8 +275,8 @@ public class ModuleManagerTest {
     // passes because optional module is preset
     @Test
     public void testSetNextModuleOptionalWorks() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
-        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
         TestModule aModule = new TestModule();
         
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
@@ -295,7 +296,7 @@ public class ModuleManagerTest {
     // fails because optional module isn't present
     @Test
     public void testSetNextModuleOptionalFails() {
-        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         TestModule aModule = new TestModule();
         
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();

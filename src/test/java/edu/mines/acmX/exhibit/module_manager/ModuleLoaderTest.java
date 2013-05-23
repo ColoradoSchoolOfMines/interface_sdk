@@ -1,8 +1,11 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-import org.apache.logging.log4j.Logger;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
 
 /**
  * Unit test for ModuleLoader
@@ -19,6 +22,7 @@ public class ModuleLoaderTest {
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.random",
+                "Horses",
                 "0.0.0",
                 "0.0.0",
                 "horse.jpg",
@@ -37,6 +41,7 @@ public class ModuleLoaderTest {
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.badclass",
+                "Badgers",
                 "0.0.0",
                 "0.0.0",
                 "horse.jpg",
@@ -56,6 +61,7 @@ public class ModuleLoaderTest {
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.classnotfound",
+                "Horses",
                 "0.0.0",
                 "0.0.0",
                 "horse.jpg",
