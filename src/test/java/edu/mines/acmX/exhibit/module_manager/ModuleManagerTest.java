@@ -10,6 +10,11 @@ import org.apache.logging.log4j.Logger;
 public class ModuleManagerTest 
 {
 
+    @Before
+    public void resetModuleManager() {
+        ModuleManager.removeInstance();
+    }
+
 	@Test
     public void testGetInstance() {
         ModuleManager m = ModuleManager.getInstance();
@@ -55,15 +60,56 @@ public class ModuleManagerTest
         assertTrue( false );
     }
 
+    /**
+     * Most of this functionality will be tested in the ModuleLoader, however
+     * this just ensures that ModuleManager gets what it needs.
+     */
     @Test
     public void testLoadModuleFromMetaData() {
+        assertTrue( false );
+    }
+
+    private ModuleMetaData createEmptyModuleMetaData(String name) {
+        Map<String, Boolean> inputTypesA = new HashMap<String, Boolean>();
+        List<String> moduleDepA = new ArrayList<String>();
+        ModuleMetaData a = new ModuleMetaData(
+                name,
+                "2.3",
+                "2.3",
+                "icon.png",
+                "Title" + name,
+                "Andrew",
+                "0.1",
+                inputTypesA,
+                moduleDepA);
+        return a;
+    }
+
+
+    @Test
+    public void testCheckModuleDependencies() {
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        a.getRequiredModules().push("com.test.B");
+
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+
         // TODO
+
         assertTrue( false );
     }
 
     @Test
-    public void testCheckModuleDependencies() {
-        // TODO
+    public void testCheckModuleDependencyMissing() {
+        assertTrue( false );
+    }
+
+    @Test
+    public void testCheckCircularModuleDependencies() {
+        assertTrue( false );
+    }
+
+    @Test
+    public void testCheckRecursiveMissingModuleDependcies() {
         assertTrue( false );
     }
 

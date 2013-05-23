@@ -87,11 +87,27 @@ public class ModuleManager {
 
     /**
      * Iterates through the loaded ModuleMetaData objects, removing
-     * those that don't have their required dependencies.
+     * those that don't have their required module dependencies.
      */
-    public void checkModuleDependencies() {
+    private void checkModuleDependencies() {
         // TODO remove ModuleMetaData information for modules that don't
         // have required dependencies
+    }
+
+    /**
+     * Iterates through the loaded ModuleMetaData objects, removing
+     * those that don't have their required input services.
+     */
+    private void checkModuleInputServices() {
+
+    }
+
+    /**
+     * Ensures that all modules have all dependencies available, including
+     * required modules and input services.
+     */
+    public void checkDependencies() {
+        // TODO make sure to check sensor dependencies first
     }
 
     /**
@@ -157,7 +173,7 @@ public class ModuleManager {
         return metaData;
     }
 
-    public void removeInstance() {
+    public static void removeInstance() {
         instance = null;
     }
     public static void main(String[] args) {
