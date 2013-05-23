@@ -89,27 +89,88 @@ public class ModuleManagerTest
     @Test
     public void testCheckModuleDependencies() {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
-        a.getRequiredModules().push("com.test.B");
-
         ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
 
-        // TODO
+        List<String> alist = new ArrayList<String>();
+        alist.add("com.test.B");
+        a.setRequiredModules(alist);
 
-        assertTrue( false );
+        ModuleManager m = ModuleManager.getInstance();
+        Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
+        modConfigs.put(a.getPackageName(), a);
+        modConfigs.put(b.getPackageName(), b);
+        m.setModuleMetaDataMap(modConfigs);
+        m.checkDependencies();
+        assertTrue( m.getModuleMetaDataMap().size() == 2 );
+        assertTrue( m.getModuleMetaDataMap().get(a.getPackageName()) == a);
+        assertTrue( m.getModuleMetaDataMap().get(b.getPackageName()) == b);
     }
 
     @Test
     public void testCheckModuleDependencyMissing() {
-        assertTrue( false );
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+
+        List<String> alist = new ArrayList<String>();
+        alist.add("com.test.B");
+        a.setRequiredModules(alist);
+
+        ModuleManager m = ModuleManager.getInstance();
+        Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
+        modConfigs.put(a.getPackageName(), a);
+
+        m.setModuleMetaDataMap(modConfigs);
+        m.checkDependencies();
+
+        assertTrue( m.getModuleMetaDataMap().size() == 0 );
     }
 
     @Test
     public void testCheckCircularModuleDependencies() {
-        assertTrue( false );
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+
+        List<String> alist = new ArrayList<String>();
+        alist.add("com.test.B");
+        a.setRequiredModules(alist);
+
+        List<String> blist = new ArrayList<String>();
+        blist.add("com.test.A");
+        b.setRequiredModules(blist);
+
+
+        ModuleManager m = ModuleManager.getInstance();
+        Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
+        modConfigs.put(a.getPackageName(), a);
+        modConfigs.put(b.getPackageName(), b);
+        m.setModuleMetaDataMap(modConfigs);
+        m.checkDependencies();
+        assertTrue( m.getModuleMetaDataMap().size() == 2 );
+        assertTrue( m.getModuleMetaDataMap().get(a.getPackageName()) == a);
+        assertTrue( m.getModuleMetaDataMap().get(b.getPackageName()) == b);
     }
 
     @Test
     public void testCheckRecursiveMissingModuleDependcies() {
+        ModuleMetaData a = createEmptyModuleMetaData("com.test.A");
+        ModuleMetaData b = createEmptyModuleMetaData("com.test.B");
+
+        List<String> alist = new ArrayList<String>();
+        alist.add("com.test.B");
+        a.setRequiredModules(alist);
+
+        List<String> blist = new ArrayList<String>();
+        blist.add("com.test.C");
+        b.setRequiredModules(blist);
+
+        ModuleManager m = ModuleManager.getInstance();
+        Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
+        modConfigs.put(a.getPackageName(), a);
+        modConfigs.put(b.getPackageName(), b);
+
+        m.setModuleMetaDataMap(modConfigs);
+        m.checkDependencies();
+
+        assertTrue( m.getModuleMetaDataMap().size() == 0 );
         assertTrue( false );
     }
 

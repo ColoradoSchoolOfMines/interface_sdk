@@ -176,6 +176,12 @@ public class ModuleManager {
     public static void removeInstance() {
         instance = null;
     }
+
+    public static void setModuleMetaDataMap(Map<String, ModuleMetaData> m) {
+        this.moduleConfigs = m;
+    }
+
+
     public static void main(String[] args) {
     	System.out.println("Heeeloo!");
 	}
