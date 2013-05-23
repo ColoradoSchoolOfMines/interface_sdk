@@ -15,7 +15,58 @@ public class ModuleLoaderTest {
      */
     @Test
     public void testLoadModule() {
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
+        Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        ModuleMetaData moduleToLoadData = new ModuleMetaData(
+                "com.andrew.random",
+                "0.0.0",
+                "0.0.0",
+                "horse.jpg",
+                "i_love_horseys",
+                "andrew demaria",
+                "0.1",
+                desiredInputs,
+                desiredModules);
+        ModuleInterface m = ModuleLoader.loadModule("modules/HorseSimpleGood.jar", moduleToLoadData);
+        assertTrue( m != null );
+    }
 
+    @Test(expected=ModuleLoadException.class)
+    public void testLoadModuleWithoutProperClassImplementing() {
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
+        Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        ModuleMetaData moduleToLoadData = new ModuleMetaData(
+                "com.andrew.badclass",
+                "0.0.0",
+                "0.0.0",
+                "horse.jpg",
+                "i_love_horseys",
+                "andrew demaria",
+                "0.1",
+                desiredInputs,
+                desiredModules);
+        ModuleInterface m =
+            ModuleLoader.loadModule("modules/HorseBadClassNotImplementedCorrectly.jar",
+                    moduleToLoadData); 
+    }
+
+    @Test(expected=ModuleLoadException.class)
+    public void testLoadModuleWithoutExistingClass() {
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
+        Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        ModuleMetaData moduleToLoadData = new ModuleMetaData(
+                "com.andrew.classnotfound",
+                "0.0.0",
+                "0.0.0",
+                "horse.jpg",
+                "i_love_horseys",
+                "andrew demaria",
+                "0.1",
+                desiredInputs,
+                desiredModules);
+        ModuleInterface m =
+            ModuleLoader.loadModule("modules/SnakeAteTheHorseSoThisIsBad.jar",
+                    moduleToLoadData); 
     }
 
     /**
@@ -24,7 +75,8 @@ public class ModuleLoaderTest {
      */
     @Test
     public void testLoadModuleKeepsSingleton() {
-
+        // TODO
+        assertTrue( false );
     }
 
     /**
@@ -33,7 +85,8 @@ public class ModuleLoaderTest {
      */
     @Test
     public void testEnsureThatAllInterfacesExistOnLoadedInstance() {
-
+        // TODO
+        assertTrue( false );
     }
 }
 

@@ -81,6 +81,9 @@ public class ModuleManagerTest {
      */
     @Test
     public void testLoadModuleFromMetaData() {
+        // not sure if we need this since it will be calling another tested
+        // function.
+        // TODO
         assertTrue( false );
     }
 
