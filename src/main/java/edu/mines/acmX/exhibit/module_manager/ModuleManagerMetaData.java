@@ -1,15 +1,24 @@
-/*
+/**
  * ModuleManagerMetaData.java
- * Copyright (C) 2013 Andrew DeMaria (muff1nman) <ademaria@mines.edu>
  *
- * All Rights Reserved.
+ * @author  Andrew DeMaria
+ * @author  Austin Diviness
  */
 
 package edu.mines.acmX.exhibit.module_manager;
 
 public class ModuleManagerMetaData {
+    /**
+     * Holds the package name of the default module to be loaded by 
+     * the Module manager
+     */
     private String defaultModuleName;
     
+    /**
+     * Creates an instance of ModuleManagerMetaData. 
+     *
+     * @param   defaultModuleName   package name of defualt module
+     */
 	public ModuleManagerMetaData(String defaultModuleName) {
         this.defaultModuleName = defaultModuleName;
 	}

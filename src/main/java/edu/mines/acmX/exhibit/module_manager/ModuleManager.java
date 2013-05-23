@@ -17,7 +17,9 @@ import java.util.Map;
 
 public class ModuleManager {
 
-    // singleton instance
+    /**
+     * Singleton instance of ModuleManager
+     */
     private static ModuleManager instance = null;
 
     // config variables
@@ -34,35 +36,81 @@ public class ModuleManager {
 		
 	}
 
+    /**
+     * Fetches instance of ModuleManager, or creates one if it has not yet created.
+     *
+     * @return  The single instance of ModuleManager
+     */
     public static ModuleManager getInstance() {
         // TODO fix to properly check for current instance
         return null;
     }
 
+    /**
+     * Creates a Map of all Modules found in the directory indicated by the path
+     * and associates each package name to the ModuleMetaData object created from
+     * that Module's manifest file.
+     *
+     * @param   path    The path to the directy holding modules
+     *
+     * @return          A Map, where the keys are Module package names and the value is the 
+     *                  meta data gathered from that module's manifest file
+     */
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
         // TODO use ModuleMetadataManifestLoader to load all configs of modules
         return null;
     }
 
+    /**
+     * Loads the ModuleManager config file.
+     *
+     * @param   path    Path to the ModuleManager xml config file
+     */
     public void loadModuleManagerConfig(String path)  {
         // TODO load ModuleManager xml config
     }
 
+    /**
+     * Loads a Module from the associated ModuleMetaData.
+     *
+     * @param   data    ModuleMetaData to be loaded
+     *
+     * @return          loaded Module
+     */
     public Module loadModuleFromMetaData(ModuleMetaData data) {
         // TODO implement function
         return null;
     }
 
+    /**
+     * Iterates through the loaded ModuleMetaData objects, removing
+     * those that don't have their required dependencies.
+     */
     public void checkModuleDependencies() {
         // TODO remove ModuleMetaData information for modules that don't
         // have required dependencies
     }
 
+    /**
+     * checks a single ModuleMetaData for its dependencies.
+     *
+     * @param   data    ModuleMetaData to be checked
+     *
+     * @return          true if it can be run, false otherwise
+     */
     public boolean canModuleRun(ModuleMetaData data) {
         // TODO check data to ensure dependencies exist
+        // TODO does this check both module dependencies and sensor dependencies?
         return false;
     }
 
+    /**
+     * Main run loop of the ModuleManager. Each loops sets the next module
+     * to the default module specified, then runs the current module's 
+     * init function. After, the current module is set to the next module,
+     * which will be the defualt module if the current module has not 
+     * specified the next one.
+     */
     public void run() {
         while (true) {
             nextModule = defaultModule;
@@ -72,11 +120,25 @@ public class ModuleManager {
         }
     }
 
+    /**
+     * Sets the default module for ModuleManager.
+     *
+     * @param   name    Package name of module to be made default.
+     *
+     * @return          true if module is set, false otherwise.
+     */
     public boolean setDefaultModule(String name) {
         // TODO implement function
         return false;
     }
 
+    /**
+     * Sets next module to be loaded, after the current module.
+     *
+     * @param name  Package name of module to be loaded next.
+     *
+     * @return      true if module is set, false otherwise.
+     */
     public boolean setNextModule(String name) {
         // may just be a call to query?
         // make a test to check that xml is checked as well even if the module exits

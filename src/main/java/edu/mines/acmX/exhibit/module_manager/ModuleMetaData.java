@@ -1,8 +1,11 @@
-/*
+/**
  * ModuleMetadata.java
- * Copyright (C) 2013 Andrew DeMaria (muff1nman) <ademaria@mines.edu>
+ * <p>
+ * A data structure to store xml information found in a Module's
+ * manifest file.
  *
- * All Rights Reserved.
+ * @author  Andrew DeMaria
+ * @author  Austin Diviness
  */
 
 package edu.mines.acmX.exhibit.module_manager;
