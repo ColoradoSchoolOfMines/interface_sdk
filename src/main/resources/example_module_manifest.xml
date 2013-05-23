@@ -1,7 +1,14 @@
+<!-- 
+  Some random notes:
+  The package is essentially the name for the module
+  The class is the name the entry point for the module which should be a class
+  implementing one of the ModuleInterfaces (i.e. CommandlineModule)
+-->
 <?xml version="1.0" encoding="utf-8"?>
 <manifest 
         xmlns:module="http://some_url_here"
-        package="edu.mines.acmx.some_game">
+        package="edu.mines.acmx.some_game"
+        class="SomeGame" >
 
     <uses-sdk 
             module:minSdkVersion="4"
