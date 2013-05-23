@@ -5,7 +5,7 @@ import org.junit.*;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Unit test for simple App.
+ * Unit test for ModuleManager
  */
 public class ModuleManagerTest 
 {
