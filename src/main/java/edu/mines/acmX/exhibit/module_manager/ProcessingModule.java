@@ -22,6 +22,10 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
         return module.setNextModuleToLoad( moduleName );
     }
 
+    public void init() {
+        super.init();
+    }
+
 
 
 }

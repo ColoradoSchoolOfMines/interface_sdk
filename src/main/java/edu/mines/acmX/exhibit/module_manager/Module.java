@@ -6,13 +6,15 @@ package edu.mines.acmX.exhibit.module_manager;
  * manager will deal with running an instance of this class.
  */
 
-public class Module {
+public class Module implements ModuleInterface {
 
     // just a slim layer for interfacing with a modulemanager and will return a boolean on whether the requested module can be run.
-    protected final boolean setNextModuleToLoad( String moduleName ) {
+    public final boolean setNextModuleToLoad( String moduleName ) {
         // TODO set nextModule in ModuleManager
         return false;
     }
+
+    public void init() { }
 
     // TODO
     // layer to query modulemanager
