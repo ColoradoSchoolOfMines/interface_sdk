@@ -1,8 +1,8 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import static org.junit.Assert.*;
+import org.junit.*;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Unit test for ModuleManifestLoader.
