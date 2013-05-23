@@ -9,10 +9,8 @@ regesture or if the module is interested in knowing who started the game)
 */
 package edu.mines.acmX.exhibit.input_services.openni;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.Collections;
@@ -20,9 +18,22 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.OpenNI.*;
 
-import javax.swing.*;
+import org.OpenNI.ActiveHandEventArgs;
+import org.OpenNI.Context;
+import org.OpenNI.DepthGenerator;
+import org.OpenNI.DepthMetaData;
+import org.OpenNI.GeneralException;
+import org.OpenNI.GestureGenerator;
+import org.OpenNI.GestureRecognizedEventArgs;
+import org.OpenNI.HandsGenerator;
+import org.OpenNI.IObservable;
+import org.OpenNI.IObserver;
+import org.OpenNI.ImageGenerator;
+import org.OpenNI.ImageMetaData;
+import org.OpenNI.InactiveHandEventArgs;
+import org.OpenNI.Point3D;
+import org.OpenNI.StatusException;
 
 public class HandTracker {
     // the size of the history for locations, for drawing paths
@@ -58,11 +69,10 @@ public class HandTracker {
 	class MyGestureRecognized implements IObserver<GestureRecognizedEventArgs> {
 		public void update(IObservable<GestureRecognizedEventArgs> observable,
                            GestureRecognizedEventArgs args) {
+            // start tracking the position of the wave, which is the hand
 			try {
-                // start tracking the position of the wave, which is the hand
 				handsGen.StartTracking(args.getEndPosition());
-			}
-            catch (StatusException e) {
+			} catch (StatusException e) {
 				e.printStackTrace();
 			}
 		}

@@ -69,9 +69,10 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
       float x = (float)point.getValue().getX(),
             y = (float)point.getValue().getY();
 
-      float vheight = (manager.getHeight() / (float)manager.getWidth());
-      x /= handTracker.getWidth();
-      y = vheight - (vheight * (y/handTracker.getHeight()));
+//      
+//      float vheight = (manager.getHeight() / (float)manager.getWidth());
+//      x /= handTracker.getWidth();
+//      y = vheight - (vheight * (y/handTracker.getHeight()));
       
       //Update status
       pointers[pointer][0] = x;
