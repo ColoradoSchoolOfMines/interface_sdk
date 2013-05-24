@@ -17,10 +17,10 @@ public class ModuleMetaDataBuilder {
 
     // inputs
     // document what boolean means
-    Map<InputType, DependencyType> inputTypes;
+    Map<InputType, DependencyType> inputTypes = new HashMap<InputType, DependencyType>();
 
     // required modules
-    Map<String, DependencyType> moduleDependencies;
+    Map<String, DependencyType> moduleDependencies = new HashMap<String, DependencyType>();
 
     public ModuleMetaDataBuilder() {
 		
@@ -77,9 +77,6 @@ public class ModuleMetaDataBuilder {
 	}
 
     public void addInputType(InputType inputType, DependencyType depend) {
-        if ( inputTypes == null ) {
-            inputTypes = new HashMap<InputType, DependencyType>();
-        }
         inputTypes.put(inputType, depend);
     }
 
@@ -88,9 +85,6 @@ public class ModuleMetaDataBuilder {
 	}
 
     public void addModuleDependency(String input, DependencyType depend) {
-        if ( moduleDependencies == null ) {
-            moduleDependencies = new HashMap<String, DependencyType>();
-        }
         moduleDependencies.put(input, depend);
     }
 }
