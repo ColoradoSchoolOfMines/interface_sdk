@@ -11,21 +11,13 @@ import org.apache.logging.log4j.Logger;
 public class ModuleHelperTest {
 
     /**
-     * Test that the module helper is able to specify which module should be run
-     * after it exits
+	 * We do not need to test this because it has already been tested in 
+	 * ModuleManagerTest.java. The tested function is just a slim layer
+	 * over test ModuleManager functions.
      */
     @Test
     public void testNextValidModule() {
-        // TODO replace with Logger
-        System.out.println("Running testNextModule");
-        fail( "Test not complete" );
+		assertTrue(true);
     }
-
-    @Test
-    public void testNextInvalidModule() {
-        // TODO both required and not required
-        fail( "Test not complete" );
-    }
-
     
 }
