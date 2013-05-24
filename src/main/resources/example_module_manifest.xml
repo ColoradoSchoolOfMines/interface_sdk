@@ -20,13 +20,13 @@
             version="1.2">
 
         <inputs>
-            <input required="false" input-type="acceleration" />
-            <!-- without the required, it will default to true -->
-            <input require="true" input-type="2Dimage" />
+            <input optional="true" input-type="acceleration" />
+            <!-- without the optional, it will default to required -->
+            <input input-type="image2D" />
         </inputs>
         <requires-module>
             <module package="edu.mines.acmX.some_other_game" />
-            <module package="edu.mines.acmX.another_game" />
+            <module optional="true" package="edu.mines.acmX.another_game" />
             <!-- possibly include a label for easy typing / remembering -->
             <!-- how does launcher require modules? maybe a requre-all tag? -->
         </requires-module>

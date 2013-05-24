@@ -14,9 +14,9 @@ import org.junit.Test;
 public class ModuleManifestLoaderTest {
 
     @Test
-    public void testLoadCorrectModule() throws ManifestLoadException {
+    public void testLoadCorrectModuleWithoutExtraStuff() throws ManifestLoadException {
         String pathToJar = "modules/HorseSimpleGood.jar";
-        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
+        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData shouldEqual = new ModuleMetaData(
                 "com.andrew.random",
@@ -33,29 +33,59 @@ public class ModuleManifestLoaderTest {
         assertEquals( shouldEqual, ModuleManifestLoader.load( pathToJar ));
     }
 
+    @Test
+    public void testLoadCorrectModuleWithOptionalModulesAndInputs() throws ManifestLoadException {
+        String pathToJar = "modules/PiggyGoodWithLotsOfDepend.jar";
+        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+
+        desiredInputs.put(InputType.ACCELERATION, DependencyType.OPTIONAL);
+        desiredInputs.put(InputType.IMAGE2D, DependencyType.REQUIRED);
+
+        desiredModules.put("edu.mines.acmX.some_other_game", DependencyType.REQUIRED);
+        desiredModules.put("edu.mines.acmX.another_game", DependencyType.OPTIONAL);
+
+        ModuleMetaData shouldEqual = new ModuleMetaData(
+                "com.andrew.lotsofdepends",
+                "Piggy",
+                "0.0.0",
+                "0.0.0",
+                "",
+                "i_love_piggys",
+                "andrew demaria",
+                "0.1",
+                desiredInputs,
+                desiredModules);
+
+        assertEquals( shouldEqual, ModuleManifestLoader.load( pathToJar ));
+    }
+
     /**
      * Should fail when the manifest file cannot be located
+     * @throws ManifestLoadException 
      */
     @Test(expected=ManifestLoadException.class)
-    public void testLoadBadModuleManifest() {
+    public void testLoadBadModuleManifest() throws ManifestLoadException {
         String jarPath = "modules/BadModuleManifest.jar";
         ModuleManifestLoader.load( jarPath );
     }
 
     /**
      * Should fail when the xml cannot be parsed
+     * @throws ManifestLoadException 
      */
     @Test(expected=ManifestLoadException.class)
-    public void testLoadMaformedXMLManifest() {
+    public void testLoadMaformedXMLManifest() throws ManifestLoadException {
         String jarPath = "modules/MaformedXMLManifest.jar";
         ModuleManifestLoader.load( jarPath );
     }
 
     /**
      * Should fail when the data is incorrect
+     * @throws ManifestLoadException 
      */
     @Test(expected=ManifestLoadException.class)
-    public void testLoadManifestIllegalStructure() {
+    public void testLoadManifestIllegalStructure() throws ManifestLoadException {
         String jarPath = "modules/ManifestIllegalStructure.jar";
         ModuleManifestLoader.load( jarPath );
     }

@@ -11,34 +11,37 @@ import org.apache.logging.log4j.Logger;
 public class ModuleManagerManifestLoaderTest {
 
     @Test
-    public void testLoadCorrectModuleManagerManifest() {
+    public void testLoadCorrectModuleManagerManifest() throws ManifestLoadException {
         ModuleManagerMetaData data = new ModuleManagerMetaData("com.example.test", "/home/andrew/");
-		assertEquals(data, ModuleManagerManifestLoader.load("module_manager/testModuleManagerManifest.xml");
+		assertEquals(data, ModuleManagerManifestLoader.load("module_manager/testModuleManagerManifest.xml"));
     }
 
     /**
      * Should fail when the manifest file cannot be located
+     * @throws ManifestLoadException 
      */
     @Test(expected=ManifestLoadException.class)
-    public void testLoadBadModuleManagerManifest() {
+    public void testLoadBadModuleManagerManifest() throws ManifestLoadException {
 		String path = "module_manager/IDoNotExist.xml";
         ModuleManagerManifestLoader.load( path );
     }
 
     /**
      * Should fail when the xml cannot be parsed
+     * @throws ManifestLoadException 
      */
     @Test(expected=ManifestLoadException.class)
-    public void testLoadMaformedXMLManifest() {
+    public void testLoadMaformedXMLManifest() throws ManifestLoadException {
         String path = "module_manager/testBadXMLModuleManagerManifest.xml";
         ModuleManagerManifestLoader.load( path );
     }
 
     /**
      * Should fail when the data is incorrect
+     * @throws ManifestLoadException 
      */
     @Test(expected=ManifestLoadException.class)
-    public void testLoadManifestIllegalStructure() {
+    public void testLoadManifestIllegalStructure() throws ManifestLoadException {
         String path = "module_manager/testBadDataModuleManagerManifest.xml";
         ModuleManagerManifestLoader.load( path );
     }

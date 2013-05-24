@@ -26,7 +26,7 @@ public class ModuleMetaData {
 
     // inputs
     // document what boolean means
-    Map<String, DependencyType> inputTypes;
+    Map<InputType, DependencyType> inputTypes;
 
     // required modules
     Map<String, DependencyType> moduleDependencies;
@@ -53,10 +53,11 @@ public class ModuleMetaData {
      */
 	public ModuleMetaData(String packageName, String className, String minSdkVersion,
 			String targetSdkVersion, String iconPath, String title,
-			String author, String version, Map<String, DependencyType> inputTypes,
+			String author, String version, Map<InputType, DependencyType> inputTypes,
 			Map<String, DependencyType> moduleDependencies) {
 		super();
 		this.packageName = packageName;
+        this.className = className;
 		this.minSdkVersion = minSdkVersion;
 		this.targetSdkVersion = targetSdkVersion;
 		this.iconPath = iconPath;
@@ -99,7 +100,7 @@ public class ModuleMetaData {
 		return version;
 	}
 
-	public Map<String, DependencyType> getInputTypes() {
+	public Map<InputType, DependencyType> getInputTypes() {
 		return inputTypes;
 	}
 
@@ -141,7 +142,7 @@ public class ModuleMetaData {
 		this.version = version;
 	}
 
-	public void setInputTypes(Map<String, DependencyType> inputTypes) {
+	public void setInputTypes(Map<InputType, DependencyType> inputTypes) {
 		this.inputTypes = inputTypes;
 	}
 

@@ -88,7 +88,7 @@ public class ModuleManagerTest {
     }
 
     private ModuleMetaData createEmptyModuleMetaData(String packageName, String className) {
-        Map<String, DependencyType> inputTypesA = new HashMap<String, DependencyType>();
+        Map<InputType, DependencyType> inputTypesA = new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> moduleDepA = new HashMap<String, DependencyType>();
         ModuleMetaData a = new ModuleMetaData(
                 packageName,
