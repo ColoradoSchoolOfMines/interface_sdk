@@ -6,19 +6,18 @@
 -->
 <?xml version="1.0" encoding="utf-8"?>
 <manifest 
-        xmlns:module="http://some_url_here"
         package="edu.mines.acmx.some_game"
         class="SomeGame" >
 
     <uses-sdk 
-            module:minSdkVersion="4"
-            module:targetSdkVersion="5"/>
+            minSdkVersion="4"
+            targetSdkVersion="5"/>
 
     <module 
-            module:icon="some_path.jpg" 
-            module:title="some_title"
-            module:author="some_author"
-            module:version="1.2">
+            icon="some_path.jpg" 
+            title="some_title"
+            author="some_author"
+            version="1.2">
 
         <inputs>
             <input required="false" input-type="acceleration" />
@@ -26,8 +25,8 @@
             <input require="true" input-type="2Dimage" />
         </inputs>
         <requires-module>
-            <module module:package="edu.mines.acmX.some_other_game" />
-            <module module:package="edu.mines.acmX.another_game" />
+            <module package="edu.mines.acmX.some_other_game" />
+            <module package="edu.mines.acmX.another_game" />
             <!-- possibly include a label for easy typing / remembering -->
             <!-- how does launcher require modules? maybe a requre-all tag? -->
         </requires-module>
