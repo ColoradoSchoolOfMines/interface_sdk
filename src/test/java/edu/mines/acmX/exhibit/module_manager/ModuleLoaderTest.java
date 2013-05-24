@@ -83,7 +83,7 @@ public class ModuleLoaderTest {
     @Test
     public void testLoadModuleKeepsSingleton() {
         // TODO
-        assertTrue( false );
+        fail( "Test not complete" );
     }
 
     /**
@@ -93,7 +93,7 @@ public class ModuleLoaderTest {
     @Test
     public void testEnsureThatAllInterfacesExistOnLoadedInstance() {
         // TODO
-        assertTrue( false );
+        fail( "Test not complete" );
     }
 }
 

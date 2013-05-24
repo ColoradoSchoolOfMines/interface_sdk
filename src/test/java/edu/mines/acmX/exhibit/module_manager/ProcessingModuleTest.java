@@ -16,7 +16,7 @@ public class ProcessingModuleTest {
     @Test
     public void testThatAConcreteProcessingModuleClassCanRun() {
         // TODO
-        assertTrue( false );
+        fail( "Test not complete" );
     }
 
 }

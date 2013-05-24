@@ -71,7 +71,7 @@ public class ModuleManagerTest {
         ModuleManager m = ModuleManager.getInstance();
         m.loadAllModuleConfigs( "modules" );
         // TODO check that modules are loaded correctly
-        assertTrue( false );
+        fail( "Test not complete" );
     }
 
     /**
@@ -83,7 +83,7 @@ public class ModuleManagerTest {
         // not sure if we need this since it will be calling another tested
         // function.
         // TODO
-        assertTrue( false );
+        fail( "Test not complete" );
     }
 
     private ModuleMetaData createEmptyModuleMetaData(String packageName, String className) {
@@ -212,7 +212,7 @@ public class ModuleManagerTest {
     @Test
     public void testRun() {
         // TODO
-        assertTrue( false );
+        fail( "Test not complete" );
     }
 
     @Test

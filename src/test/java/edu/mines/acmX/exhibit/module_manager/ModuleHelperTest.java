@@ -18,13 +18,13 @@ public class ModuleHelperTest {
     public void testNextValidModule() {
         // TODO replace with Logger
         System.out.println("Running testNextModule");
-        assertTrue(false);
+        fail( "Test not complete" );
     }
 
     @Test
     public void testNextInvalidModule() {
         // TODO both required and not required
-        assertTrue(false);
+        fail( "Test not complete" );
     }
 
     

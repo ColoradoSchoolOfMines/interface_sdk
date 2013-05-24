@@ -13,13 +13,13 @@ public class ModuleManagerManifestLoaderTest {
     @Test
     public void testLoadCorrectModuleManagerManifest() {
         // TODO 
-        assertTrue(false);
+        fail( "Test not complete" );
     }
 
     @Test(expected=Exception.class)
     public void testLoadBadModuleManagerManifest() {
         // TODO
-        assertTrue(false);
+        fail( "Test not complete" );
     }
 
 }

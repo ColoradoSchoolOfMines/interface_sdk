@@ -33,16 +33,30 @@ public class ModuleManifestLoaderTest {
         assertEquals( shouldEqual, ModuleManifestLoader.load( pathToJar ));
     }
 
+    /**
+     * Should fail when the manifest file cannot be located
+     */
     @Test(expected=ManifestLoadException.class)
     public void testLoadBadModuleManifest() {
 
-        assertTrue(false);
+        fail( "Tests not complete" );
     }
 
+    /**
+     * Should fail when the xml cannot be parsed
+     */
     @Test(expected=ManifestLoadException.class)
     public void testLoadBadJar() {
         // TODO 
-        assertTrue(false);
+        fail( "Tests not complete" );
     }
 
+    /**
+     *
+     */
+    @Test(expected=ManifestLoadException.class)
+    public void testLoadManifestIllegalStructure() {
+        // TODO
+        fail( "Tests not complete" );
+    }
 }
