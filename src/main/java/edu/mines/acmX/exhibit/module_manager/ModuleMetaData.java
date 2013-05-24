@@ -67,6 +67,111 @@ public class ModuleMetaData {
 		this.inputTypes = inputTypes;
 		this.moduleDependencies = moduleDependencies;
 	}
+	
+	
+
+	@Override
+	public String toString() {
+		return "ModuleMetaData [packageName=" + packageName + ", className="
+				+ className + ", minSdkVersion=" + minSdkVersion
+				+ ", targetSdkVersion=" + targetSdkVersion + ", iconPath="
+				+ iconPath + ", title=" + title + ", author=" + author
+				+ ", version=" + version + ", inputTypes=" + inputTypes
+				+ ", moduleDependencies=" + moduleDependencies + "]";
+	}
+
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((author == null) ? 0 : author.hashCode());
+		result = prime * result
+				+ ((className == null) ? 0 : className.hashCode());
+		result = prime * result
+				+ ((iconPath == null) ? 0 : iconPath.hashCode());
+		result = prime * result
+				+ ((inputTypes == null) ? 0 : inputTypes.hashCode());
+		result = prime * result
+				+ ((minSdkVersion == null) ? 0 : minSdkVersion.hashCode());
+		result = prime
+				* result
+				+ ((moduleDependencies == null) ? 0 : moduleDependencies
+						.hashCode());
+		result = prime * result
+				+ ((packageName == null) ? 0 : packageName.hashCode());
+		result = prime
+				* result
+				+ ((targetSdkVersion == null) ? 0 : targetSdkVersion.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((version == null) ? 0 : version.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ModuleMetaData other = (ModuleMetaData) obj;
+		if (author == null) {
+			if (other.author != null)
+				return false;
+		} else if (!author.equals(other.author))
+			return false;
+		if (className == null) {
+			if (other.className != null)
+				return false;
+		} else if (!className.equals(other.className))
+			return false;
+		if (iconPath == null) {
+			if (other.iconPath != null)
+				return false;
+		} else if (!iconPath.equals(other.iconPath))
+			return false;
+		if (inputTypes == null) {
+			if (other.inputTypes != null)
+				return false;
+		} else if (!inputTypes.equals(other.inputTypes))
+			return false;
+		if (minSdkVersion == null) {
+			if (other.minSdkVersion != null)
+				return false;
+		} else if (!minSdkVersion.equals(other.minSdkVersion))
+			return false;
+		if (moduleDependencies == null) {
+			if (other.moduleDependencies != null)
+				return false;
+		} else if (!moduleDependencies.equals(other.moduleDependencies))
+			return false;
+		if (packageName == null) {
+			if (other.packageName != null)
+				return false;
+		} else if (!packageName.equals(other.packageName))
+			return false;
+		if (targetSdkVersion == null) {
+			if (other.targetSdkVersion != null)
+				return false;
+		} else if (!targetSdkVersion.equals(other.targetSdkVersion))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (version == null) {
+			if (other.version != null)
+				return false;
+		} else if (!version.equals(other.version))
+			return false;
+		return true;
+	}
+
 
 	public String getPackageName() {
 		return packageName;

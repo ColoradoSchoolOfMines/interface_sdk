@@ -13,7 +13,7 @@ public class ModuleManagerManifestLoaderTest {
     @Test
     public void testLoadCorrectModuleManagerManifest() throws ManifestLoadException {
         ModuleManagerMetaData data = new ModuleManagerMetaData("com.example.test", "/home/andrew/");
-		assertEquals(data, ModuleManagerManifestLoader.load("module_manager/testModuleManagerManifest.xml"));
+		assertEquals(data, ModuleManagerManifestLoader.load("src/test/resources/module_manager/testModuleManagerManifest.xml"));
     }
 
     /**

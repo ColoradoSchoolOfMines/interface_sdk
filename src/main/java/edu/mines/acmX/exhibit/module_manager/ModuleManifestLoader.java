@@ -53,10 +53,10 @@ public class ModuleManifestLoader {
 
     private static ModuleMetaData parseManifest( Document manifest ) {
         ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
-        Element manifestTag = manifest.getDocumentElement();
+        Element manifestTag = (Element) manifest.getElementsByTagName("manifest").item(0);
         builder.setPackageName(manifestTag.getAttribute("package"));
         builder.setClassName(manifestTag.getAttribute("class"));
-
+        
         NodeList sdk = manifestTag.getElementsByTagName("uses-sdk");
         parseSdkVersion(sdk, builder);
 
@@ -79,7 +79,11 @@ public class ModuleManifestLoader {
         builder.setTitle( singleModuleTag.getAttribute("title"));
         builder.setAuthor( singleModuleTag.getAttribute("author"));
         builder.setVersion( singleModuleTag.getAttribute("version"));
-
+        
+        
+        parseInputs(singleModuleTag.getElementsByTagName("inputs"), builder);
+        parseModuleDependencies(singleModuleTag.getElementsByTagName("requires-module"), builder);
+        
 
     }
 
@@ -93,7 +97,7 @@ public class ModuleManifestLoader {
     }
 
     private static void parseInput( Element input, ModuleMetaDataBuilder builder ) {
-        InputType inputType = InputType.valueOf(input.getAttribute("input-type"));
+        InputType inputType = InputType.valueOf(input.getAttribute("input-type").toUpperCase());
         builder.addInputType(inputType, parseDependencyType(input));
     }
 

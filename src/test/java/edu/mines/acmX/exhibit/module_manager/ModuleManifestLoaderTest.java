@@ -15,7 +15,7 @@ public class ModuleManifestLoaderTest {
 
     @Test
     public void testLoadCorrectModuleWithoutExtraStuff() throws ManifestLoadException {
-        String pathToJar = "modules/HorseSimpleGood.jar";
+        String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/HorseSimpleGood.jar";
         Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData shouldEqual = new ModuleMetaData(
@@ -29,13 +29,19 @@ public class ModuleManifestLoaderTest {
                 "0.1",
                 desiredInputs,
                 desiredModules);
+        
+        ModuleMetaData expected = ModuleManifestLoader.load( pathToJar );
+        
+        System.out.println("Expected:" + shouldEqual.toString());
+        System.out.println();
+        System.out.println("Actual:" + expected.toString());
 
-        assertEquals( shouldEqual, ModuleManifestLoader.load( pathToJar ));
+        assertTrue( shouldEqual.equals(expected));
     }
 
     @Test
     public void testLoadCorrectModuleWithOptionalModulesAndInputs() throws ManifestLoadException {
-        String pathToJar = "modules/PiggyGoodWithLotsOfDepend.jar";
+        String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/PiggyGoodWithLotsOfDepend.jar";
         Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
 
