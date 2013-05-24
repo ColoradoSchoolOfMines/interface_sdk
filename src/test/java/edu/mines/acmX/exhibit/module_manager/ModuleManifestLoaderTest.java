@@ -15,7 +15,8 @@ public class ModuleManifestLoaderTest {
 
     @Test
     public void testLoadCorrectModuleWithoutExtraStuff() throws ManifestLoadException {
-        String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/HorseSimpleGood.jar";
+        //String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/HorseSimpleGood.jar";
+        String pathToJar = "src/test/resources/modules/HorseSimpleGood.jar";
         Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData shouldEqual = new ModuleMetaData(
@@ -41,7 +42,8 @@ public class ModuleManifestLoaderTest {
 
     @Test
     public void testLoadCorrectModuleWithOptionalModulesAndInputs() throws ManifestLoadException {
-        String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/PiggyGoodWithLotsOfDepend.jar";
+        //String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/PiggyGoodWithLotsOfDepend.jar";
+        String pathToJar = "src/test/resources/modules/PiggyGoodWithLotsOfDepend.jar";
         Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
 
@@ -72,7 +74,7 @@ public class ModuleManifestLoaderTest {
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadBadModuleManifest() throws ManifestLoadException {
-        String jarPath = "modules/BadModuleManifest.jar";
+        String jarPath = "src/test/resources/modules/BadModuleManifest.jar";
         ModuleManifestLoader.load( jarPath );
     }
 
@@ -82,7 +84,7 @@ public class ModuleManifestLoaderTest {
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadMaformedXMLManifest() throws ManifestLoadException {
-        String jarPath = "modules/MaformedXMLManifest.jar";
+        String jarPath = "src/test/resources/modules/MaformedXMLManifest.jar";
         ModuleManifestLoader.load( jarPath );
     }
 
@@ -92,7 +94,7 @@ public class ModuleManifestLoaderTest {
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadManifestIllegalStructure() throws ManifestLoadException {
-        String jarPath = "modules/ManifestIllegalStructure.jar";
+        String jarPath = "src/test/resources/modules/ManifestIllegalStructure.jar";
         ModuleManifestLoader.load( jarPath );
     }
 }
