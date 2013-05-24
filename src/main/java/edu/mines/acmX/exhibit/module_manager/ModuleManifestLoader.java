@@ -15,7 +15,7 @@ public class ModuleManifestLoader {
      *
      * @param   jarPath path to the Module that is to have its manifest loaded
      */
-    public static ModuleMetaData loadModuleManifest(String jarPath) {
+    public static ModuleMetaData load(String jarPath) throws ManifestLoadException {
         return null;
     }
 }

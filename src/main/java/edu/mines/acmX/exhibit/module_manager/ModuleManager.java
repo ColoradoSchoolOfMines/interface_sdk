@@ -74,7 +74,7 @@ public class ModuleManager {
      *
      * @param   path    Path to the ModuleManager xml config file
      */
-    public void loadModuleManagerConfig(String path)  {
+    public void loadModuleManagerConfig(String path) throws ManifestLoadException {
         // TODO load ModuleManager xml config
     }
 
@@ -151,8 +151,9 @@ public class ModuleManager {
      * @param   name    Package name of module to be made default.
      *
      */
-    private void setDefaultModule(String name) throws Exception {
+    private void setDefaultModule(String name) throws ModuleLoadException {
         // TODO implement function
+        // make sure we throw if we cant load
     }
 
     /**

@@ -15,9 +15,10 @@ public class ModuleLoaderTest {
     /**
      * This test should ensure that a proper module can be loaded given a jar
      * path to its jar file
+     * @throws ModuleLoadException 
      */
     @Test
-    public void testLoadModule() {
+    public void testLoadModule() throws ModuleLoadException {
         Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
@@ -36,7 +37,7 @@ public class ModuleLoaderTest {
     }
 
     @Test(expected=ModuleLoadException.class)
-    public void testLoadModuleWithoutProperClassImplementing() {
+    public void testLoadModuleWithoutProperClassImplementing() throws ModuleLoadException {
         Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
@@ -56,7 +57,7 @@ public class ModuleLoaderTest {
     }
 
     @Test(expected=ModuleLoadException.class)
-    public void testLoadModuleWithoutExistingClass() {
+    public void testLoadModuleWithoutExistingClass() throws ModuleLoadException {
         Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(

@@ -18,7 +18,7 @@ public class ModuleLoader {
      * @param   data    An instance of ModuleMetaData containing the metadata
      *                  relevant to the desired Module to be loaded.
      */
-    public static ModuleInterface loadModule(String jarPath, ModuleMetaData data) {
+    public static ModuleInterface loadModule(String jarPath, ModuleMetaData data) throws ModuleLoadException {
         return null;
     }
 }
