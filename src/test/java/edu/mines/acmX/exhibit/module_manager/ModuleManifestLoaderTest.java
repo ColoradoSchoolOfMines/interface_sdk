@@ -52,7 +52,7 @@ public class ModuleManifestLoaderTest {
     }
 
     /**
-     *
+     * Should fail when the data is incorrect
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadManifestIllegalStructure() {

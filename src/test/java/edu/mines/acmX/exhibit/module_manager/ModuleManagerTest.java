@@ -1,5 +1,6 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,7 +41,7 @@ public class ModuleManagerTest {
     // The module manager should have an instance of ModuleManagerMetaData that
     // has been correctly instantiated with the given xml file.
 	@Test
-    public void testLoadModuleManagerConfig() {
+    public void testLoadModuleManagerConfig() throws ManifestLoadException {
         String xmlPath = "module_manager/testModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
@@ -50,7 +51,7 @@ public class ModuleManagerTest {
 
     // expect a throw when the xml is baddly formed
     @Test( expected=Exception.class )
-    public void testBadXMLModuleManagerConfig() {
+    public void testBadXMLModuleManagerConfig() throws ManifestLoadException {
         String xmlPath = "module_manager/testBadXMLModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
@@ -58,7 +59,7 @@ public class ModuleManagerTest {
 
     // expect a throw when an xml attribute is missing.
     @Test( expected=Exception.class )
-    public void testBadDataModuleManagerConfig() {
+    public void testBadDataModuleManagerConfig() throws ManifestLoadException {
         String xmlPath = "module_manager/testBadDataModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);

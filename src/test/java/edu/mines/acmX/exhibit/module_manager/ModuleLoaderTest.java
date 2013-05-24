@@ -1,6 +1,6 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
