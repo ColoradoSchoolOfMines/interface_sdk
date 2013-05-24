@@ -38,17 +38,17 @@ public class ModuleManifestLoaderTest {
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadBadModuleManifest() {
-
-        fail( "Tests not complete" );
+        String jarPath = "modules/BadModuleManifest.jar";
+        ModuleManifestLoader.load( jarPath );
     }
 
     /**
      * Should fail when the xml cannot be parsed
      */
     @Test(expected=ManifestLoadException.class)
-    public void testLoadBadJar() {
-        // TODO 
-        fail( "Tests not complete" );
+    public void testLoadMaformedXMLManifest() {
+        String jarPath = "modules/MaformedXMLManifest.jar";
+        ModuleManifestLoader.load( jarPath );
     }
 
     /**
@@ -56,7 +56,7 @@ public class ModuleManifestLoaderTest {
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadManifestIllegalStructure() {
-        // TODO
-        fail( "Tests not complete" );
+        String jarPath = "modules/ManifestIllegalStructure.jar";
+        ModuleManifestLoader.load( jarPath );
     }
 }
