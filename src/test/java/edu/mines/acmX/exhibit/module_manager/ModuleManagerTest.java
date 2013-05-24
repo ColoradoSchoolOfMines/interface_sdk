@@ -19,9 +19,8 @@ public class ModuleManagerTest {
 
         }
 
-        @Override
         public void init() {
-            super.init();
+
         }
     }
 
@@ -208,7 +207,6 @@ public class ModuleManagerTest {
         m.checkDependencies();
 
         assertTrue( m.getModuleMetaDataMap().size() == 0 );
-        assertTrue( false );
     }
 
     @Test

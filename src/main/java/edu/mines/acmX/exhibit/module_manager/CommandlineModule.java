@@ -13,9 +13,16 @@ public abstract class CommandlineModule implements ModuleInterface {
         return module.setNextModuleToLoad( moduleName );
     }
 
-    public void init() {
-    	System.out.println("This is super");
-    }
+    /**
+     * This function runs the entire Module and needs to be overloaded.
+     *
+     * TODO
+     * However, this function will probably change to be more consitent with
+     * ProcessingModule's API in that there will be setup and update functions
+     * and the possibility of turning on or off looping.
+     *
+     */
+    public abstract void init();
 
 }
 
