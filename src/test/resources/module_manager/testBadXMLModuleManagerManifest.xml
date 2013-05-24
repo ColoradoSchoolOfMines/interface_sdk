@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest>
-  <modulemanager 
+<manifest
+  <module-manager 
       module:default="com.example.test"/>
 </manifest>
 <!-- vim:fenc=utf-8

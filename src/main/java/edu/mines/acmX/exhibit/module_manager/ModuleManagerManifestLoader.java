@@ -14,7 +14,7 @@ public class ModuleManagerManifestLoader {
      *
      * @param   path path to a manifest for a module manager.
      */
-    public static ModuleManagerMetaData loadModuleManifest(String path) {
+    public static ModuleManagerMetaData load(String path) throws ManifestLoadException {
         // TODO
         return null;
     }

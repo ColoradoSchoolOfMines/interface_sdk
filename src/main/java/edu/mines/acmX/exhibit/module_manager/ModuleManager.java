@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * TODO cleanup
+ * TODO should module manager manifest be located outside of jar files?
  * This class is the main entry point for the exhibit using the interface sdk
  * library. 
  *
