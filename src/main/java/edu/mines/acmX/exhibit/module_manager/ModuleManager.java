@@ -42,18 +42,22 @@ public class ModuleManager {
     private ModuleInterface defaultModule;
     private Map<String, ModuleMetaData> moduleConfigs;
 
-	private ModuleManager() {
-        // TODO add constructor, load defaultModule here, point currentModule to
-        // defaultModule
-        // TODO lots more
+	private ModuleManager() throws ManifestLoadException, ModuleLoadException {
+		loadModuleManagerConfig(pathToModuleManagerManifest);
+        moduleConfigs = loadAllModuleConfigs(metaData.getPathToModules());
+        checkDependencies();
+        setDefaultModule(metaData.getDefaultModuleName());
+        currentModule = defaultModule;
 	}
 
     /**
      * Fetches instance of ModuleManager, or creates one if it has not yet created.
      *
      * @return  The single instance of ModuleManager
+     * @throws ManifestLoadException	When the ModuleManager configuration is incorrect
+     * @throws ModuleLoadException 
      */
-    public static ModuleManager getInstance() {
+    public static ModuleManager getInstance() throws ManifestLoadException, ModuleLoadException {
         /*
          * Now this is a bit tricky here. Please dont change this unless you are
          * well read up on threading.
@@ -92,11 +96,12 @@ public class ModuleManager {
 
     /**
      * Loads the ModuleManager config file.
+     * TODO should really be private
      *
      * @param   path    Path to the ModuleManager xml config file
      */
     public void loadModuleManagerConfig(String path) throws ManifestLoadException {
-        // TODO load ModuleManager xml config
+        metaData = ModuleManagerManifestLoader.load(pathToModuleManagerManifest);
     }
 
     /**
@@ -368,6 +373,14 @@ public class ModuleManager {
     
     public void setMetaData(ModuleManagerMetaData data) {
     	metaData = data;
+    }
+
+    public static void createEmptyInstance(){
+        instance = new ModuleManager("NotUsed");
+    }
+
+    private ModuleManager(String notUsedExceptToDifferentiateBetweenTheActualCTor) {
+
     }
 }
 
