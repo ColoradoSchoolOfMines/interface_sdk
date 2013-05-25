@@ -76,7 +76,7 @@ public class ModuleManagerTest {
     @Test
     public void testLoadAllModuleConfigs() throws ManifestLoadException, ModuleLoadException {
     	ModuleManager m = ModuleManager.getInstance();
-    	Map<String,ModuleMetaData> metas = m.loadAllModuleConfigs( "/home/andrew/Documents.local/interface_sdk/src/test/resources/test_load_modules" );
+    	Map<String,ModuleMetaData> metas = m.loadAllModuleConfigs( "src/test/resources/test_load_modules" );
         assertEquals(2,metas.size());
     }
 
