@@ -61,10 +61,6 @@ public class ModuleManager {
         return instance;
     }
 
-    public static void setPathToManifest(String path) {
-        ModuleManager.pathToModuleManagerManifest = path;
-    }
-
     /**
      * Creates a Map of all Modules found in the directory indicated by the path
      * and associates each package name to the ModuleMetaData object created from
@@ -286,6 +282,10 @@ public class ModuleManager {
             currentModule.init();
             currentModule = nextModule;
         }
+    }
+
+    public static void setPathToManifest(String path) {
+        ModuleManager.pathToModuleManagerManifest = path;
     }
 
     /**
