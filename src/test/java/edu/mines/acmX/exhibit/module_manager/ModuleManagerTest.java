@@ -1,8 +1,6 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,6 +76,24 @@ public class ModuleManagerTest {
     	ModuleManager m = ModuleManager.getInstance();
     	Map<String,ModuleMetaData> metas = m.loadAllModuleConfigs( "src/test/resources/test_load_modules" );
         assertEquals(2,metas.size());
+    }
+    
+    /** 
+     * This test should ensure that only jar files get loaded and everything
+     * else is skipped.
+     */
+    @Test
+    public void testLoadAllModuleConfigsWhenOtherStuffInDirectory() throws ManifestLoadException, ModuleLoadException {
+        fail( "Test not complete" );
+    }
+
+    /**
+     * This test should ensure that the module loading is not recursive and wont
+     * load in jar files in subdirectories of the main module directory
+     */
+    @Test
+    public void testLoadAllModuleConfigsIsNotRecursive() throws ManifestLoadException, ModuleLoadException {
+        fail( "Test not complete" );
     }
 
     /**
