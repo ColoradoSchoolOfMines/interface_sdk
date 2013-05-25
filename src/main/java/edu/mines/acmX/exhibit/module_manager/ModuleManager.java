@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -15,9 +17,9 @@ import java.util.Map;
  * TODO cleanup
  * TODO should module manager manifest be located outside of jar files?
  * This class is the main entry point for the exhibit using the interface sdk
- * library. 
+ * library.
  *
- * Singleton 
+ * Singleton
  *
  * @author Andrew DeMaria
  * @author Austin Diviness
@@ -41,43 +43,46 @@ public class ModuleManager {
     // core manager data variables
     private ModuleInterface currentModule;
     private ModuleInterface nextModule;
+    private ModuleMetaData nextModuleMetaData;
     private ModuleInterface defaultModule;
+    private boolean loadDefault;
     private Map<String, ModuleMetaData> moduleConfigs;
 
-	private ModuleManager() throws ManifestLoadException, ModuleLoadException {
-		loadModuleManagerConfig(pathToModuleManagerManifest);
+    private ModuleManager() throws ManifestLoadException, ModuleLoadException {
+        loadModuleManagerConfig(pathToModuleManagerManifest);
         moduleConfigs = loadAllModuleConfigs(metaData.getPathToModules());
         checkDependencies();
         setDefaultModule(metaData.getDefaultModuleName());
-        currentModule = defaultModule;
-	}
+        loadDefault = true;
+    }
 
     /**
      * Fetches instance of ModuleManager, or creates one if it has not yet created.
      *
      * @return  The single instance of ModuleManager
-     * @throws ManifestLoadException	When the ModuleManager configuration is incorrect
-     * @throws ModuleLoadException 
+     * @throws ManifestLoadException    When the ModuleManager configuration is incorrect
+     * @throws ModuleLoadException
      */
-    public static ModuleManager getInstance() throws ManifestLoadException, ModuleLoadException {
+    public static ModuleManager getInstance() throws ManifestLoadException,
+            ModuleLoadException {
         /*
          * Now this is a bit tricky here. Please dont change this unless you are
          * well read up on threading.
          *
          * The first if statement is for performance to prevent threads from
          * uncessarily blocking on the nested synchronized statement.
-         * 
+         *
          * The syncronized statement itself ensures that only one thread can
          * make an instance if it does not exist
          */
-        if( instance == null ) {
-            synchronized( ModuleManager.class ) {
-                if( instance == null ) {
+        if (instance == null) {
+            synchronized (ModuleManager.class) {
+                if (instance == null) {
                     instance = new ModuleManager();
                 }
             }
         }
-        
+
         return instance;
     }
 
@@ -95,26 +100,29 @@ public class ModuleManager {
      *
      * @param   path    The path to the directy holding modules
      *
-     * @return          A Map, where the keys are Module package names and the value is the 
+     * @return          A Map, where the keys are Module package names and the value is the
      *                  meta data gathered from that module's manifest file
      */
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
-    	Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
+        Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
         File jarDir = new File(path);
 
-        File[] listOfJarFiles = jarDir.listFiles( new JarFilter() );
-        
-        for( File each : listOfJarFiles ) {
-        	try {
-				ModuleMetaData m = ModuleManifestLoader.load(each.getCanonicalPath());
-				modConfigs.put(m.getPackageName(), m);
-			} catch (ManifestLoadException e) {
-				// TODO add proper logging
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO add proper logging
-				e.printStackTrace();
-			}
+        File[] listOfJarFiles = jarDir.listFiles(new JarFilter());
+
+        for (File each : listOfJarFiles) {
+            try {
+                ModuleMetaData m = ModuleManifestLoader.load(each
+                        .getCanonicalPath());
+                m.setJarFileName(each.getName());
+                System.out.println("Setting jar name of " + each.getName() + " for " + m.getPackageName());
+                modConfigs.put(m.getPackageName(), m);
+            } catch (ManifestLoadException e) {
+                // TODO add proper logging
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO add proper logging
+                e.printStackTrace();
+            }
         }
 
         return modConfigs;
@@ -126,8 +134,10 @@ public class ModuleManager {
      *
      * @param   path    Path to the ModuleManager xml config file
      */
-    public void loadModuleManagerConfig(String path) throws ManifestLoadException {
-        metaData = ModuleManagerManifestLoader.load(pathToModuleManagerManifest);
+    public void loadModuleManagerConfig(String path)
+            throws ManifestLoadException {
+        metaData = ModuleManagerManifestLoader
+                .load(pathToModuleManagerManifest);
     }
 
     /**
@@ -136,33 +146,11 @@ public class ModuleManager {
      * @param   data    ModuleMetaData to be loaded
      *
      * @return          loaded Module
+     * @throws ModuleLoadException 
      */
-    public ModuleInterface loadModuleFromMetaData(ModuleMetaData data) {
-        try {
-        	// Generate a url list of places to look for the jar.  currently we just have one location
-			URL[] urlList = { new File(metaData.getPathToModules()).toURI().toURL() };
-			// Get the class loader that we currently have and transform it into a class loader for urls
-			URLClassLoader loader = new URLClassLoader( urlList, this.getClass().getClassLoader());
-			// We now will load the class by searching the jar for the package and class as dictated in the module manifest file.  
-			// We set the second argument to true to instantiate the class TODO change later?
-			// Finally, cast it into the usable ModuleInterface class
-			Class<? extends ModuleInterface> moduleClassToLoad = Class.forName(data.getPackageName() + "." + data.getClassName(), true, loader).asSubclass(ModuleInterface.class);
-			return moduleClassToLoad.newInstance();
-			
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return null;
+    public ModuleInterface loadModuleFromMetaData(ModuleMetaData data) throws ModuleLoadException {
+    	// TODO fix this low level, easily breakable path hacking.
+    	return ModuleLoader.loadModule(metaData.getPathToModules() + "/" + data.getJarFileName(), data, this.getClass().getClassLoader());
     }
 
     /**
@@ -170,14 +158,14 @@ public class ModuleManager {
      * those that don't have their required module dependencies.
      */
     private void checkModuleDependencies() {
-    	// First generate a new depth first search data instance
-    	Map<String,CheckType> depthData = generateEmptyDepthFirstSeachData();
-    	// part of a depth first search
-    	// while there are modules that have not been checked,
-    	// check them.
+        // First generate a new depth first search data instance
+        Map<String,CheckType> depthData = generateEmptyDepthFirstSeachData();
+        // part of a depth first search
+        // while there are modules that have not been checked,
+        // check them.
         String moduleNameToCheck;
         boolean isModuleOkay;
-    	while((moduleNameToCheck = getFirstModuleWithType(depthData, CheckType.UNKNOWN)) != null) {
+        while((moduleNameToCheck = getFirstModuleWithType(depthData, CheckType.UNKNOWN)) != null) {
             isModuleOkay = canModuleRunWithItsDependentModules(moduleNameToCheck, depthData);
             if( !isModuleOkay ) {
                 this.moduleConfigs.remove(moduleNameToCheck);
@@ -189,20 +177,20 @@ public class ModuleManager {
      * This function is used internally for performing its checkDepencies
      * operation
      *
-     * @return	Returns the first module name ( or key in this case ) of a
+     * @return  Returns the first module name ( or key in this case ) of a
      *          module that has not yet been checked (CheckType.UNKNOWN).  If
      *          there are no modules with this status then null is returned.
      */
     private String getFirstModuleWithType(Map<String,CheckType> depthData, CheckType desired) {
-    	Iterator<String> i = depthData.keySet().iterator();
-    	while(i.hasNext()) {
-    		String currentKey = i.next();
-    		CheckType current = depthData.get(currentKey);
+        Iterator<String> i = depthData.keySet().iterator();
+        while(i.hasNext()) {
+            String currentKey = i.next();
+            CheckType current = depthData.get(currentKey);
             if( current == desired ) {
                 return currentKey;
             }
-    	}
-		return null;
+        }
+        return null;
     }
 
     /**
@@ -229,10 +217,10 @@ public class ModuleManager {
      * @return  An empty Map of module names to their current check status
      */
     private Map<String,CheckType> generateEmptyDepthFirstSeachData() {
-    	Map<String,CheckType> depthData = new HashMap<String,CheckType>();
+        Map<String,CheckType> depthData = new HashMap<String,CheckType>();
         Iterator<String> i = this.moduleConfigs.keySet().iterator();
         while( i.hasNext()) {
-        	depthData.put(i.next(), CheckType.UNKNOWN);
+            depthData.put(i.next(), CheckType.UNKNOWN);
         }
         
         return depthData;
@@ -283,38 +271,38 @@ public class ModuleManager {
         
         Iterator<String> i = dependencies.keySet().iterator();
         while( i.hasNext()) {
-        	String nextToCheck = i.next();
-        	if( dependencies.get(nextToCheck) == DependencyType.REQUIRED ) {
-        		CheckType statusOfNextToCheck = checkedModules.get(nextToCheck);
-        		if( statusOfNextToCheck == null || statusOfNextToCheck == CheckType.UNKNOWN ) {
-        			// notice that the following operator will short circuit and
-        			// nextToCheck may be checked later (or not at all) if
-        			// moduleOkay is already false.
+            String nextToCheck = i.next();
+            if( dependencies.get(nextToCheck) == DependencyType.REQUIRED ) {
+                CheckType statusOfNextToCheck = checkedModules.get(nextToCheck);
+                if( statusOfNextToCheck == null || statusOfNextToCheck == CheckType.UNKNOWN ) {
+                    // notice that the following operator will short circuit and
+                    // nextToCheck may be checked later (or not at all) if
+                    // moduleOkay is already false.
                     // Also notice that it should be okay to call this next
                     // function with a module name that does not exist
                     moduleOkay = moduleOkay &&
-        					canModuleRunWithItsDependentModules(nextToCheck,
-        							checkedModules); 
+                            canModuleRunWithItsDependentModules(nextToCheck,
+                                    checkedModules); 
 
                 } else if ( checkedModules.get(nextToCheck) == CheckType.DIRTY ) {
                     // We have a circular dependency at this point and should
                     // not make a new call to check the nextModule
-                	// NOTHING
+                    // NOTHING
                 }
-        	}
+            }
         }
         
         if( !moduleOkay ) {
-        	// we ran into a module that does not have all of its dependencies!
-        	// remove this module from our module listing
+            // we ran into a module that does not have all of its dependencies!
+            // remove this module from our module listing
             System.out.println("Removing module " + current + " from module list" );
-        	checkedModules.remove(current);
-        	moduleConfigs.remove(current);
-        	return false;
+            checkedModules.remove(current);
+            moduleConfigs.remove(current);
+            return false;
         } else {
             System.out.println( "Module " + current + " has all required dependencies.");
-        	checkedModules.put(current, CheckType.CHECKED); // part of DFS
-        	return true;
+            checkedModules.put(current, CheckType.CHECKED); // part of DFS
+            return true;
         }
 
     }
@@ -328,10 +316,20 @@ public class ModuleManager {
      */
     public void run() {
         while (true) {
-            nextModule = defaultModule;
-            // TODO read into processing
+        	if (loadDefault) {
+        		currentModule = defaultModule;
+        	} else {
+        		try {
+					currentModule = loadModuleFromMetaData(nextModuleMetaData);
+				} catch (ModuleLoadException e) {
+					System.out.println("Loading default module because next module could not be loaded");
+					currentModule = defaultModule;
+				} finally {
+	        		loadDefault = true;
+				}
+        	}
+        	
             currentModule.init();
-            currentModule = nextModule;
         }
     }
 
@@ -349,6 +347,7 @@ public class ModuleManager {
     private void setDefaultModule(String name) throws ModuleLoadException {
         // TODO implement function
         // make sure we throw if we cant load
+        defaultModule = loadModuleFromMetaData( moduleConfigs.get(name) );
     }
 
     /**
@@ -364,8 +363,20 @@ public class ModuleManager {
         // TODO check configuration for name
         // grab the associated ModuleMetaData
         // instantiate the next module using loadModuleFromMetaData
+    	// TODO check that this method is syncronized!!!
         // BE CAREFUL!!!
-        return false;
+        try {
+			//nextModule = loadModuleFromMetaData( moduleConfigs.get(name) );
+        	nextModuleMetaData = moduleConfigs.get(name);
+        	if ( nextModuleMetaData == null ){
+        		throw new ModuleLoadException("Metadata for the requested module is not available");
+        	}
+        	loadDefault = false;
+			return true;
+		} catch (ModuleLoadException e) {
+			nextModule = defaultModule;
+			return false;
+		}
     }
 
     // USED ONLY FOR TESTING BELOW THIS COMMENT
@@ -383,23 +394,23 @@ public class ModuleManager {
     }
     
     public Map<String, ModuleMetaData> getModuleMetaDataMap() {
-    	return this.moduleConfigs;
+        return this.moduleConfigs;
     }
     
     public void setCurrentModule(ModuleInterface m) {
-    	currentModule = m;
+        currentModule = m;
     }
 
     public static void main(String[] args) {
-    	System.out.println("Heeeloo!");
-	}
+        System.out.println("Heeeloo!");
+    }
 
     public void testSetDefaultModule(String name) throws ModuleLoadException {
         setDefaultModule(name);
     }
     
     public void setMetaData(ModuleManagerMetaData data) {
-    	metaData = data;
+        metaData = data;
     }
 
     public static void createEmptyInstance(){

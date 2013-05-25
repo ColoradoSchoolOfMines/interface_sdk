@@ -29,7 +29,32 @@ public class ModuleManagerTest {
         ModuleManager.createEmptyInstance();
     }
 
-	@Test
+    @Test
+    public void testLoadModuleInModuleManager() throws ManifestLoadException,
+            ModuleLoadException {
+        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        ModuleMetaData moduleToLoadData = new ModuleMetaData(
+                "com.andrew.random",
+                "Horses",
+                "0.0.0",
+                "0.0.0",
+                "horse.jpg",
+                "i_love_horseys",
+                "andrew demaria",
+                "0.1",
+                desiredInputs,
+                desiredModules);
+        moduleToLoadData.setJarFileName("HorseSimpleGood.jar");
+        ModuleManagerMetaData metaNeeded = new ModuleManagerMetaData("", "src/test/resources/modules/");
+        ModuleManager m = ModuleManager.getInstance();
+        m.setMetaData( metaNeeded );
+        ModuleInterface module = m.loadModuleFromMetaData(moduleToLoadData);
+        assertTrue( module != null );
+    }
+
+
+    @Test
     public void testGetInstance() throws ManifestLoadException, ModuleLoadException {
         ModuleManager m = ModuleManager.getInstance();
         assertTrue( m instanceof ModuleManager);
@@ -39,12 +64,12 @@ public class ModuleManagerTest {
 
     // The module manager should have an instance of ModuleManagerMetaData that
     // has been correctly instantiated with the given xml file.
-	@Test
+    @Test
     public void testLoadModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
-		ModuleManager.removeInstance();
+        ModuleManager.removeInstance();
         String xmlPath = "src/test/resources/module_manager/testModuleManagerManifest.xml";
-		ModuleManager.setPathToManifest(xmlPath);
-		ModuleManager.createEmptyInstance();
+        ModuleManager.setPathToManifest(xmlPath);
+        ModuleManager.createEmptyInstance();
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
         ModuleManagerMetaData shouldEqual = new ModuleManagerMetaData("com.example.test","/home/andrew/");
@@ -73,8 +98,8 @@ public class ModuleManagerTest {
     // appropriate ModuleMetaData structures from jar files.
     @Test
     public void testLoadAllModuleConfigs() throws ManifestLoadException, ModuleLoadException {
-    	ModuleManager m = ModuleManager.getInstance();
-    	Map<String,ModuleMetaData> metas = m.loadAllModuleConfigs( "src/test/resources/test_load_modules" );
+        ModuleManager m = ModuleManager.getInstance();
+        Map<String,ModuleMetaData> metas = m.loadAllModuleConfigs( "src/test/resources/test_load_modules" );
         assertEquals(2,metas.size());
     }
     
@@ -233,12 +258,11 @@ public class ModuleManagerTest {
 
     @Test
     public void testSetDefaultModuleValid() throws Exception {
+    	ModuleManager.removeInstance();
         String path = "src/test/resources/module_manager/HorseyGoodManifest.xml";
-        String defaultModuleName = "com.andrew.lotsofdepends";
-        ModuleManager.setPathToManifest(path);
+        String defaultModuleName = "com.andrew.random";
+        ModuleManager.setPathToManifest(path); 
         ModuleManager m = ModuleManager.getInstance();
-        m.setMetaData(new ModuleManagerMetaData(defaultModuleName, "src/test/resources/modules"));
-		m.testSetDefaultModule(defaultModuleName);
         assertEquals(defaultModuleName, m.getMetaData().getDefaultModuleName());
     }
 
@@ -249,7 +273,7 @@ public class ModuleManagerTest {
         ModuleManager.setPathToManifest(path);
         ModuleManager m = ModuleManager.getInstance();
         m.setMetaData(new ModuleManagerMetaData(defaultModuleName, "src/test/resources/modules"));
-		m.testSetDefaultModule(defaultModuleName);
+        m.testSetDefaultModule(defaultModuleName);
         
     }
 
@@ -263,6 +287,8 @@ public class ModuleManagerTest {
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
         alist.put("com.test.B",DependencyType.REQUIRED);
         a.setModuleDependencies(alist);
+        
+        // also need to set mm meta data.
 
         ModuleManager m = ModuleManager.getInstance();
         Map<String,ModuleMetaData> modConfigs = new HashMap<String,ModuleMetaData>();
@@ -270,6 +296,7 @@ public class ModuleManagerTest {
         modConfigs.put(b.getPackageName(), b);
 
         m.setModuleMetaDataMap(modConfigs);
+        
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == true);
     }

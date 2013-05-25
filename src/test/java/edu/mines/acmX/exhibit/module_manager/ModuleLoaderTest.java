@@ -36,6 +36,25 @@ public class ModuleLoaderTest {
         assertTrue( m != null );
     }
 
+    @Test
+    public void testAnotherLoadModule() throws ModuleLoadException {
+        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        ModuleMetaData moduleToLoadData = new ModuleMetaData(
+                "edu.mines.andrew.games",
+                "HelloWorld",
+                "0.0.0",
+                "0.0.0",
+                "",
+                "helloworld",
+                "andrew demaria",
+                "1.2",
+                desiredInputs,
+                desiredModules);
+        ModuleInterface m = ModuleLoader.loadModule("src/test/resources/modules/HelloWorldGood.jar", moduleToLoadData, this.getClass().getClassLoader());
+        assertTrue( m != null );
+    }
+
     @Test(expected=ModuleLoadException.class)
     public void testLoadModuleWithoutProperClassImplementing() throws ModuleLoadException {
         Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();

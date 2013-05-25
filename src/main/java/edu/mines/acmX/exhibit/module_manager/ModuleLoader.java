@@ -27,6 +27,7 @@ public class ModuleLoader {
         try {
         	// Generate a url list of places to look for the jar.  currently we just have one location
 			URL[] urlList = { new File(jarPath).toURI().toURL() };
+			System.out.println("module Url looks like: " + urlList[0].toString());
 			// Get the class loader that we currently have and transform it into a class loader for urls
 			URLClassLoader loader = new URLClassLoader( urlList, classLoader);
 			// We now will load the class by searching the jar for the package and class as dictated in the module manifest file.  

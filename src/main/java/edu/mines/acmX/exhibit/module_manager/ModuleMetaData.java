@@ -10,10 +10,14 @@
 
 package edu.mines.acmX.exhibit.module_manager;
 
-import java.util.List;
 import java.util.Map;
 
 public class ModuleMetaData {
+    // This is only used by the module manager and will known when a
+    // modulemetadata object is built
+    private String jarFileName;
+
+
     // manifest top level
     private String packageName;
     private String className;
@@ -213,6 +217,10 @@ public class ModuleMetaData {
 		return moduleDependencies;
 	}
 
+    public String getJarFileName() {
+        return jarFileName;
+    }
+
 	// DEBUG PURPOSES ONLY
 	
 	public void setPackageName(String packageName) {
@@ -254,6 +262,10 @@ public class ModuleMetaData {
 	public void setModuleDependencies(Map<String, DependencyType> moduleDependencies) {
 		this.moduleDependencies = moduleDependencies;
 	}
+
+    public void setJarFileName(String name) {
+        this.jarFileName = name;
+    }
 }
 
 
