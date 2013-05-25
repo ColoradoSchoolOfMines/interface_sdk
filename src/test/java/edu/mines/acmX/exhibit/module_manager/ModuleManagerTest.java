@@ -75,10 +75,9 @@ public class ModuleManagerTest {
     // appropriate ModuleMetaData structures from jar files.
     @Test
     public void testLoadAllModuleConfigs() throws ManifestLoadException, ModuleLoadException {
-        ModuleManager m = ModuleManager.getInstance();
-        m.loadAllModuleConfigs( "modules" );
-        // TODO check that modules are loaded correctly
-        fail( "Test not complete" );
+    	ModuleManager m = ModuleManager.getInstance();
+    	Map<String,ModuleMetaData> metas = m.loadAllModuleConfigs( "/home/andrew/Documents.local/interface_sdk/src/test/resources/test_load_modules" );
+        assertEquals(2,metas.size());
     }
 
     /**

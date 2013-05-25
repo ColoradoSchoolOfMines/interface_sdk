@@ -99,6 +99,7 @@ public class ModuleManager {
      *                  meta data gathered from that module's manifest file
      */
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
+    	Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
         File jarDir = new File(path);
 
         File[] listOfJarFiles = jarDir.listFiles( new JarFilter() );
@@ -106,7 +107,7 @@ public class ModuleManager {
         for( File each : listOfJarFiles ) {
         	try {
 				ModuleMetaData m = ModuleManifestLoader.load(each.getCanonicalPath());
-				moduleConfigs.put(m.getPackageName(), m);
+				modConfigs.put(m.getPackageName(), m);
 			} catch (ManifestLoadException e) {
 				// TODO add proper logging
 				e.printStackTrace();
@@ -116,7 +117,7 @@ public class ModuleManager {
 			}
         }
 
-        return null;
+        return modConfigs;
     }
 
     /**
