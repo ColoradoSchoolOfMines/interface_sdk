@@ -31,6 +31,10 @@ public class ModuleManagerMetaData {
     public String getDefaultModuleName() {
         return defaultModuleName;
     }
+
+    public String getPathToModules() {
+        return pathToModules;
+    }
     
     
     @Override
