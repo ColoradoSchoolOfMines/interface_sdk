@@ -4,7 +4,6 @@ package edu.mines.acmX.exhibit.module_manager;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * TODO cleanup
