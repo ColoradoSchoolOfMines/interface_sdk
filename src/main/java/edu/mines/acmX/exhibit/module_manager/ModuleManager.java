@@ -182,7 +182,7 @@ public class ModuleManager {
     }
 
     /**
-     * This function is used internally to generate a the data needed in the
+     * This function is used internally to generate the data needed in the
      * depth first search algorithm.  It is not be used outside of the class.
      *
      * @return  An empty Map of module names to their current check status
@@ -200,7 +200,7 @@ public class ModuleManager {
 
     /**
      * Checks a module can run only in regards to whether or not modules it
-     * depends on exist.  In essence this funciton will return false if a module
+     * depends on exist.  In essence this function will return false if a module
      * has a required dependency and whether that required module and any of
      * that referenced modules referenced modules (i.e. its recursive) do not
      * exist.  It will return true otherwise.  Note that optional module

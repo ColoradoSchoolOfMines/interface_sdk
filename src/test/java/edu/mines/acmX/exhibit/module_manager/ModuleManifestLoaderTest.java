@@ -15,7 +15,6 @@ public class ModuleManifestLoaderTest {
 
     @Test
     public void testLoadCorrectModuleWithoutExtraStuff() throws ManifestLoadException {
-        //String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/HorseSimpleGood.jar";
         String pathToJar = "src/test/resources/modules/HorseSimpleGood.jar";
         Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
@@ -42,7 +41,6 @@ public class ModuleManifestLoaderTest {
 
     @Test
     public void testLoadCorrectModuleWithOptionalModulesAndInputs() throws ManifestLoadException {
-        //String pathToJar = "/home/andrew/Documents.local/interface_sdk/src/test/resources/modules/PiggyGoodWithLotsOfDepend.jar";
         String pathToJar = "src/test/resources/modules/PiggyGoodWithLotsOfDepend.jar";
         Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();

@@ -32,7 +32,7 @@ public class ModuleManagerManifestLoaderTest {
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadMaformedXMLManifest() throws ManifestLoadException {
-        String path = "module_manager/testBadXMLModuleManagerManifest.xml";
+        String path = "src/test/resources/module_manager/testBadXMLModuleManagerManifest.xml";
         ModuleManagerManifestLoader.load( path );
     }
 
@@ -42,7 +42,7 @@ public class ModuleManagerManifestLoaderTest {
      */
     @Test(expected=ManifestLoadException.class)
     public void testLoadManifestIllegalStructure() throws ManifestLoadException {
-        String path = "module_manager/testBadDataModuleManagerManifest.xml";
+        String path = "src/test/resources/module_manager/testBadDataModuleManagerManifest.xml";
         ModuleManagerManifestLoader.load( path );
     }
 }
