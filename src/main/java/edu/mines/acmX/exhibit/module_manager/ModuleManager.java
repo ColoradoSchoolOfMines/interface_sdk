@@ -165,23 +165,6 @@ public class ModuleManager {
     }
 
     /**
-     * checks a single ModuleMetaData for its dependencies.
-     * 
-     * Notice that this will modify the private data member moduleConfigs so
-     * that an entry that does not have a required dependency will be removed
-     * from the Map.
-     *
-     * @param   data    ModuleMetaData to be checked
-     *
-     * @return          true if it can be run, false otherwise
-     */
-    private boolean canModuleRun(ModuleMetaData data) {
-        // TODO check data to ensure dependencies exist
-        // TODO does this check both module dependencies and sensor dependencies?
-        return false;
-    }
-
-    /**
      * This function is used internally to generate the data needed in the
      * depth first search algorithm.  It is not be used outside of the class.
      *
