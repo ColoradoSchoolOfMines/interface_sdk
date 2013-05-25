@@ -348,6 +348,7 @@ public class ModuleManager {
     }
 
     public static void removeInstance() {
+        pathToModuleManagerManifest = null;
         instance = null;
     }
 

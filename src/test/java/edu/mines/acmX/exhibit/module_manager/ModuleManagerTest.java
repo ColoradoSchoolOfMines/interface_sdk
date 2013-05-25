@@ -43,7 +43,10 @@ public class ModuleManagerTest {
     // has been correctly instantiated with the given xml file.
 	@Test
     public void testLoadModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
+		ModuleManager.removeInstance();
         String xmlPath = "src/test/resources/module_manager/testModuleManagerManifest.xml";
+		ModuleManager.setPathToManifest(xmlPath);
+		ModuleManager.createEmptyInstance();
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
         ModuleManagerMetaData shouldEqual = new ModuleManagerMetaData("com.example.test","");
