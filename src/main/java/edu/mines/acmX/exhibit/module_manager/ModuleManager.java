@@ -2,6 +2,8 @@ package edu.mines.acmX.exhibit.module_manager;
 
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -79,6 +81,13 @@ public class ModuleManager {
         return instance;
     }
 
+    // TODO document
+    private class JarFilter implements FilenameFilter {
+        public boolean accept(File dir, String filename) {
+            return filename.endsWith(".jar");
+        }
+    }
+
     /**
      * Creates a Map of all Modules found in the directory indicated by the path
      * and associates each package name to the ModuleMetaData object created from
@@ -90,7 +99,23 @@ public class ModuleManager {
      *                  meta data gathered from that module's manifest file
      */
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
-        // TODO use ModuleMetadataManifestLoader to load all configs of modules
+        File jarDir = new File(path);
+
+        File[] listOfJarFiles = jarDir.listFiles( new JarFilter() );
+        
+        for( File each : listOfJarFiles ) {
+        	try {
+				ModuleMetaData m = ModuleManifestLoader.load(each.getCanonicalPath());
+				moduleConfigs.put(m.getPackageName(), m);
+			} catch (ManifestLoadException e) {
+				// TODO add proper logging
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO add proper logging
+				e.printStackTrace();
+			}
+        }
+
         return null;
     }
 
