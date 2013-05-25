@@ -28,10 +28,11 @@ public class ModuleManagerTest {
     @Before
     public void resetModuleManager() {
         ModuleManager.removeInstance();
+        ModuleManager.createEmptyInstance();
     }
 
 	@Test
-    public void testGetInstance() {
+    public void testGetInstance() throws ManifestLoadException, ModuleLoadException {
         ModuleManager m = ModuleManager.getInstance();
         assertTrue( m instanceof ModuleManager);
         ModuleManager other = ModuleManager.getInstance();
@@ -41,7 +42,7 @@ public class ModuleManagerTest {
     // The module manager should have an instance of ModuleManagerMetaData that
     // has been correctly instantiated with the given xml file.
 	@Test
-    public void testLoadModuleManagerConfig() throws ManifestLoadException {
+    public void testLoadModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
         String xmlPath = "src/test/resources/module_manager/testModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
@@ -51,7 +52,7 @@ public class ModuleManagerTest {
 
     // expect a throw when the xml is baddly formed
     @Test( expected=Exception.class )
-    public void testBadXMLModuleManagerConfig() throws ManifestLoadException {
+    public void testBadXMLModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
         String xmlPath = "src/test/resources/module_manager/testBadXMLModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
@@ -59,7 +60,7 @@ public class ModuleManagerTest {
 
     // expect a throw when an xml attribute is missing.
     @Test( expected=Exception.class )
-    public void testBadDataModuleManagerConfig() throws ManifestLoadException {
+    public void testBadDataModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
         String xmlPath = "src/test/resources/module_manager/testBadDataModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
@@ -68,7 +69,7 @@ public class ModuleManagerTest {
     // This should go through the test/resources/modules directory and get the
     // appropriate ModuleMetaData structures from jar files.
     @Test
-    public void testLoadAllModuleConfigs() {
+    public void testLoadAllModuleConfigs() throws ManifestLoadException, ModuleLoadException {
         ModuleManager m = ModuleManager.getInstance();
         m.loadAllModuleConfigs( "modules" );
         // TODO check that modules are loaded correctly
@@ -106,7 +107,7 @@ public class ModuleManagerTest {
 
 
     @Test
-    public void testCheckModuleDependencies() {
+    public void testCheckModuleDependencies() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
 
@@ -126,7 +127,7 @@ public class ModuleManagerTest {
     }
 
     @Test
-    public void testCheckModuleDependencyMissing() {
+    public void testCheckModuleDependencyMissing() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
 
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
@@ -144,7 +145,7 @@ public class ModuleManagerTest {
     }
 
     @Test
-    public void testCheckModuleDependencyMissingWhenOptional() {
+    public void testCheckModuleDependencyMissingWhenOptional() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
 
         Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
@@ -163,7 +164,7 @@ public class ModuleManagerTest {
     }
 
     @Test
-    public void testCheckCircularModuleDependencies() {
+    public void testCheckCircularModuleDependencies() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
 
@@ -187,7 +188,7 @@ public class ModuleManagerTest {
     }
 
     @Test
-    public void testCheckRecursiveMissingModuleDependcies() {
+    public void testCheckRecursiveMissingModuleDependcies() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
 
@@ -224,11 +225,11 @@ public class ModuleManagerTest {
         ModuleManager m = ModuleManager.getInstance();
         m.setMetaData(new ModuleManagerMetaData(defaultModuleName, "src/test/resources/modules"));
 		m.testSetDefaultModule(defaultModuleName);
-        assertEquals(defaultModuleName, m.getMetaData().getDefaultModule());
+        assertEquals(defaultModuleName, m.getMetaData().getDefaultModuleName());
     }
 
     @Test(expected=ModuleLoadException.class)
-    public void testSetDefaultModuleInvalid() throws ModuleLoadException {
+    public void testSetDefaultModuleInvalid() throws ModuleLoadException, ManifestLoadException {
         String path = "src/test/resources/module_manager/HorseyBadManifest.xml";
         String defaultModuleName = "com.example.test";
         ModuleManager.setPathToManifest(path);
@@ -240,7 +241,7 @@ public class ModuleManagerTest {
 
     // default case
     @Test
-    public void testSetNextModuleRequired() {
+    public void testSetNextModuleRequired() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
         TestModule aModule = new TestModule();
@@ -262,7 +263,7 @@ public class ModuleManagerTest {
     // fails because current module tries to open module it didn't
     // specify in its manifest
     @Test
-    public void testSetNextModuleIllegal() {
+    public void testSetNextModuleIllegal() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
         TestModule aModule = new TestModule();
@@ -280,7 +281,7 @@ public class ModuleManagerTest {
 
     // passes because optional module is preset
     @Test
-    public void testSetNextModuleOptionalWorks() {
+    public void testSetNextModuleOptionalWorks() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
         TestModule aModule = new TestModule();
@@ -301,7 +302,7 @@ public class ModuleManagerTest {
 
     // fails because optional module isn't present
     @Test
-    public void testSetNextModuleOptionalFails() {
+    public void testSetNextModuleOptionalFails() throws ManifestLoadException, ModuleLoadException {
         ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
         TestModule aModule = new TestModule();
         

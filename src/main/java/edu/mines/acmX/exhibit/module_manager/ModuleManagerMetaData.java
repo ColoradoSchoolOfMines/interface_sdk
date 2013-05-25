@@ -84,10 +84,6 @@ public class ModuleManagerMetaData {
         defaultModuleName = name;
     }
 
-    public String getDefaultModule() {
-        return defaultModuleName;
-    }
-
     public void setPathToModules(String path) {
         this.pathToModules = path;
     }
