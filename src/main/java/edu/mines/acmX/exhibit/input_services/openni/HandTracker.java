@@ -128,7 +128,6 @@ public class HandTracker {
      */
     public HandTracker() {
         try {
-          System.out.println("constructor");
             // context setup
             context = OpenNIContextSingleton.getContext();
 
