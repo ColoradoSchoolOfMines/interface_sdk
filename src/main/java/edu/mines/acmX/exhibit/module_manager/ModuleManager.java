@@ -50,6 +50,16 @@ public class ModuleManager {
      * @return  The single instance of ModuleManager
      */
     public static ModuleManager getInstance() {
+        /*
+         * Now this is a bit tricky here. Please dont change this unless you are
+         * well read up on threading.
+         *
+         * The first if statement is for performance to prevent threads from
+         * uncessarily blocking on the nested synchronized statement.
+         * 
+         * The syncronized statement itself ensures that only one thread can
+         * make an instance if it does not exist
+         */
         if( instance == null ) {
             synchronized( ModuleManager.class ) {
                 if( instance == null ) {
