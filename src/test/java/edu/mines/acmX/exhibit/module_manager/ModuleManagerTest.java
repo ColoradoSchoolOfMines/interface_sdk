@@ -218,7 +218,7 @@ public class ModuleManagerTest {
 
     @Test
     public void testSetDefaultModuleValid() {
-        String path = "module_manager/HorseyGoodManifest.xml";
+        String path = "src/test/resources/module_manager/HorseyGoodManifest.xml";
         ModuleManager.setPathToManifest(path);
         ModuleManager m = ModuleManager.getInstance();
         assertEquals("com.andrew.random", m.getMetaData().getDefaultModule());
@@ -226,7 +226,7 @@ public class ModuleManagerTest {
 
     @Test(expected=Exception.class)
     public void testSetDefaultModuleInvalid() {
-        String path = "module_manager/HorseyBadManifest.xml";
+        String path = "src/test/resources/module_manager/HorseyBadManifest.xml";
         ModuleManager.setPathToManifest(path);
         ModuleManager m = ModuleManager.getInstance();
     }
