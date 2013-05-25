@@ -36,9 +36,12 @@ public class ModuleManagerManifestLoader {
         return data;
     }
     
-    private static ModuleManagerMetaData parseManifest(Document manifestDocument) {
+    private static ModuleManagerMetaData parseManifest(Document manifestDocument) throws ManifestLoadException {
         Element element = (Element) manifestDocument.getElementsByTagName("manifest").item(0);
         element = (Element) element.getElementsByTagName("module-manager").item(0);
+        if (!element.hasAttribute("default-module") || !element.hasAttribute("module-path")) {
+        	throw new ManifestLoadException("Could not load manifest: missing attributes");
+        }
         String defaultModule = element.getAttribute("default-module");
         String modulePath = element.getAttribute("module-path");
         return new ModuleManagerMetaData(defaultModule, modulePath);

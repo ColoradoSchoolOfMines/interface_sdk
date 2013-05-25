@@ -8,14 +8,17 @@ import org.apache.logging.log4j.Logger;
  * Unit test for ProcessingModule
  */
 public class ProcessingModuleTest {
-
+    private class ConcreteModule extends ProcessingModule {
+    	
+    }
     /**
      * This test should ensure that a test implementation class of the abstract
      * ProcessingModule class can be run
      */
     @Test
     public void testThatAConcreteProcessingModuleClassCanRun() {
-        // TODO
+    	ProcessingModule concrete = new ConcreteModule();
+    	
         fail( "Test not complete" );
     }
 
