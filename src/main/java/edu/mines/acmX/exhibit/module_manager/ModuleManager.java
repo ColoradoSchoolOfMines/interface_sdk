@@ -29,6 +29,12 @@ import java.util.Map;
 // input_services?
 
 public class ModuleManager {
+	
+    public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
+        ModuleManager.setPathToManifest("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
+        ModuleManager m = ModuleManager.getInstance();
+        m.run();
+    }
 
     /**
      * Singleton instance of ModuleManager
@@ -401,9 +407,7 @@ public class ModuleManager {
         currentModule = m;
     }
 
-    public static void main(String[] args) {
-        System.out.println("Heeeloo!");
-    }
+
 
     public void testSetDefaultModule(String name) throws ModuleLoadException {
         setDefaultModule(name);
