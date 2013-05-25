@@ -49,7 +49,9 @@ public class ModuleManagerTest {
 		ModuleManager.createEmptyInstance();
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
-        ModuleManagerMetaData shouldEqual = new ModuleManagerMetaData("com.example.test","");
+        ModuleManagerMetaData shouldEqual = new ModuleManagerMetaData("com.example.test","/home/andrew/");
+        System.out.println("should equal: " + shouldEqual);
+        System.out.println("Actual: " + m.getMetaData());
         assertTrue( m.getMetaData().equals( shouldEqual ));
     }
 
