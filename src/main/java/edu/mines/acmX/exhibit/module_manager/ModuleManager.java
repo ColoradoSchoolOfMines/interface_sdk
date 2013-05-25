@@ -351,6 +351,10 @@ public class ModuleManager {
     public static void main(String[] args) {
     	System.out.println("Heeeloo!");
 	}
+
+    public void testSetDefaultModule(String name) throws ModuleLoadException {
+        setDefaultModule(name);
+    }
 }
 
 
