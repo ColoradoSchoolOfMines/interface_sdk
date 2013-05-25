@@ -424,6 +424,10 @@ public class ModuleManager {
     private ModuleManager(String notUsedExceptToDifferentiateBetweenTheActualCTor) {
 
     }
+    
+    public String getNextModuleName() {
+    	return this.nextModuleMetaData.getPackageName();
+    }
 }
 
 
