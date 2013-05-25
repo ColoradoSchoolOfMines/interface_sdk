@@ -32,7 +32,7 @@ public class ModuleLoaderTest {
                 "0.1",
                 desiredInputs,
                 desiredModules);
-        ModuleInterface m = ModuleLoader.loadModule("modules/HorseSimpleGood.jar", moduleToLoadData);
+        ModuleInterface m = ModuleLoader.loadModule("src/test/resources/modules/HorseSimpleGood.jar", moduleToLoadData);
         assertTrue( m != null );
     }
 
@@ -52,7 +52,7 @@ public class ModuleLoaderTest {
                 desiredInputs,
                 desiredModules);
         ModuleInterface m =
-            ModuleLoader.loadModule("modules/HorseBadClassNotImplementedCorrectly.jar",
+            ModuleLoader.loadModule("src/test/resources/modules/HorseBadClassNotImplementedCorrectly.jar",
                     moduleToLoadData); 
     }
 
@@ -72,7 +72,7 @@ public class ModuleLoaderTest {
                 desiredInputs,
                 desiredModules);
         ModuleInterface m =
-            ModuleLoader.loadModule("modules/SnakeAteTheHorseSoThisIsBad.jar",
+            ModuleLoader.loadModule("src/test/resources/modules/SnakeAteTheHorseSoThisIsBad.jar",
                     moduleToLoadData); 
     }
 
