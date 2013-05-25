@@ -29,8 +29,21 @@ public class ModuleHelper implements ModuleInterface {
      * @return              true if successful, false otherwise
      */
     public final boolean setNextModuleToLoad( String moduleName ) {
-        // TODO set nextModule in ModuleManager
-        return false;
+    	ModuleManager m;
+		try {
+			m = ModuleManager.getInstance();
+	    	return m.setNextModule(moduleName);
+		} catch (ManifestLoadException e) {
+			// This should never happen because ModuleManager is already past the point of throwing errors when a default module cannot be loaded
+			System.out.println("ManifestLoadException thrown to ModuleHelper");
+			System.exit(1);
+			return false;
+		} catch (ModuleLoadException e) {
+			// This should never happen because ModuleManager is already past the point of throwing errors when a default module cannot be loaded
+			System.out.println("ModuleLoadException thrown to ModuleHelper");
+			System.exit(1);
+			return false;
+		}
     }
 
     public void init() { }
