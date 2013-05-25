@@ -32,7 +32,7 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
   }
 
   public void installInto(Component man) {
-    handTracker = new HandTracker();
+    handTracker = new HandTracker(OpenNIContextSingleton.getContext());
     manager = man;
   }
 
