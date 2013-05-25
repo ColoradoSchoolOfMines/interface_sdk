@@ -42,7 +42,7 @@ public class ModuleManagerTest {
     // has been correctly instantiated with the given xml file.
 	@Test
     public void testLoadModuleManagerConfig() throws ManifestLoadException {
-        String xmlPath = "module_manager/testModuleManagerManifest.xml";
+        String xmlPath = "src/test/resources/module_manager/testModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
         ModuleManagerMetaData shouldEqual = new ModuleManagerMetaData("com.example.test","");
@@ -52,7 +52,7 @@ public class ModuleManagerTest {
     // expect a throw when the xml is baddly formed
     @Test( expected=Exception.class )
     public void testBadXMLModuleManagerConfig() throws ManifestLoadException {
-        String xmlPath = "module_manager/testBadXMLModuleManagerManifest.xml";
+        String xmlPath = "src/test/resources/module_manager/testBadXMLModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
     }
@@ -60,7 +60,7 @@ public class ModuleManagerTest {
     // expect a throw when an xml attribute is missing.
     @Test( expected=Exception.class )
     public void testBadDataModuleManagerConfig() throws ManifestLoadException {
-        String xmlPath = "module_manager/testBadDataModuleManagerManifest.xml";
+        String xmlPath = "src/test/resources/module_manager/testBadDataModuleManagerManifest.xml";
         ModuleManager m = ModuleManager.getInstance();
         m.loadModuleManagerConfig(xmlPath);
     }
@@ -221,6 +221,7 @@ public class ModuleManagerTest {
         String path = "src/test/resources/module_manager/HorseyGoodManifest.xml";
         ModuleManager.setPathToManifest(path);
         ModuleManager m = ModuleManager.getInstance();
+		//m.testSetDefaultModule(
         assertEquals("com.andrew.random", m.getMetaData().getDefaultModule());
     }
 
