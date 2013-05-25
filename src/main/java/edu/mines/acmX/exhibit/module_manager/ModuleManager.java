@@ -25,8 +25,9 @@ public class ModuleManager {
 
     /**
      * Singleton instance of ModuleManager
+     * This is volatile inorder to be safe with multiple threads
      */
-    private static ModuleManager instance = null;
+    private static volatile ModuleManager instance = null;
 
     // config variables
     private ModuleManagerMetaData metaData;
@@ -50,8 +51,15 @@ public class ModuleManager {
      * @return  The single instance of ModuleManager
      */
     public static ModuleManager getInstance() {
-        // TODO fix to properly check for current instance
-        return null;
+        if( instance == null ) {
+            synchronized( ModuleManager.class ) {
+                if( instance == null ) {
+                    instance = new ModuleManager();
+                }
+            }
+        }
+        
+        return instance;
     }
 
     public static void setPathToManifest(String path) {
@@ -211,10 +219,13 @@ public class ModuleManager {
 
         // This is the main part of the DFS algorithm
         checkedModules.put(current,CheckType.DIRTY);
+        System.out.println("Checking module dependencies for " + current );
         ModuleMetaData meta = moduleConfigs.get(current);
         if( meta == null ) {
             // we ran into a module that does not exist! AHAHA... make sure
             // that this module does not exist, stop processing and return false
+            System.out.println("One of the required modules for " + current + 
+                    " does not exisit. Removing " + current);
             checkedModules.remove(current);
             moduleConfigs.remove(current); // slightly unnecessary at this point since we know it does not exist
             return false;
@@ -227,23 +238,35 @@ public class ModuleManager {
         Iterator<String> i = dependencies.keySet().iterator();
         while( i.hasNext()) {
         	String nextToCheck = i.next();
-        	if( dependencies.get(i) == DependencyType.REQUIRED ) {
-                // notice that the following operator will short circuit and
-                // nextToCheck may be checked later (or not at all) if
-                // moduleOkay is already false.
-                moduleOkay = moduleOkay &&
-                    canModuleRunWithItsDependentModules(nextToCheck,
-                            checkedModules); 
+        	if( dependencies.get(nextToCheck) == DependencyType.REQUIRED ) {
+        		CheckType statusOfNextToCheck = checkedModules.get(nextToCheck);
+        		if( statusOfNextToCheck == null || statusOfNextToCheck == CheckType.UNKNOWN ) {
+        			// notice that the following operator will short circuit and
+        			// nextToCheck may be checked later (or not at all) if
+        			// moduleOkay is already false.
+                    // Also notice that it should be okay to call this next
+                    // function with a module name that does not exist
+                    moduleOkay = moduleOkay &&
+        					canModuleRunWithItsDependentModules(nextToCheck,
+        							checkedModules); 
+
+                } else if ( checkedModules.get(nextToCheck) == CheckType.DIRTY ) {
+                    // We have a circular dependency at this point and should
+                    // not make a new call to check the nextModule
+                	// NOTHING
+                }
         	}
         }
         
         if( !moduleOkay ) {
         	// we ran into a module that does not have all of its dependencies!
         	// remove this module from our module listing
+            System.out.println("Removing module " + current + " from module list" );
         	checkedModules.remove(current);
         	moduleConfigs.remove(current);
         	return false;
         } else {
+            System.out.println( "Module " + current + " has all required dependencies.");
         	checkedModules.put(current, CheckType.CHECKED); // part of DFS
         	return true;
         }
