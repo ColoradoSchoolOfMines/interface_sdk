@@ -1,6 +1,10 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -103,7 +107,30 @@ public class ModuleManager {
      * @return          loaded Module
      */
     public ModuleInterface loadModuleFromMetaData(ModuleMetaData data) {
-        // TODO implement function
+        try {
+        	// Generate a url list of places to look for the jar.  currently we just have one location
+			URL[] urlList = { new File(metaData.getPathToModules()).toURI().toURL() };
+			// Get the class loader that we currently have and transform it into a class loader for urls
+			URLClassLoader loader = new URLClassLoader( urlList, this.getClass().getClassLoader());
+			// We now will load the class by searching the jar for the package and class as dictated in the module manifest file.  
+			// We set the second argument to true to instantiate the class TODO change later?
+			// Finally, cast it into the usable ModuleInterface class
+			Class<? extends ModuleInterface> moduleClassToLoad = Class.forName(data.getPackageName() + "." + data.getClassName(), true, loader).asSubclass(ModuleInterface.class);
+			return moduleClassToLoad.newInstance();
+			
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return null;
     }
 
@@ -162,23 +189,6 @@ public class ModuleManager {
     public void checkDependencies() {
         checkModuleInputServices();
         checkModuleDependencies();
-    }
-
-    /**
-     * checks a single ModuleMetaData for its dependencies.
-     * 
-     * Notice that this will modify the private data member moduleConfigs so
-     * that an entry that does not have a required dependency will be removed
-     * from the Map.
-     *
-     * @param   data    ModuleMetaData to be checked
-     *
-     * @return          true if it can be run, false otherwise
-     */
-    private boolean canModuleRun(ModuleMetaData data) {
-        // TODO check data to ensure dependencies exist
-        // TODO does this check both module dependencies and sensor dependencies?
-        return false;
     }
 
     /**
