@@ -217,19 +217,25 @@ public class ModuleManagerTest {
     }
 
     @Test
-    public void testSetDefaultModuleValid() {
+    public void testSetDefaultModuleValid() throws Exception {
         String path = "src/test/resources/module_manager/HorseyGoodManifest.xml";
+        String defaultModuleName = "com.andrew.lotsofdepends";
         ModuleManager.setPathToManifest(path);
         ModuleManager m = ModuleManager.getInstance();
-		//m.testSetDefaultModule(
-        assertEquals("com.andrew.random", m.getMetaData().getDefaultModule());
+        m.setMetaData(new ModuleManagerMetaData(defaultModuleName, "src/test/resources/modules"));
+		m.testSetDefaultModule(defaultModuleName);
+        assertEquals(defaultModuleName, m.getMetaData().getDefaultModule());
     }
 
-    @Test(expected=Exception.class)
-    public void testSetDefaultModuleInvalid() {
+    @Test(expected=ModuleLoadException.class)
+    public void testSetDefaultModuleInvalid() throws ModuleLoadException {
         String path = "src/test/resources/module_manager/HorseyBadManifest.xml";
+        String defaultModuleName = "com.example.test";
         ModuleManager.setPathToManifest(path);
         ModuleManager m = ModuleManager.getInstance();
+        m.setMetaData(new ModuleManagerMetaData(defaultModuleName, "src/test/resources/modules"));
+		m.testSetDefaultModule(defaultModuleName);
+        
     }
 
     // default case

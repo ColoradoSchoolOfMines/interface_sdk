@@ -355,6 +355,10 @@ public class ModuleManager {
     public void testSetDefaultModule(String name) throws ModuleLoadException {
         setDefaultModule(name);
     }
+    
+    public void setMetaData(ModuleManagerMetaData data) {
+    	metaData = data;
+    }
 }
 
 

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <module-manager
-      module:default="com.example.test"/>
+	<module-manager
+		default-module="com.example.test"
+		module-path="src/test/resources/modules" />
 </manifest>
 <!-- vim:fenc=utf-8
-  -->
+	-->
 
