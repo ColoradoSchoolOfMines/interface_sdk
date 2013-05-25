@@ -215,12 +215,6 @@ public class ModuleManagerTest {
     }
 
     @Test
-    public void testRun() {
-        // TODO
-        fail( "Test not complete" );
-    }
-
-    @Test
     public void testSetDefaultModuleValid() throws Exception {
         String path = "src/test/resources/module_manager/HorseyGoodManifest.xml";
         String defaultModuleName = "com.andrew.lotsofdepends";
