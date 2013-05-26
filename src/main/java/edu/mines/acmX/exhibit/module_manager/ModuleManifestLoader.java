@@ -52,7 +52,11 @@ public class ModuleManifestLoader {
     }
 
 	/**
-	 * Helper function that parses the xml file to /TODO finish
+	 * Helper function that parses the xml file to create a ModuleMetaData object.
+	 *
+	 * @param	manifest	The xml document to be parsed
+	 *
+	 * @return				ModuleMetaData object describing the manifest
 	 */
     private static ModuleMetaData parseManifest( Document manifest ) {
         ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
@@ -70,12 +74,24 @@ public class ModuleManifestLoader {
 
     }
 
+	/**
+	 * Helper function that parses the manifest sdk version information.
+	 *
+	 * @param	sdkTag	The NodeList of all instances of the 'uses-sdk' tag
+	 * @param	builder	The builder object that is gathering data
+	 */
     private static void parseSdkVersion( NodeList sdkTag, ModuleMetaDataBuilder builder) {
         Element singleUsesTag = (Element) sdkTag.item(0);
         builder.setMinSdkVersion(singleUsesTag.getAttribute("minSdkVersion"));
         builder.setTargetSdkVersion(singleUsesTag.getAttribute("targetSdkVersion"));
     }
 
+	/**
+	 * Helper function that parses the manifest module dependency information.
+	 *
+	 * @param	module	The NodeList of all instances of the 'module' tag //TODO check tag
+	 * @param	builder	The builder object that is gathering data
+	 */
     private static void parseModuleInfo( NodeList module,  ModuleMetaDataBuilder builder ) {
         Element singleModuleTag = (Element) module.item(0);
         builder.setIconPath( singleModuleTag.getAttribute("icon"));
@@ -90,6 +106,12 @@ public class ModuleManifestLoader {
 
     }
 
+	/**
+	 * Helper function that parses the manifest for required input services.
+	 *
+	 * @param	inputs	The NodeList of all instances of the 'required-inputs' tag //TODO check tag
+	 * @param	builder	The builder object that is gathering data
+	 */
     private static void parseInputs( NodeList inputs, ModuleMetaDataBuilder builder ) {
         Element singleInputTag = (Element) inputs.item(0);
         NodeList nodeList = singleInputTag.getElementsByTagName("input");
@@ -99,11 +121,23 @@ public class ModuleManifestLoader {
 
     }
 
+	/**
+	 * Helper function that parses an input tag for its attributes.
+	 *
+	 * @param	input	An  element representing a single input service requirement
+	 * @param	builder	The builder object that is gathering data
+	 */
     private static void parseInput( Element input, ModuleMetaDataBuilder builder ) {
         InputType inputType = InputType.valueOf(input.getAttribute("input-type").toUpperCase());
         builder.addInputType(inputType, parseDependencyType(input));
     }
 
+	/**
+	 * Helper function that parses the manifest for required modules
+	 *
+	 * @param	nodeList	The NodeList of all instances of the 'required-module' tag //TODO check tag
+	 * @param	builder		The builder object that is gathering data
+	 */
     private static void parseModuleDependencies(NodeList nodeList, ModuleMetaDataBuilder builder) {
         Element element = (Element) nodeList.item(0);
         NodeList modules = element.getElementsByTagName("module");
@@ -112,10 +146,24 @@ public class ModuleManifestLoader {
         }
     }
 
+	/**
+	 * Helper function that parses a single module dependency tag.
+	 *
+	 * @param	element	A single module dependency element
+	 * @param	builder	The builder object that is gathering data
+	 */
     private static void parseModuleDependency(Element element, ModuleMetaDataBuilder builder) {
         builder.addModuleDependency(element.getAttribute("package"), parseDependencyType(element));
     }
 
+	/**
+	 * Helper function that translates a 'optional' attribute to the proper
+	 * DependencyType.
+	 *
+	 * @param	element	element that has an 'optional' attribute
+	 *
+	 * @return			The parsed DependencyType
+	 */
     private static DependencyType parseDependencyType(Element element) {
         boolean optional = false;
         DependencyType dependencyType = DependencyType.REQUIRED;
