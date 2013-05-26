@@ -31,6 +31,7 @@ public class ModuleHelper implements ModuleInterface {
      * Sets the next module to be loaded by the Module Manager
      *
      * @param   moduleName  The package name of the next module to be loaded
+	 *
      * @return              true if successful, false otherwise
      */
     public final boolean setNextModuleToLoad( String moduleName ) {
@@ -39,12 +40,14 @@ public class ModuleHelper implements ModuleInterface {
 			m = ModuleManager.getInstance();
 	    	return m.setNextModule(moduleName);
 		} catch (ManifestLoadException e) {
-			// This should never happen because ModuleManager is already past the point of throwing errors when a default module cannot be loaded
+			// This should never happen because ModuleManager is already past the point
+			// of throwing errors when a default module cannot be loaded
 			System.out.println("ManifestLoadException thrown to ModuleHelper");
 			System.exit(1);
 			return false;
 		} catch (ModuleLoadException e) {
-			// This should never happen because ModuleManager is already past the point of throwing errors when a default module cannot be loaded
+			// This should never happen because ModuleManager is already past the point
+			// of throwing errors when a default module cannot be loaded
 			System.out.println("ModuleLoadException thrown to ModuleHelper");
 			System.exit(1);
 			return false;

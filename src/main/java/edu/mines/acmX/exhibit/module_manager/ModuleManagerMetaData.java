@@ -78,7 +78,7 @@ public class ModuleManagerMetaData {
 		return true;
 	}
     
-    // DEBUG USE ONLY
+    // DEBUG USE ONLY BELOW HERE
 
 	public void setDefaultModuleName(String name) {
         defaultModuleName = name;

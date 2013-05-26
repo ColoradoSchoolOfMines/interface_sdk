@@ -94,6 +94,10 @@ public class ModuleManager {
     }
 
     // TODO document
+	/**
+	 * Utility class to filter the jar files from other files that may
+	 * exist in the modules' directory.
+	 */
     private class JarFilter implements FilenameFilter {
         public boolean accept(File dir, String filename) {
             return filename.endsWith(".jar");
@@ -242,6 +246,7 @@ public class ModuleManager {
      * exist.  It will return true otherwise.  Note that optional module
      * dependencies are exactly that, optional and are not checked.
      *
+	 * TODO should that * in the anchor tag be removed?
      * Notice that this function essenitally performs a <a
      * href="http://en.wikipedia.org/wiki/Depth-first_search">DepthFirstSeach</a>
      * when checking modules to successfully accomplish its goal without ending
@@ -420,8 +425,6 @@ public class ModuleManager {
     public void setCurrentModule(ModuleInterface m) {
         currentModule = m;
     }
-
-
 
     public void testSetDefaultModule(String name) throws ModuleLoadException {
         setDefaultModule(name);

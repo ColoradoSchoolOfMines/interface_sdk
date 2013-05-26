@@ -36,6 +36,15 @@ public class ModuleManagerManifestLoader {
         return data;
     }
     
+	/**
+	 * Helper function to parse the xml data to create a 
+	 * ModuleManagerMetaData object.
+	 *
+	 * @param	manifestDocument	Document created from the ModuleManager
+	 *								manifest file.
+	 *
+	 * @return						ModuleManagerMetaData object for the Module Manager.
+	 */
     private static ModuleManagerMetaData parseManifest(Document manifestDocument) throws ManifestLoadException {
         Element element = (Element) manifestDocument.getElementsByTagName("manifest").item(0);
         element = (Element) element.getElementsByTagName("module-manager").item(0);

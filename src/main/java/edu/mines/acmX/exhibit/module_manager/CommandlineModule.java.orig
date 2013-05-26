@@ -1,13 +1,16 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+<<<<<<< HEAD
 import java.util.concurrent.CountDownLatch;
 
+=======
 /**
  * Non graphical versions of Module should extend from this.
  *
  * @author	Andrew DeMaria
  * @author	Austin Diviness
  */
+>>>>>>> origin/api_build
 public abstract class CommandlineModule implements ModuleInterface {
 
 	/**
@@ -36,7 +39,7 @@ public abstract class CommandlineModule implements ModuleInterface {
      * This function runs the entire Module and needs to be overloaded.
      *
      * TODO
-     * However, this function will probably change to be more consitent with
+     * However, this function will probably change to be more consistent with
      * ProcessingModule's API in that there will be setup and update functions
      * and the possibility of turning on or off looping.
      *

@@ -51,6 +51,9 @@ public class ModuleManifestLoader {
     	return toReturn;
     }
 
+	/**
+	 * Helper function that parses the xml file to /TODO finish
+	 */
     private static ModuleMetaData parseManifest( Document manifest ) {
         ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
         Element manifestTag = (Element) manifest.getElementsByTagName("manifest").item(0);

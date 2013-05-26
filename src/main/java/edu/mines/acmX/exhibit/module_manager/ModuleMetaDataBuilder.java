@@ -4,6 +4,14 @@ package edu.mines.acmX.exhibit.module_manager;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A builder for a ModuleMetaData object. Simplifies the creation
+ * of ModuleMetaData objects by storing data to be used to create
+ * one until build is called.
+ *
+ * @author	Andrew DeMaria
+ * @author	Austin Diviness
+ */
 public class ModuleMetaDataBuilder {
     // manifest top level
     private String packageName;
@@ -26,6 +34,12 @@ public class ModuleMetaDataBuilder {
 		
 	}
 
+	/**
+	 * Builds a ModuleMetaData object using the information previously passed
+	 * to the builder.
+	 *
+	 * @return ModuleMetaData instance
+	 */
     public ModuleMetaData build() {
         return new ModuleMetaData(
                 packageName,

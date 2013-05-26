@@ -40,6 +40,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     public boolean setNextModuleToLoad( String moduleName ) {
         return module.setNextModuleToLoad( moduleName );
     }
+<<<<<<< HEAD
     
     public void init(CountDownLatch waitForModule) {
     	module.init(waitForModule);
@@ -53,6 +54,13 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	frame.setSize(500, 500);
     	frame.add(this);
     	frame.setVisible(true);
+=======
+
+	/**
+	 * Wrapper of PApplet's init function. 
+	 */
+    public void init() {
+>>>>>>> origin/api_build
         super.init();
     }
     
