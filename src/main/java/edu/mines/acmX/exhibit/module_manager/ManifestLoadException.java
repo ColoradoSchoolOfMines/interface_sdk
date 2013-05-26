@@ -3,6 +3,9 @@ package edu.mines.acmX.exhibit.module_manager;
 /**
  * Exception that is raised when a manifest of any type can't be 
  * loaded, for some reason. 
+ *
+ * @author	Andrew DeMaria
+ * @author	Austin Diviness
  */
 public class ManifestLoadException extends Exception {
 

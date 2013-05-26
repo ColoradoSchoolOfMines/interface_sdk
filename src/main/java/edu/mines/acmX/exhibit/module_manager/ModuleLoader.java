@@ -19,19 +19,24 @@ public class ModuleLoader {
     // module manifest
     /**
      * 
-     * @param   jarPath path to the top level directory for the module jars
-     * @param   data    An instance of ModuleMetaData containing the metadata
-     *                  relevant to the desired Module to be loaded.
+     * @param   jarPath		path to the top level directory for the module jars
+     * @param   data		An instance of ModuleMetaData containing the metadata
+     *						relevant to the desired Module to be loaded.
+	 * @param	classLoader	class loader //TODO needs better description
      */
     public static ModuleInterface loadModule(String jarPath, ModuleMetaData data, ClassLoader classLoader) throws ModuleLoadException {
         try {
-        	// Generate a url list of places to look for the jar.  currently we just have one location
+        	// Generate a url list of places to look for the jar.  currently we 
+			// just have one location
 			URL[] urlList = { new File(jarPath).toURI().toURL() };
 			System.out.println("module Url looks like: " + urlList[0].toString());
-			// Get the class loader that we currently have and transform it into a class loader for urls
+			// Get the class loader that we currently have and transform it into a 
+			// class loader for urls
 			URLClassLoader loader = new URLClassLoader( urlList, classLoader);
-			// We now will load the class by searching the jar for the package and class as dictated in the module manifest file.  
-			// We set the second argument to true to instantiate the class TODO change later?
+			// We now will load the class by searching the jar for the package and 
+			// class as dictated in the module manifest file.  
+			// We set the second argument to true to instantiate the class 
+			// TODO change later?
 			// Finally, cast it into the usable ModuleInterface class
 			Class<? extends ModuleInterface> moduleClassToLoad = Class.forName(data.getPackageName() + "." + data.getClassName(), true, loader).asSubclass(ModuleInterface.class);
 			return moduleClassToLoad.newInstance();

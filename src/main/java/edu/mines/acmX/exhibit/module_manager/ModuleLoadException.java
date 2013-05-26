@@ -2,6 +2,9 @@ package edu.mines.acmX.exhibit.module_manager;
 
 /**
  * Exception that is thrown when a module can't be loaded.
+ *
+ * @author	Andrew DeMaria
+ * @author	Austin Diviness
  */
 public class ModuleLoadException extends Exception {
 
