@@ -18,7 +18,8 @@ public class ModuleManagerTest {
 
         }
 
-        public void init() {
+		@Override
+        public void run() {
 
         }
     }
@@ -109,7 +110,9 @@ public class ModuleManagerTest {
      */
     @Test
     public void testLoadAllModuleConfigsWhenOtherStuffInDirectory() throws ManifestLoadException, ModuleLoadException {
-        fail( "Test not complete" );
+		ModuleManager manager = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> map = manager.loadAllModuleConfigs("src/test/resources/test_load_modules");
+		assertTrue(map.size() == 2);
     }
 
     /**
@@ -118,7 +121,9 @@ public class ModuleManagerTest {
      */
     @Test
     public void testLoadAllModuleConfigsIsNotRecursive() throws ManifestLoadException, ModuleLoadException {
-        fail( "Test not complete" );
+		ModuleManager manager = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> map = manager.loadAllModuleConfigs("src/test/resources/test_load_modules");
+		assertTrue(map.containsKey("com.should.nothave") == false);
     }
 
     /**
