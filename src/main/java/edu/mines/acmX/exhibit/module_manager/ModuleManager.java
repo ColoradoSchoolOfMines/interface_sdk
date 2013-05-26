@@ -12,6 +12,7 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * TODO cleanup
@@ -322,6 +323,8 @@ public class ModuleManager {
      */
     public void run() {
         while (true) {
+        	CountDownLatch waitForModule = new CountDownLatch(1);
+        	
         	if (loadDefault) {
         		currentModule = defaultModule;
         	} else {
@@ -335,7 +338,18 @@ public class ModuleManager {
 				}
         	}
         	
-            currentModule.init();
+            currentModule.init(waitForModule);
+            currentModule.execute();
+            
+            try {
+				waitForModule.await();
+			} catch (InterruptedException e) {
+				
+				// Unexpected Interuption
+				// TODO log this!
+				
+			}
+            
         }
     }
 

@@ -1,5 +1,7 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+import java.util.concurrent.CountDownLatch;
+
 public abstract class CommandlineModule implements ModuleInterface {
 
     private final ModuleHelper module;
@@ -17,12 +19,25 @@ public abstract class CommandlineModule implements ModuleInterface {
      * This function runs the entire Module and needs to be overloaded.
      *
      * TODO
-     * However, this function will probably change to be more consitent with
+     * However, this function will probably change to be more consistent with
      * ProcessingModule's API in that there will be setup and update functions
      * and the possibility of turning on or off looping.
      *
      */
-    public abstract void init();
+    public final void init(CountDownLatch waitForModule) {
+    	module.init(waitForModule);
+    }
+    
+    public final void execute() {
+    	this.run();
+    	this.finishExecution();
+    }
+    
+    public final void finishExecution() {
+    	module.finishExecution();
+    }
+    
+    public abstract void run();
 
 }
 

@@ -1,5 +1,7 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * This class is meant to be used as a delegated class instance inside other
  * classes implementing ModuleInterface such as ProcessingModule,
@@ -19,6 +21,9 @@ package edu.mines.acmX.exhibit.module_manager;
  */
 
 public class ModuleHelper implements ModuleInterface {
+	
+	// TODO Document this
+	private CountDownLatch countDownWhenDone;
 
     // just a slim layer for interfacing with a modulemanager and will return a
     // boolean on whether the requested module can be run.
@@ -46,7 +51,20 @@ public class ModuleHelper implements ModuleInterface {
 		}
     }
 
-    public void init() { }
+    // Method should be overridden
+	public void init(CountDownLatch waitForModule) {
+		this.countDownWhenDone = waitForModule;
+	}
+	
+	public void finishExecution() {
+		this.countDownWhenDone.countDown();
+	}
+
+	public void execute() {
+		// Never used
+	}
+    
+    
 
     // TODO
     // layer to query modulemanager

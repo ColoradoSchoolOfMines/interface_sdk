@@ -6,11 +6,17 @@
  */
 package edu.mines.acmX.exhibit.module_manager;
 
+import java.util.concurrent.CountDownLatch;
+
 public interface ModuleInterface {
 
     public boolean setNextModuleToLoad( String moduleName );
 
-    public void init();
+	public void init(CountDownLatch waitForModule);
+	
+	public void execute();
+	
+	public void finishExecution();
 
 }
 
