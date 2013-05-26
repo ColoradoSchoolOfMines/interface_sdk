@@ -44,7 +44,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     /**
      * This function is just a wrapper for ModuleHelper's init function
      *
-     * @see ModuleHelper.java
+     * @see		ModuleHelper.java
      *
      * @param   waitForModule   @see ModuleHelper.java
      *
@@ -57,7 +57,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * This function is just a wrapper for ModuleHelper's finishExecution
      * function
      *
-     * @see ModuleHelper.java
+     * @see	ModuleHelper.java
      *
      */
     
