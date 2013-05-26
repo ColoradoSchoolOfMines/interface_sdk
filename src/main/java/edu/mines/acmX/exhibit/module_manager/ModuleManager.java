@@ -343,6 +343,7 @@ public class ModuleManager {
         		currentModule = defaultModule;
         	} else {
         		try {
+					//TODO should currentModuleMetaData also be set here?
 					currentModule = loadModuleFromMetaData(nextModuleMetaData);
 				} catch (ModuleLoadException e) {
 					System.out.println("Loading default module because next module could not be loaded");
