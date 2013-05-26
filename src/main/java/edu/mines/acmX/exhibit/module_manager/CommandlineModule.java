@@ -32,28 +32,45 @@ public abstract class CommandlineModule implements ModuleInterface {
         return module.setNextModuleToLoad( moduleName );
     }
 
-    /**
-     * This function runs the entire Module and needs to be overloaded.
+
+    /** 
+     * wrapper function for modulehelper's init function
      *
-     * TODO
-     * However, this function will probably change to be more consitent with
-     * ProcessingModule's API in that there will be setup and update functions
-     * and the possibility of turning on or off looping.
+     * @see ModuleHelper.java
      *
+     * @param   waitformodule   @see ModuleHelper.java
      */
     public final void init(CountDownLatch waitForModule) {
     	module.init(waitForModule);
     }
-    
+
+    /**
+     * This function calls the child classes run method and then finishes
+     * execution. The idea is that the implementing CommandlineModule will
+     * implement its own loop inside its implementation for run if so desired.
+     */
     public final void execute() {
     	this.run();
     	this.finishExecution();
     }
-    
+
+    /** 
+     * wrapper function for modulehelper's finishExecution function
+     *
+     * @see ModuleHelper.java
+     *
+     * @param   waitformodule   @see ModuleHelper.java
+     */
     public final void finishExecution() {
     	module.finishExecution();
     }
     
+    /**
+     * This function should be overridden to provide the desired functionality
+     * in your own CommandlineModule.  You can do whatever you like in this
+     * function and are encouraged to implement your own looping mechanism if so
+     * desired.
+     */
     public abstract void run();
 
 }
