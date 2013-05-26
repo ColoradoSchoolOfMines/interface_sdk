@@ -52,6 +52,7 @@ public class ModuleManager {
     private ModuleInterface currentModule;
     private ModuleInterface nextModule;
     private ModuleMetaData nextModuleMetaData;
+	private ModuleMetaData currentModuleMetaData;
     private ModuleInterface defaultModule;
     private boolean loadDefault;
     private Map<String, ModuleMetaData> moduleConfigs;
@@ -380,6 +381,7 @@ public class ModuleManager {
         // TODO implement function
         // make sure we throw if we cant load
         defaultModule = loadModuleFromMetaData( moduleConfigs.get(name) );
+		setCurrentModuleMetaData(name);
     }
 
     /**
@@ -397,6 +399,11 @@ public class ModuleManager {
         // instantiate the next module using loadModuleFromMetaData
     	// TODO check that this method is syncronized!!!
         // BE CAREFUL!!!
+		
+		//check that currentModule can set this package in question
+		if (!currentModuleMetaData.moduleDependencies.containsKey(name)) {
+			return false;
+		}
         try {
 			//nextModule = loadModuleFromMetaData( moduleConfigs.get(name) );
         	nextModuleMetaData = moduleConfigs.get(name);
@@ -410,6 +417,11 @@ public class ModuleManager {
 			return false;
 		}
     }
+
+	//TODO should be private, make public for tests
+	public void setCurrentModuleMetaData(String name) {
+		currentModuleMetaData = moduleConfigs.get(name);
+	}
 
     // USED ONLY FOR TESTING BELOW THIS COMMENT
     public ModuleManagerMetaData getMetaData() {

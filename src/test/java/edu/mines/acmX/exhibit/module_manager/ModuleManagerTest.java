@@ -21,6 +21,7 @@ public class ModuleManagerTest {
 
         }
 
+		@Override
         public void run() {
 
         }
@@ -112,7 +113,9 @@ public class ModuleManagerTest {
      */
     @Test
     public void testLoadAllModuleConfigsWhenOtherStuffInDirectory() throws ManifestLoadException, ModuleLoadException {
-        fail( "Test not complete" );
+		ModuleManager manager = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> map = manager.loadAllModuleConfigs("src/test/resources/test_load_modules");
+		assertTrue(map.size() == 2);
     }
 
     /**
@@ -121,7 +124,9 @@ public class ModuleManagerTest {
      */
     @Test
     public void testLoadAllModuleConfigsIsNotRecursive() throws ManifestLoadException, ModuleLoadException {
-        fail( "Test not complete" );
+		ModuleManager manager = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> map = manager.loadAllModuleConfigs("src/test/resources/test_load_modules");
+		assertTrue(map.containsKey("com.should.nothave") == false);
     }
 
     /**
@@ -312,7 +317,7 @@ public class ModuleManagerTest {
         modConfigs.put(b.getPackageName(), b);
 
         m.setModuleMetaDataMap(modConfigs);
-        
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == true);
     }
@@ -332,6 +337,7 @@ public class ModuleManagerTest {
         ModuleManager m = ModuleManager.getInstance();
 
         m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == false);
     }
@@ -353,6 +359,7 @@ public class ModuleManagerTest {
         modConfigs.put(b.getPackageName(), b);
 
         m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == true);
     }
@@ -372,6 +379,7 @@ public class ModuleManagerTest {
         modConfigs.put(a.getPackageName(), a);
 
         m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == false);
     }
