@@ -4,6 +4,7 @@ package edu.mines.acmX.exhibit.module_manager;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -116,7 +117,9 @@ public class ModuleManager {
      */
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
         Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
+        System.out.println("Opening [" + path + "] to find yummy jars");
         File jarDir = new File(path);
+        System.out.println(jarDir.getName());
 
         File[] listOfJarFiles = jarDir.listFiles(new JarFilter());
 
@@ -147,8 +150,12 @@ public class ModuleManager {
      */
     public void loadModuleManagerConfig(String path)
             throws ManifestLoadException {
+        InputStream moduleManifestStream = this.getClass().getClassLoader().getResourceAsStream(pathToModuleManagerManifest);
+        if( moduleManifestStream == null ) {
+            throw new ManifestLoadException("Could not find resource?");
+        }
         metaData = ModuleManagerManifestLoader
-                .load(pathToModuleManagerManifest);
+                .load(moduleManifestStream);
     }
 
     /**
