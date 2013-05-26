@@ -131,11 +131,28 @@ public class ModuleManagerTest {
      * this just ensures that ModuleManager gets what it needs.
      */
     @Test
-    public void testLoadModuleFromMetaData() {
+    public void testLoadModuleFromMetaData() throws ManifestLoadException, ModuleLoadException {
         // not sure if we need this since it will be calling another tested
         // function.
         // TODO
-        fail( "Test not complete" );
+        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        ModuleMetaData moduleToLoadData = new ModuleMetaData(
+                "com.andrew.random",
+                "Horses",
+                "0.0.0",
+                "0.0.0",
+                "horse.jpg",
+                "i_love_horseys",
+                "andrew demaria",
+                "0.1",
+                desiredInputs,
+                desiredModules);
+		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules/HorseSimpleGood.jar");
+		ModuleManager manager = ModuleManager.getInstance();
+		manager.setMetaData(data);
+		assertTrue(manager.loadModuleFromMetaData(moduleToLoadData) instanceof ModuleInterface);
+
     }
 
     private ModuleMetaData createEmptyModuleMetaData(String packageName, String className) {
