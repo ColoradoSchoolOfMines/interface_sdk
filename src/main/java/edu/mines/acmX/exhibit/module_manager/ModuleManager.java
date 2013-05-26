@@ -151,12 +151,13 @@ public class ModuleManager {
      */
     public void loadModuleManagerConfig(String path)
             throws ManifestLoadException {
-        InputStream moduleManifestStream = this.getClass().getClassLoader().getResourceAsStream(pathToModuleManagerManifest);
-        if( moduleManifestStream == null ) {
-            throw new ManifestLoadException("Could not find resource?");
-        }
+    	System.out.println("Path: " + pathToModuleManagerManifest);
+        //InputStream moduleManifestStream = this.getClass().getClassLoader().getResourceAsStream(pathToModuleManagerManifest);
+//        if( moduleManifestStream == null ) {
+//            throw new ManifestLoadException("Could not find resource?");
+//        }
         metaData = ModuleManagerManifestLoader
-                .load(moduleManifestStream);
+                .load(pathToModuleManagerManifest);
     }
 
     /**

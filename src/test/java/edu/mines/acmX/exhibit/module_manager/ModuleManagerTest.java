@@ -71,7 +71,7 @@ public class ModuleManagerTest {
     @Test
     public void testLoadModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
         ModuleManager.removeInstance();
-        String xmlPath = "src/test/resources/module_manager/testModuleManagerManifest.xml";
+        String xmlPath = "module_manager/testModuleManagerManifest.xml";
         ModuleManager.setPathToManifest(xmlPath);
         ModuleManager.createEmptyInstance();
         ModuleManager m = ModuleManager.getInstance();
@@ -154,6 +154,7 @@ public class ModuleManagerTest {
 		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules/HorseSimpleGood.jar");
 		ModuleManager manager = ModuleManager.getInstance();
 		manager.setMetaData(data);
+		manager.setCurrentModuleMetaData("com.andrew.random");
 		assertTrue(manager.loadModuleFromMetaData(moduleToLoadData) instanceof ModuleInterface);
 
     }
