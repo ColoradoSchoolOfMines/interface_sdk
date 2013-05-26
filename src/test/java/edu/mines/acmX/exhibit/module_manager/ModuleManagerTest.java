@@ -301,7 +301,7 @@ public class ModuleManagerTest {
         modConfigs.put(b.getPackageName(), b);
 
         m.setModuleMetaDataMap(modConfigs);
-        
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == true);
     }
@@ -321,6 +321,7 @@ public class ModuleManagerTest {
         ModuleManager m = ModuleManager.getInstance();
 
         m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == false);
     }
@@ -342,6 +343,7 @@ public class ModuleManagerTest {
         modConfigs.put(b.getPackageName(), b);
 
         m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == true);
     }
@@ -361,6 +363,7 @@ public class ModuleManagerTest {
         modConfigs.put(a.getPackageName(), a);
 
         m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == false);
     }
