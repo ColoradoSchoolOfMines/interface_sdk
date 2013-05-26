@@ -2,6 +2,9 @@ package edu.mines.acmX.exhibit.module_manager;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +21,7 @@ public class ModuleManagerTest {
 
         }
 
-        public void init() {
+        public void run() {
 
         }
     }
@@ -258,12 +261,25 @@ public class ModuleManagerTest {
 
     @Test
     public void testSetDefaultModuleValid() throws Exception {
-    	ModuleManager.removeInstance();
-        String path = "src/test/resources/module_manager/HorseyGoodManifest.xml";
-        String defaultModuleName = "com.andrew.random";
-        ModuleManager.setPathToManifest(path); 
+        ModuleManager.removeInstance();
+        ModuleManager.createEmptyInstance();
         ModuleManager m = ModuleManager.getInstance();
-        assertEquals(defaultModuleName, m.getMetaData().getDefaultModuleName());
+        Map<String,ModuleMetaData> modMetas = new HashMap<String,ModuleMetaData>();
+        ModuleMetaData defaultModMeta = new ModuleMetaData(
+                "com.andrew.random",
+                "Horses",null, null, null, null, null, null, 
+                new HashMap<InputType,DependencyType>(),
+                new HashMap<String, DependencyType>());
+        modMetas.put("com.andrew.random", defaultModMeta );
+        URL pathToModules = this.getClass().getClassLoader().getResource("modules");
+        System.out.println(pathToModules);
+        m.setMetaData(new ModuleManagerMetaData("com.andrew.random", pathToModules.toString()));
+        m.setModuleMetaDataMap( modMetas );
+        Method setDefault = ModuleManager.class.getDeclaredMethod("setDefaultModule",String.class);
+        setDefault.setAccessible( true );
+
+        setDefault.invoke(m, "com.andrew.random" );
+        assertEquals("com.andrew.random", m.getMetaData().getDefaultModuleName());
     }
 
     @Test(expected=ModuleLoadException.class)
