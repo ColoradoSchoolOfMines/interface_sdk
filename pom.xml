@@ -12,14 +12,19 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+  </properties>
+  <repositories>
+    <repository>
+      <url>https://s3-us-west-2.amazonaws.com/jar.download.andrewdemaria.com/libs</url>
+      <id>DeMaria_libraries</id>
+    </repository>
+  </repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>processing</groupId>
 			<artifactId>core</artifactId>
 			<version>1.5.1</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -34,18 +39,16 @@
 			<version>1.2.14</version>
 		</dependency>
 		<dependency>
-			<groupId>mp3spi</groupId>
-			<artifactId>mp3spi</artifactId>
+			<groupId>javazoom.spi</groupId>
+			<artifactId>mp3</artifactId>
 			<version>1.9.5</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/mp3spi1.9.5.jar</systemPath>
+			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>openni</groupId>
-			<artifactId>openni</artifactId>
-			<version>1.5.4,0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/org.OpenNI.jar</systemPath>
+    <dependency>
+      <groupId>org.OpenNI</groupId>
+      <artifactId>OpenNI</artifactId>
+      <version>1.5.4.0</version>
+      <scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
