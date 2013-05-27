@@ -1,0 +1,39 @@
+<!-- 
+  Some random notes:
+  The package is essentially the name for the module
+  The class is the name the entry point for the module which should be a class
+  implementing one of the ModuleInterfaces (i.e. CommandlineModule)
+-->
+<?xml version="1.0" encoding="utf-8"?>
+<manifest 
+        package="edu.mines.acmx.some_game"
+        class="SomeGame" >
+
+    <uses-sdk 
+            minSdkVersion="4"
+            targetSdkVersion="5"/>
+
+    <module 
+            icon="some_path.jpg" 
+            title="some_title"
+            author="some_author"
+            version="1.2">
+
+        <inputs>
+            <input optional="true" input-type="acceleration" />
+            <!-- without the optional, it will default to required -->
+            <input input-type="image2D" />
+        </inputs>
+        <requires-module>
+            <module package="edu.mines.acmX.some_other_game" />
+            <module optional="true" package="edu.mines.acmX.another_game" />
+            <!-- possibly include a label for easy typing / remembering -->
+            <!-- how does launcher require modules? maybe a requre-all tag? -->
+        </requires-module>
+
+    </module>
+
+</manifest>
+<!-- vim:fenc=utf-8
+  -->
+

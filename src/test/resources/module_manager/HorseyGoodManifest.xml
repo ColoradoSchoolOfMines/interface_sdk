@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+	<module-manager
+		default-module="com.andrew.random"
+		module-path="src/test/resources/modules" />
+</manifest>
+<!-- vim:fenc=utf-8
+	-->
+
