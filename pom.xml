@@ -15,7 +15,7 @@
   </properties>
   <repositories>
     <repository>
-      <url>https://s3-us-west-2.amazonaws.com/jar.download.andrewdemaria.com/libs/</url>
+      <url>https://s3-us-west-2.amazonaws.com/jar.download.andrewdemaria.com/libs</url>
       <id>DeMaria_libraries</id>
     </repository>
     <repository>
