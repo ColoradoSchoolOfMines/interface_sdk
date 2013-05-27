@@ -2,7 +2,6 @@ package edu.mines.acmX.exhibit.module_manager;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Unit test for ModuleManagerManifestLoader.
