@@ -18,10 +18,6 @@
       <url>https://s3-us-west-2.amazonaws.com/jar.download.andrewdemaria.com/libs</url>
       <id>DeMaria_libraries</id>
     </repository>
-    <repository>
-      <url>http://repo1.maven.org/maven/</url>
-      <id>default</id>
-    </repository>
   </repositories>
 
 	<dependencies>
@@ -29,7 +25,6 @@
 			<groupId>processing</groupId>
 			<artifactId>core</artifactId>
 			<version>1.5.1</version>
-			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
