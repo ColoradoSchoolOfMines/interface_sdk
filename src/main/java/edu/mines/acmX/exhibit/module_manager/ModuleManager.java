@@ -425,6 +425,10 @@ public class ModuleManager {
 		currentModuleMetaData = moduleConfigs.get(name);
 	}
 
+	public String[] getAllAvailableModules() {
+		return moduleConfigs.keySet().toArray(new String[0]);
+	}
+
     // USED ONLY FOR TESTING BELOW THIS COMMENT
     public ModuleManagerMetaData getMetaData() {
         return metaData;
