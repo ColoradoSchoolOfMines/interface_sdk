@@ -6,7 +6,7 @@ import java.util.concurrent.CountDownLatch;
 
 
 
-class AWTModule extends Frame implements ModuleInterface {
+public abstract class AWTModule extends Frame implements ModuleInterface {
 
 	private final ModuleHelper moduleHelper;
 
@@ -30,6 +30,7 @@ class AWTModule extends Frame implements ModuleInterface {
 		// TODO implement function
 		setSize(500, 500);
 		setVisible(true);
+		this.run();
 	}
 
 	@Override
@@ -37,8 +38,11 @@ class AWTModule extends Frame implements ModuleInterface {
 		moduleHelper.finishExecution();
 	}
 	
-	public void exit() {
+	@Override
+	public void dispose() {
+		super.dispose();
 		finishExecution();
 	}
-
+	
+	public abstract void run();
 }
