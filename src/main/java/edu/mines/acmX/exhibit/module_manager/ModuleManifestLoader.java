@@ -89,7 +89,7 @@ public class ModuleManifestLoader {
 	/**
 	 * Helper function that parses the manifest module dependency information.
 	 *
-	 * @param	module	The NodeList of all instances of the 'module' tag //TODO check tag
+	 * @param	module	The NodeList of all instances of the 'module' tag
 	 * @param	builder	The builder object that is gathering data
 	 */
     private static void parseModuleInfo( NodeList module,  ModuleMetaDataBuilder builder ) {
@@ -109,7 +109,7 @@ public class ModuleManifestLoader {
 	/**
 	 * Helper function that parses the manifest for required input services.
 	 *
-	 * @param	inputs	The NodeList of all instances of the 'required-inputs' tag //TODO check tag
+	 * @param	inputs	The NodeList of all instances of the 'required-inputs' tag
 	 * @param	builder	The builder object that is gathering data
 	 */
     private static void parseInputs( NodeList inputs, ModuleMetaDataBuilder builder ) {
@@ -135,7 +135,7 @@ public class ModuleManifestLoader {
 	/**
 	 * Helper function that parses the manifest for required modules
 	 *
-	 * @param	nodeList	The NodeList of all instances of the 'required-module' tag //TODO check tag
+	 * @param	nodeList	The NodeList of all instances of the 'required-module' tag
 	 * @param	builder		The builder object that is gathering data
 	 */
     private static void parseModuleDependencies(NodeList nodeList, ModuleMetaDataBuilder builder) {
