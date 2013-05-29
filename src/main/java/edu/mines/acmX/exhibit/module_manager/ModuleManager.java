@@ -390,14 +390,13 @@ public class ModuleManager {
 
     /**
      * Sets the default module for ModuleManager. Throws an exception if 
-     * the default module cannot be loaded.
+     * the default module cannot be loaded in which case the ModuleManager
+     * should exit.
      *
      * @param   name    Package name of module to be made default.
      *
      */
     private void setDefaultModule(String name) throws ModuleLoadException {
-        // TODO implement function
-        // make sure we throw if we cant load
         defaultModule = loadModuleFromMetaData( moduleConfigs.get(name) );
 		setCurrentModuleMetaData(name);
     }
