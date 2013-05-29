@@ -14,12 +14,6 @@ package edu.mines.acmX.exhibit.input_services;
 public interface InputDriverv2 {
 	
     /**
-     * Updates the driver and pumps all available input events into the given
-     * receiver.
-     */
-    public void pumpInput();
-
-    /**
      * Performs any actions necessary to install this InputDriver into the given
      * GameManager. (This does not include calling installInputDriver().)
      *
