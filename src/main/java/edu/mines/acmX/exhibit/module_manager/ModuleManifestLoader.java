@@ -140,6 +140,11 @@ public class ModuleManifestLoader {
 	 */
     private static void parseModuleDependencies(NodeList nodeList, ModuleMetaDataBuilder builder) {
         Element element = (Element) nodeList.item(0);
+		NodeList moduleAll = element.getElementsByTagName("optional-all");
+		if (moduleAll.getLength() > 0) {
+			builder.setOptionalAll(true);
+			return;
+		}
         NodeList modules = element.getElementsByTagName("module");
         for( int i = 0; i < modules.getLength(); ++i ) {
             parseModuleDependency( (Element) modules.item(i), builder );

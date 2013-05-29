@@ -409,7 +409,8 @@ public class ModuleManager {
         // BE CAREFUL!!!
 		
 		//check that currentModule can set this package in question
-		if (!currentModuleMetaData.moduleDependencies.containsKey(name)) {
+		if (!currentModuleMetaData.moduleDependencies.containsKey(name) &&
+				!currentModuleMetaData.getOptionalAll()) {
 			return false;
 		}
         try {
