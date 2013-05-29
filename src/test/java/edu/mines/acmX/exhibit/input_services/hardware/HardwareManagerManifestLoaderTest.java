@@ -27,18 +27,17 @@ public class HardwareManagerManifestLoaderTest {
 		Map<String, String> devices = new HashMap<String, String>();
 		Map<String, List<String>> deviceSupports = new HashMap<String, List<String>>();
 		
-		functionalities.put("depth", "edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface");
+		functionalities.put("depth", "edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface".toLowerCase());
 		expected.setFunctionalities(functionalities);
 		
-		devices.put("kinectopenni", "path.to.driver");
+		devices.put("kinectopenni", "edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver".toLowerCase());
 		expected.setDevices(devices);
 		
 		List<String> supports = new ArrayList<String>();
 		supports.add("depth");
-		supports.add("2dimage");
 		deviceSupports.put("kinectopenni", supports);
 		expected.setDeviceSupports(deviceSupports);
-		
+				
 		assertTrue(hmd.equals(expected));
 		
 	}
