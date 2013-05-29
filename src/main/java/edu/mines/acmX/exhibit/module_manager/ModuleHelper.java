@@ -13,8 +13,13 @@ import java.util.concurrent.CountDownLatch;
  * <h5>History</h5>
  * Again this class arose from a predicament by the team trying to have classes
  * such as ProcessingModule to have a parent of both a PApplet and a Module.
- * The solution to tthis was to have ProcessingModule implement desired Module
- * functionality with a ModuleInterface.  // TODO more stuff
+ * The solution to this was to wrap up the desired functionality into a
+ * ModuleInterface.  Each abstract Module class such as Processing Module would
+ * implement this interface (multiple implementing is allowed in java). Because
+ * the implementation for the ModuleInterface would be the same between all the
+ * implementing Modules we added a concrete ModuleHelper class to contain these
+ * implementation details. This allows abstract Modules (i.e. ProcessingModule)
+ * to implement ModuleInterface by delegating these methods to the ModuleHelper. 
  *
  * @author  Andrew DeMaria
  * @author  Austin Diviness
@@ -22,8 +27,10 @@ import java.util.concurrent.CountDownLatch;
 
 public class ModuleHelper implements ModuleInterface {
 	
-	// TODO Document this
-	private CountDownLatch countDownWhenDone;
+    /**
+     * @see ModuleManager#run
+     */
+    private CountDownLatch countDownWhenDone;
 
     // just a slim layer for interfacing with a modulemanager and will return a
     // boolean on whether the requested module can be run.

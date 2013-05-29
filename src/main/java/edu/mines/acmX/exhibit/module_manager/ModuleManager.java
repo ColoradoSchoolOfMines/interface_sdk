@@ -334,6 +334,22 @@ public class ModuleManager {
      * init function. After, the current module is set to the next module,
      * which will be the defualt module if the current module has not 
      * specified the next one.
+     *
+     * A note about the internal implementation:  We use a semaphore
+     * implementation called CountDownLatch
+     * <a href="http://en.wikipedia.org/wiki/Semaphore_(programming)">link</a>
+     * which is used to block the module manager execution in run while a module
+     * is running.  At first we were hoping to call a blocking function in the
+     * run function so that we could wait on a return from the module.  This
+     * soon became unreasonable as a typical Processing Module entry point is
+     * #init which would not block because it would spawn new threads.  This may
+     * also become relevant for the AWTModule.
+     *
+     * Right now it is assumed that only one module is running at a time and
+     * hence only one module will be activly calling the module managers run
+     * function.. If this ever becomes not the case we may need multiple
+     * countDown latches and ensure that this is syncronized along with any
+     * other public functions.
      */
     public void run() {
         while (true) {
