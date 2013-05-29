@@ -13,8 +13,8 @@
 		Devices dictates the functionalities that each device can provide.
 	-->
 	<devices>
-		<device name="kinectopenni"
-						driver="path.to.driver">
+		<device name="kinect"
+						driver="BAD">
 			<provides name="depth" />
 			<provides name="2dimage" />
 		</device>

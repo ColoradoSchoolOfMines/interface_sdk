@@ -9,15 +9,5 @@
 							interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface" />
 	</functionalities>
 
-	<!--
-		Devices dictates the functionalities that each device can provide.
-	-->
-	<devices>
-		<device name="kinectopenni"
-						driver="path.to.driver">
-			<provides name="depth" />
-			<provides name="2dimage" />
-		</device>
-	</devices>
 
 </manifest>

@@ -5,15 +5,14 @@
 		supports. It also is not device specific.
 	-->
 	<functionalities>
-		<supports name="depth"
-							interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface" />
+		<supports name="depth" />
 	</functionalities>
 
 	<!--
 		Devices dictates the functionalities that each device can provide.
 	-->
 	<devices>
-		<device name="kinectopenni"
+		<device name="kinect"
 						driver="path.to.driver">
 			<provides name="depth" />
 			<provides name="2dimage" />
