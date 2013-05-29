@@ -31,7 +31,8 @@ public class ModuleLoaderTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
         ModuleInterface m = ModuleLoader.loadModule("src/test/resources/modules/HorseSimpleGood.jar", moduleToLoadData, this.getClass().getClassLoader());
         assertTrue( m != null );
     }
@@ -50,7 +51,8 @@ public class ModuleLoaderTest {
                 "andrew demaria",
                 "1.2",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
         ModuleInterface m = ModuleLoader.loadModule("src/test/resources/modules/HelloWorldGood.jar", moduleToLoadData, this.getClass().getClassLoader());
         assertTrue( m != null );
     }
@@ -69,7 +71,8 @@ public class ModuleLoaderTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
         ModuleInterface m =
             ModuleLoader.loadModule("src/test/resources/modules/HorseBadClassNotImplementedCorrectly.jar",
                     moduleToLoadData,
@@ -90,7 +93,8 @@ public class ModuleLoaderTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
         ModuleInterface m =
             ModuleLoader.loadModule("src/test/resources/modules/SnakeAteTheHorseSoThisIsBad.jar",
                     moduleToLoadData,

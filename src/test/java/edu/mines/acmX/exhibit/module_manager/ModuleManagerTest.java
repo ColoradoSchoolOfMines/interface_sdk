@@ -48,7 +48,8 @@ public class ModuleManagerTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
         moduleToLoadData.setJarFileName("HorseSimpleGood.jar");
         ModuleManagerMetaData metaNeeded = new ModuleManagerMetaData("", "src/test/resources/modules/");
         ModuleManager m = ModuleManager.getInstance();
@@ -150,7 +151,8 @@ public class ModuleManagerTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
 		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules/HorseSimpleGood.jar");
 		ModuleManager manager = ModuleManager.getInstance();
 		manager.setMetaData(data);
@@ -172,7 +174,8 @@ public class ModuleManagerTest {
                 "Andrew",
                 "0.1",
                 inputTypesA,
-                moduleDepA);
+                moduleDepA,
+                false);
         return a;
     }
 
@@ -292,7 +295,7 @@ public class ModuleManagerTest {
                 "com.andrew.random",
                 "Horses",null, null, null, null, null, null, 
                 new HashMap<InputType,DependencyType>(),
-                new HashMap<String, DependencyType>());
+                new HashMap<String, DependencyType>(), false);
         modMetas.put("com.andrew.random", defaultModMeta );
         URL pathToModules = this.getClass().getClassLoader().getResource("modules");
         System.out.println(pathToModules);

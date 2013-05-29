@@ -29,7 +29,7 @@ public class ModuleHelperTest {
 		String nextToLoad = "should.change.to.this";
 		ModuleMetaData garblygook = new ModuleMetaData(nextToLoad, nextToLoad,
 				nextToLoad, nextToLoad, nextToLoad, nextToLoad, nextToLoad,
-				nextToLoad, null, null);
+				nextToLoad, null, null, false);
 		meta.put(nextToLoad, garblygook);
 		m.setModuleMetaDataMap(meta);
 		ModuleHelper mod = new ModuleHelper();

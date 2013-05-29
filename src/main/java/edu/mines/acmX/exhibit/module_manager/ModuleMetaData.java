@@ -34,6 +34,7 @@ public class ModuleMetaData {
 
     // required modules
     Map<String, DependencyType> moduleDependencies;
+	private boolean optionalAll;
 
     /**
      * Creates a ModuleMetaData object
@@ -58,7 +59,7 @@ public class ModuleMetaData {
 	public ModuleMetaData(String packageName, String className, String minSdkVersion,
 			String targetSdkVersion, String iconPath, String title,
 			String author, String version, Map<InputType, DependencyType> inputTypes,
-			Map<String, DependencyType> moduleDependencies) {
+			Map<String, DependencyType> moduleDependencies, boolean optionalAll) {
 		super();
 		this.packageName = packageName;
         this.className = className;
@@ -70,6 +71,7 @@ public class ModuleMetaData {
 		this.version = version;
 		this.inputTypes = inputTypes;
 		this.moduleDependencies = moduleDependencies;
+		this.optionalAll = optionalAll;
 	}
 	
 	
@@ -220,6 +222,10 @@ public class ModuleMetaData {
     public String getJarFileName() {
         return jarFileName;
     }
+
+	public boolean getOptionalAll() {
+		return optionalAll;
+	}
 
 	// DEBUG PURPOSES ONLY
 	

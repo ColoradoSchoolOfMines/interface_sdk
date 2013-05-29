@@ -15,9 +15,9 @@ import java.net.URLClassLoader;
 
 public class ModuleLoader {
 
-    // takes a path to a module jar and returns a ModuleMetaData object of the
-    // module manifest
     /**
+	 * Takes a path to a module jar and returns a Module object as specified in the
+     * module's manifest.
      * 
      * @param   jarPath		path to the top level directory for the module jars
      * @param   data		An instance of ModuleMetaData containing the metadata

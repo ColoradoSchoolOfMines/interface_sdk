@@ -19,7 +19,9 @@ import java.util.concurrent.CountDownLatch;
  * TODO cleanup
  * TODO should module manager manifest be located outside of jar files?
  * This class is the main entry point for the exhibit using the interface sdk
- * library.
+ * library. This controls the lifecycle of modules and determines which modules
+ * can run by ensuring that they have all of their required dependencies. Also
+ * cycles through the next module to be run.
  *
  * Singleton
  *
@@ -32,6 +34,10 @@ import java.util.concurrent.CountDownLatch;
 
 public class ModuleManager {
 	
+	/**
+	 * Main function for the ModuleManager framework. Creates an instance of 
+	 * ModuleManager and runs it.
+	 */
     public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
         ModuleManager.setPathToManifest("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
         ModuleManager m = ModuleManager.getInstance();
@@ -403,7 +409,8 @@ public class ModuleManager {
         // BE CAREFUL!!!
 		
 		//check that currentModule can set this package in question
-		if (!currentModuleMetaData.moduleDependencies.containsKey(name)) {
+		if (!currentModuleMetaData.moduleDependencies.containsKey(name) &&
+				!currentModuleMetaData.getOptionalAll()) {
 			return false;
 		}
         try {
@@ -420,7 +427,7 @@ public class ModuleManager {
 		}
     }
 
-	//TODO should be private, make public for tests
+	//TODO should be private, made public for tests
 	public void setCurrentModuleMetaData(String name) {
 		currentModuleMetaData = moduleConfigs.get(name);
 	}

@@ -72,6 +72,7 @@ public class HandTracker {
             // start tracking the position of the wave, which is the hand
 			try {
 				handsGen.StartTracking(args.getEndPosition());
+				System.out.println("Got the wave gesture");
 			} catch (StatusException e) {
 				e.printStackTrace();
 			}
@@ -90,8 +91,20 @@ public class HandTracker {
 			List<Point3D> newList = Collections.synchronizedList(new LinkedList<Point3D>());
 			newList.add(args.getPosition());
 			history.put(new Integer(args.getId()), newList);
+			
+			
+			/*
+			 * update data
+			 * send to all the listeners
+			 */
+			
 		}
 	}
+	
+	/*
+	 * 
+	 * public func getData();
+	 */
 
     /**
      * A gesture observer that is called when a hand is moved.
@@ -108,6 +121,7 @@ public class HandTracker {
 			while(historyList.size() > HISTORY_SIZE) {
 				historyList.remove(0);
 			}
+			
 		}
 	}
 
