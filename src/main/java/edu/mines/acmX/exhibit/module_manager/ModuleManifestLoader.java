@@ -24,7 +24,7 @@ public class ModuleManifestLoader {
 
     // takes a path to a module jar and returns a ModuleMetaData object of the module manifest
     /**
-     * Creates a ModuleMetaData object
+     * Creates a ModuleMetaData object from a given path to a module jar.
      *
      * @param   jarPath path to the Module that is to have its manifest loaded
      */

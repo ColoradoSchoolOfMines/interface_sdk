@@ -1,5 +1,6 @@
 /**
  * Class that all modules that want to use processing should extend from.
+ * Extend from PApplet, so all normal processing should work with this.
  * Wraps a ModuleHeper in several methods so as to mimic multiple 
  * inheritance.
  *
@@ -74,6 +75,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * TODO try to run PApplet without creating a new frame.
      */
     public void execute(){
+		//TODO something smarter should be done with setting the size
     	frame.setSize(500, 500);
     	frame.add(this);
     	frame.setVisible(true);
