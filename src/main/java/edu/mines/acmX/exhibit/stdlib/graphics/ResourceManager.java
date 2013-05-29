@@ -5,7 +5,7 @@ resources across multiple modules. -> Should it even be here?
 
 package edu.mines.acmX.exhibit.stdlib.graphics;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -25,7 +25,7 @@ import java.util.HashMap;
  * To change this template use File | Settings | File Templates.
  */
 public class ResourceManager {
-    private static final Logger logger = Logger.getLogger(ResourceManager.class);
+    private static final Logger logger = LogManager.getLogger(ResourceManager.class);
 
     private static ResourceManager instance;
     private HashMap<String,Image> imageMap;

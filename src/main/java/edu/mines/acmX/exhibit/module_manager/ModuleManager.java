@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import org.apache.logging.log4j.*;
+
 
 /**
  * TODO cleanup
@@ -28,8 +30,11 @@ import java.util.concurrent.CountDownLatch;
  */
 
 public class ModuleManager {
-	
-    public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
+    
+    static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
+
+   public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
+       logger.info("Loading a module manager manifest file");
         ModuleManager.setPathToManifest("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
         ModuleManager m = ModuleManager.getInstance();
         m.run();

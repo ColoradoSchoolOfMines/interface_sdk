@@ -4,7 +4,7 @@ package edu.mines.acmX.exhibit.stdlib.input_processing.tracking;
 
 import java.awt.geom.Point2D;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.*;
 
 import edu.mines.acmX.exhibit.stdlib.graphics.Sprite;
 
@@ -16,7 +16,7 @@ import edu.mines.acmX.exhibit.stdlib.graphics.Sprite;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class Handv2 {
-    private static final Logger logger = Logger.getLogger(Handv2.class);
+    private static final Logger logger = LogManager.getLogger(Handv2.class);
     
     private Point2D location;
 

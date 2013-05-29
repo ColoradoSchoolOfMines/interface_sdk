@@ -1,6 +1,6 @@
 package edu.mines.acmX.exhibit.stdlib.graphics;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.*;
 
 /**
  * This class keeps track of the sprites location on disk, transforms, position velocity etc.
@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class Sprite {
-    private static final Logger logger = Logger.getLogger(Sprite.class);
+    private static final Logger logger = LogManager.getLogger(Sprite.class);
 
     Coordinate location;
     private String fileName;

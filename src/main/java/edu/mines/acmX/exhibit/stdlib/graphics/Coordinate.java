@@ -3,10 +3,10 @@ package edu.mines.acmX.exhibit.stdlib.graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.*;
 
 public final class Coordinate extends Point {
-    private static final Logger logger = Logger.getLogger(Coordinate.class);
+    private static final Logger logger = LogManager.getLogger(Coordinate.class);
 
 	private double rotation;
 
