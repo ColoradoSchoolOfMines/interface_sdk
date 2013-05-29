@@ -1,6 +1,7 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -26,13 +27,9 @@ public class ModuleLoader {
      */
     public static ModuleInterface loadModule(String jarPath, ModuleMetaData data, ClassLoader classLoader) throws ModuleLoadException {
         try {
-        	// Generate a url list of places to look for the jar.  currently we 
-			// just have one location
-			URL[] urlList = { new File(jarPath).toURI().toURL() };
-			System.out.println("module Url looks like: " + urlList[0].toString());
-			// Get the class loader that we currently have and transform it into a 
-			// class loader for urls
-			URLClassLoader loader = new URLClassLoader( urlList, classLoader);
+
+			URLClassLoader loader = getClassLoader(jarPath, classLoader);
+
 			// We now will load the class by searching the jar for the package and 
 			// class as dictated in the module manifest file.  
 			// We set the second argument to true to instantiate the class 
@@ -45,6 +42,28 @@ public class ModuleLoader {
 			throw new ModuleLoadException("Could not load module" + "\n" + e.toString());
 		} 
     }
+
+	public static InputStream loadResource(String jarPath, ModuleMetaData
+			data, ClassLoader classLoader, String resourcePath) throws
+		ModuleLoadException, MalformedURLException { 
+
+			URLClassLoader loader = getClassLoader( jarPath, classLoader );
+			return loader.getResourceAsStream( resourcePath );
+	}
+
+	private static URLClassLoader getClassLoader( String jarPath, ClassLoader classLoader  ) throws MalformedURLException {
+
+		// Generate a url list of places to look for the jar.  currently we 
+		// just have one location
+		URL[] urlList = { new File(jarPath).toURI().toURL() };
+		System.out.println("module Url looks like: " + urlList[0].toString());
+		// Get the class loader that we currently have and transform it into a 
+		// class loader for urls
+		URLClassLoader loader = new URLClassLoader( urlList, classLoader);
+
+		return loader;
+
+	}
 }
 
 

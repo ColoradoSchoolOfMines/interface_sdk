@@ -1,6 +1,7 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import java.awt.Frame;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -41,6 +42,14 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	@Override
 	public void init(CountDownLatch waitForModule) {
 		moduleHelper.init(waitForModule);
+	}
+	
+    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
+    	return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
 
 	/**

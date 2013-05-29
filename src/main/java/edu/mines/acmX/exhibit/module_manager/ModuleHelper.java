@@ -1,5 +1,6 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -60,6 +61,17 @@ public class ModuleHelper implements ModuleInterface {
 			return false;
 		}
     }
+
+	public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
+		ModuleManager m = ModuleManager.getInstance();
+		return m.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+		ModuleManager m = ModuleManager.getInstance();
+		m.loadResourceFromModule(jarResourcePath);
+		return null;
+	}
 
 	/**
 	 * Performs all initialization tasks. Currently, it only

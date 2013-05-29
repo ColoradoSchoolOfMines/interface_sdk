@@ -11,6 +11,7 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import java.awt.Frame;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 import processing.core.*;
@@ -66,6 +67,14 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	module.finishExecution();
     }
     
+    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
+    	return module.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+		return module.loadResourceFromModule(jarResourcePath);
+	}
+    
     /**
      * This function does the dirty work for creating a new Processing window.
      * This will call Processing's init() function which does further Processing
@@ -96,6 +105,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	frame.dispose();
     	this.finishExecution();
     }
+    
+    
 
 
 

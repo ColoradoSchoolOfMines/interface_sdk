@@ -1,8 +1,9 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
@@ -404,5 +405,44 @@ public class ModuleManagerTest {
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == false);
     }
+
+	/**
+	 * This test ensures that we can load resources as InputStreams
+	 * from the jars the Modules came from
+	 * @throws ModuleLoadException 
+	 * @throws ManifestLoadException 
+	 */
+	@Test
+	public void testLoadingResourcesFromDifferentModules() throws ManifestLoadException, ModuleLoadException {
+		// remove the instance so we can actually call the constructor
+		ModuleManager.removeInstance();
+		String xmlPath = "src/test/resources/module_manager/CLoaderModuleManagerManifest.xml";
+        ModuleManager.setPathToManifest(xmlPath);
+		ModuleManager m = ModuleManager.getInstance();
+
+		InputStream test = m.loadResourceFromModule("resources/images/horse.jpg", "com.andrew.random" );
+
+		assertTrue( test != null );
+	}
+
+	/**
+	 * This test ensures that the ModuleManager uses the current
+	 * module for loading resources from if it is not specified
+	 * @throws ModuleLoadException 
+	 * @throws ManifestLoadException 
+	 */
+	@Test
+	public void testLoadingResourcesFromCurrentModule() throws ManifestLoadException, ModuleLoadException {
+		ModuleManager.removeInstance();
+		String xmlPath = "src/test/resources/module_manager/CLoaderModuleManagerManifest.xml";
+        ModuleManager.setPathToManifest(xmlPath);
+		ModuleManager m = ModuleManager.getInstance();
+		ModuleMetaData current = m.getModuleMetaDataMap().get("com.andrew.random");
+		m.setCurrentModuleMetaData(current);
+		InputStream test = m.loadResourceFromModule("resources/images/horse.jpg");
+
+		assertTrue( test != null );
+
+	}
 
 }

@@ -427,6 +427,22 @@ public class ModuleManager {
 		}
     }
 
+	public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) {
+		ModuleMetaData data = moduleConfigs.get( packageName );
+		try {
+			return ModuleLoader.loadResource(metaData.getPathToModules() + "/" + data.getJarFileName(), data, this.getClass().getClassLoader(), jarResourcePath);
+		} catch (MalformedURLException | ModuleLoadException e) {
+			// TODO Logging
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) {
+		return loadResourceFromModule(jarResourcePath, currentModuleMetaData.getPackageName());
+	}
+
+
 	//TODO should be private, made public for tests
 	public void setCurrentModuleMetaData(String name) {
 		currentModuleMetaData = moduleConfigs.get(name);
@@ -437,6 +453,10 @@ public class ModuleManager {
 	}
 
     // USED ONLY FOR TESTING BELOW THIS COMMENT
+	public void setCurrentModuleMetaData( ModuleMetaData current ) {
+		this.currentModuleMetaData = current;
+	}
+
     public ModuleManagerMetaData getMetaData() {
         return metaData;
     }
