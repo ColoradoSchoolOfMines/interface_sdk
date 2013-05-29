@@ -169,8 +169,8 @@ public class ModuleManager {
      * @throws ModuleLoadException 
      */
     public ModuleInterface loadModuleFromMetaData(ModuleMetaData data) throws ModuleLoadException {
-    	// TODO fix this low level, easily breakable path hacking.
-    	return ModuleLoader.loadModule(metaData.getPathToModules() + "/" + data.getJarFileName(), data, this.getClass().getClassLoader());
+        String path = (new File(metaData.getPathToModules(), data.getJarFileName())).getPath();
+    	return ModuleLoader.loadModule(path, data, this.getClass().getClassLoader());
     }
 
     /**
