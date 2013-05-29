@@ -15,11 +15,27 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-/*
- * Loads the config file and gives it to the HardwareServiceLoader * 
+/**
+ * Creates a HardwareManagerMetaData object given a specified configuration
+ * file. Throws manifest exceptions for errors related to improper tags and
+ * attributes. 
+ * 
+ * @author Aakash Shah
+ * @author Ryan Stauffer
+ * 
+ * @see
+ * 	{@link HardwareManager}
+ *  {@link HardwareManagerManifestException}
  */
 public class HardwareManagerManifestLoader {
 	
+	/**
+	 * Loads a manifest given a specific file. 
+	 * 
+	 * @param filename
+	 * @return A HardwareManagerMetaData object
+	 * @throws HardwareManagerManifestException
+	 */
 	public static HardwareManagerMetaData load(String filename) 
 			throws HardwareManagerManifestException {
 		try {
@@ -32,6 +48,13 @@ public class HardwareManagerManifestLoader {
 		
 	}
 	
+	/**
+	 * Loads a manifest given a specific input stream. 
+	 * 
+	 * @param is The input stream
+	 * @return A HardwareManagerMetaData object
+	 * @throws HardwareManagerManifestException 
+	 */
 	public static HardwareManagerMetaData load(InputStream is)
 			throws HardwareManagerManifestException{
 		try {
@@ -46,6 +69,13 @@ public class HardwareManagerManifestLoader {
 		}
 	}
 	
+	/**
+	 * Parses the manifest tag
+	 * 
+	 * @param manifest The XML document object
+	 * @return A HardwareManagerMetaData object
+	 * @throws HardwareManagerManifestException
+	 */
 	private static HardwareManagerMetaData parseManifest(Document manifest)
 			throws HardwareManagerManifestException {
 		
@@ -70,6 +100,12 @@ public class HardwareManagerManifestLoader {
 		return hmmd;
 	}
 	
+	/**
+	 * Parses the functionalities tag.
+	 * @param funcTagList NodeList with all the functionalities tag
+	 * @param hdsmd the meta data object to store information into
+	 * @throws HardwareManagerManifestException
+	 */
 	private static void parseFunctionalities(NodeList funcTagList,
 											HardwareManagerMetaData hdsmd)
 			throws HardwareManagerManifestException {
@@ -104,6 +140,12 @@ public class HardwareManagerManifestLoader {
 		hdsmd.setFunctionalities(supportList);
 	}
 	
+	/**
+	 * Parses the devices tags
+	 * @param devicesTagList NodeList with all the devices tag
+	 * @param hmmd the meta data object to store information into
+	 * @throws HardwareManagerManifestException
+	 */
 	private static void parseDevices(NodeList devicesTagList,
 									 HardwareManagerMetaData hmmd)
 			throws HardwareManagerManifestException {
@@ -149,6 +191,12 @@ public class HardwareManagerManifestLoader {
 		hmmd.setDeviceSupports(deviceFunc);
 	}
 	
+	/**
+	 * 
+	 * @param provideTagList
+	 * @return List of provided functionalities for a device
+	 * @throws HardwareManagerManifestException
+	 */
 	private static List<String> parseDeviceProvides(NodeList provideTagList)
 			throws HardwareManagerManifestException{
 		List<String> deviceFunc = new ArrayList<String>();

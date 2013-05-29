@@ -3,6 +3,16 @@ package edu.mines.acmX.exhibit.input_services.hardware;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A POJO for managing the various aspects for a set of functionalities and
+ * devices the HardwareManager should account for.
+ *  
+ * @author Aakash Shah
+ * @author Ryan Stauffer
+ *
+ * @see
+ * 	{@link HardwareManager} {@link HardwareManagerManifestLoader}
+ */
 public class HardwareManagerMetaData {
 	private Map<String, String> functionalities; // functionalities->interface
 	private Map<String, String> devices; // device->driver class
