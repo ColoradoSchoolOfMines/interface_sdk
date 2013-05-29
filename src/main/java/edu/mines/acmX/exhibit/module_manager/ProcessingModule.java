@@ -11,10 +11,15 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import java.awt.Frame;
+import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-import processing.core.*;
+import javax.imageio.ImageIO;
+
+import processing.core.PApplet;
+import processing.core.PConstants;
+import processing.core.PImage;
 
 public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
@@ -106,7 +111,28 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	this.finishExecution();
     }
     
-    
+	// TODO: check if buffered image supports same image types asProcessing
+	// loadImage function
+	@Override
+	public PImage loadImage(String name) {
+		// name = "resources/" + name;
+		try {
+			InputStream stream = module.loadResourceFromModule(name);
+			System.out.println("stream: " + stream.toString());
+			BufferedImage buf = ImageIO.read(stream);
+			System.out.println("buffImage: " + buf.toString());
+			return buffImagetoPImage(buf);
+		} catch (Exception e) {
+			System.out.println("Exception was hit: " + e.getClass().toString());
+			return null;
+		}
+	}
+
+    private static PImage buffImagetoPImage(BufferedImage bimg) {
+		PImage img = new PImage(bimg.getWidth(), bimg.getHeight(), PConstants.ARGB);
+		bimg.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
+		return img;
+	}
 
 
 
