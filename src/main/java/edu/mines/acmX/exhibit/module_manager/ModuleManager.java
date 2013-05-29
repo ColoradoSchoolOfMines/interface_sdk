@@ -27,9 +27,6 @@ import java.util.concurrent.CountDownLatch;
  * @author Austin Diviness
  */
 
-// TODO be able to query for interfaces here? should maybe be implemented in the
-// input_services?
-
 public class ModuleManager {
 	
     public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
@@ -95,10 +92,9 @@ public class ModuleManager {
         return instance;
     }
 
-    // TODO document
 	/**
 	 * Utility class to filter the jar files from other files that may
-	 * exist in the modules' directory.
+	 * exist in the modules' directory. 
 	 */
     private class JarFilter implements FilenameFilter {
         public boolean accept(File dir, String filename) {
@@ -255,9 +251,8 @@ public class ModuleManager {
      * exist.  It will return true otherwise.  Note that optional module
      * dependencies are exactly that, optional and are not checked.
      *
-	 * TODO should that * in the anchor tag be removed?
-     * Notice that this function essenitally performs a <a
-     * href="http://en.wikipedia.org/wiki/Depth-first_search">DepthFirstSeach</a>
+     * Notice that this function essenitally performs a 
+     * <a href="http://en.wikipedia.org/wiki/Depth-first_search">DepthFirstSeach</a>
      * when checking modules to successfully accomplish its goal without ending
      * in an infinite loop. 
      *
@@ -380,8 +375,6 @@ public class ModuleManager {
      *
      */
     private void setDefaultModule(String name) throws ModuleLoadException {
-        // TODO implement function
-        // make sure we throw if we cant load
         defaultModule = loadModuleFromMetaData( moduleConfigs.get(name) );
 		setCurrentModuleMetaData(name);
     }
