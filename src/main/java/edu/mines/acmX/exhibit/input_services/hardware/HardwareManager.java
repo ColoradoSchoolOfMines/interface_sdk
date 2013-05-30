@@ -1,8 +1,11 @@
 package edu.mines.acmX.exhibit.input_services.hardware;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
@@ -36,12 +39,19 @@ public class HardwareManager {
 	private ModuleMetaData currentModuleMetaData;
 	
 	private static HardwareManager instance = null;
-	private static String manifest_path = "";
+	private static String manifest_path = "hardwaremanagermanifest.xml";	// TODO Actually make it
+	
+	private Map<String, List<String>> devices;
 	
 	private HardwareManager() 
 			throws HardwareManagerManifestException {
+		
 		loadConfigFile();
 		validifyMetaData();
+		// checkDeviceAvailabilities
+		/*
+		 * functionality -> List of available Devices
+		 */
 	}
 	
 	/**
@@ -73,7 +83,7 @@ public class HardwareManager {
 		instance = new HardwareManager();
 	}
 
-	private void setRunningModulePermissions(ModuleMetaData mmd) {
+	public void setRunningModulePermissions(ModuleMetaData mmd) {
 		currentModuleMetaData = mmd;
 		checkPermissions();
 	}
@@ -138,5 +148,47 @@ public class HardwareManager {
 	
 	public void checkPermissions() {
 		
+	}
+	
+	public void checkAvailableDevices() {
+		devices = new HashMap<String, List<String>>();
+		
+		Map<String, String> supportedDevices = metaData.getDevices();
+		Map<String, List<String>> deviceFuncs = metaData.getDeviceSupports();
+		Set<String> keys = supportedDevices.keySet();
+		
+		for (String device : keys) {
+			String driver = supportedDevices.get(device);
+			try {
+				Class<? extends DriverInterface> cl = 
+						Class.forName(driver).asSubclass(DriverInterface.class);
+				DriverInterface iDriver = cl.newInstance();
+				if (iDriver.isAvailable()) {
+					// Go through each functionality for this driver
+					// Add it to our 'devices' storage unit
+					
+					List<String> funcs = deviceFuncs.get(driver);
+					for (String func : funcs) {
+						if (devices.containsKey(func)) {
+							devices.get(func).add(driver);
+						} else {
+							List<String> availFuncs = new ArrayList<String>();
+							availFuncs.add(driver);
+							devices.put(func, availFuncs);
+						}
+					}
+					
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO log error
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO log error
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO log error
+				e.printStackTrace();
+			}
+		}
 	}
 }

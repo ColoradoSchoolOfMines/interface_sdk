@@ -16,7 +16,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterfa
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 
 public class KinectOpenNIDriver 
-	implements DepthImageInterface, RGBImageInterface {
+	implements DriverInterface, DepthImageInterface, RGBImageInterface {
 	
 	private Context context;
 	private DepthGenerator depthGen;
@@ -25,9 +25,9 @@ public class KinectOpenNIDriver
 	private int width;
 	private int height;
 	
-	public KinectOpenNIDriver() {
-         context = OpenNIContextSingleton.getContext();
+	public KinectOpenNIDriver(){
          try {
+        	context = OpenNIContextSingleton.getContext();
 			depthGen = DepthGenerator.create(context);
 			imageGen = ImageGenerator.create(context);
 			
@@ -36,9 +36,18 @@ public class KinectOpenNIDriver
 			height = imageMD.getFullYRes();
 			
 		} catch (GeneralException e) {
-			System.out.println("Found an error creating the depth generator!");
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isAvailable() {
+		boolean ret = true;
+		try {
+			context = OpenNIContextSingleton.getContext();
+		} catch (GeneralException e) {
+			ret = false;
+		}
+		return ret;
 	}
 	
 	public ShortBuffer getDepthImageData() {
