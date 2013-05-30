@@ -90,7 +90,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      */
     public void execute(){
 		//TODO something smarter should be done with setting the size
-    	frame.setSize(500, 500);
+    	frame.setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
     	frame.add(this);
     	frame.setVisible(true);
         super.init();
