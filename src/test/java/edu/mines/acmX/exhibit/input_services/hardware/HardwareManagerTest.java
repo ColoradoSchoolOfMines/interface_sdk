@@ -1,6 +1,12 @@
 package edu.mines.acmX.exhibit.input_services.hardware;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
+
+import edu.mines.acmX.exhibit.module_manager.DependencyType;
+import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
 
 /**
  * JUnit tests for the HardwareManager.
@@ -54,4 +60,54 @@ public class HardwareManagerTest {
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadDisjointSupportList.xml");
 	}
 	
+	@Test
+	public void testModulePermissionsPassingOptional()
+			throws 	HardwareManagerManifestException, DeviceConnectionException,
+					BadDeviceFunctionalityRequestException {
+		
+		System.out.println("Running testModulePermissionsPassingOptional");
+		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
+		HardwareManager hm = HardwareManager.getInstance();
+		
+		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
+		inputTypes.put("depth", DependencyType.OPTIONAL);
+		
+		hm.setRunningModulePermissions(inputTypes);
+	}
+	
+	@Test
+	public void testModulePermissionsPassingRequired()
+			throws 	HardwareManagerManifestException, DeviceConnectionException,
+					BadDeviceFunctionalityRequestException {
+		
+		System.out.println("Running testModulePermissionsPassingRequired");
+		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
+		HardwareManager hm = HardwareManager.getInstance();
+		
+		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
+		inputTypes.put("depth", DependencyType.REQUIRED);
+		
+		hm.setRunningModulePermissions(inputTypes);
+	}
+	
+	@Test(expected=BadDeviceFunctionalityRequestException.class)
+	public void testModulePermissionsFailing()
+			throws 	HardwareManagerManifestException, DeviceConnectionException,
+					BadDeviceFunctionalityRequestException {
+		
+		System.out.println("Running testModulePermissionsFailing");
+		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
+		
+		HardwareManager hm = HardwareManager.getInstance();
+		
+		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
+		inputTypes.put("image2d", DependencyType.REQUIRED);
+		
+		hm.setRunningModulePermissions(inputTypes);
+	}
+	
+	@Test
+	public void testBadFunctionalityRequest() {
+		
+	}
 }

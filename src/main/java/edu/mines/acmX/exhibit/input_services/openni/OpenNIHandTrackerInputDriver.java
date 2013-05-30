@@ -3,6 +3,7 @@ package edu.mines.acmX.exhibit.input_services.openni;
 import java.awt.Component;
 import java.util.Map;
 
+import org.OpenNI.GeneralException;
 import org.OpenNI.Point3D;
 
 import edu.mines.acmX.exhibit.input_services.InputDriver;
@@ -32,7 +33,11 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
   }
 
   public void installInto(Component man) {
-    handTracker = new HandTracker(OpenNIContextSingleton.getContext());
+    try {
+		handTracker = new HandTracker(OpenNIContextSingleton.getContext());
+	} catch (GeneralException e) {
+		//TODO we shouldn't be here, throw proper error
+	}
     manager = man;
   }
 

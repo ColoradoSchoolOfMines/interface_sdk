@@ -10,7 +10,7 @@ import java.util.Set;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
-import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_manager.DependencyType;
 
 /**
  * The HardwareManager acts as a layer of communication for retrieving drivers.
@@ -36,7 +36,7 @@ import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
 public class HardwareManager {
 	
 	private HardwareManagerMetaData metaData;
-	private ModuleMetaData currentModuleMetaData;
+	private Map<String, DependencyType> currentModuleInputTypes;
 	
 	private static HardwareManager instance = null;
 	private static String manifest_path = "hardware_manager_manifest.xml";	// TODO Actually make it
@@ -86,9 +86,12 @@ public class HardwareManager {
 		instance = new HardwareManager();
 	}
 
-	public void setRunningModulePermissions(ModuleMetaData mmd) {
-		currentModuleMetaData = mmd;
+	public void setRunningModulePermissions(Map<String, DependencyType> mmd)
+		throws BadDeviceFunctionalityRequestException {
+		
+		currentModuleInputTypes = mmd;
 		checkPermissions();
+		
 	}
 	
 	/**
@@ -149,8 +152,19 @@ public class HardwareManager {
 		}
 	}
 	
-	public void checkPermissions() {
-		
+	public void checkPermissions() 
+			throws BadDeviceFunctionalityRequestException {
+		Set<String> functionalities = currentModuleInputTypes.keySet();
+		for (String functionality : functionalities) {
+			DependencyType dt = currentModuleInputTypes.get(functionality);
+			// Ignore optional ones
+			if (dt == DependencyType.REQUIRED) {
+				// Make sure we support this functionality
+				if (!metaData.getFunctionalities().containsKey(functionality)) {
+					throw new BadDeviceFunctionalityRequestException(functionality + " not supported.");
+				}
+			}
+		}
 	}
 	
 	public void checkAvailableDevices() 
@@ -201,8 +215,14 @@ public class HardwareManager {
 		}
 	}
 	
-	public DeviceDataInterface inflateDriver(String driverPath, String functionality) {
+	public DeviceDataInterface inflateDriver(String driverPath, String functionality)
+			throws BadFunctionalityRequestException {
 		String functionalityPath = getFunctionalityPath(functionality);
+		
+		if ("".equals(functionalityPath)) {
+			throw new BadFunctionalityRequestException(functionality + " is unknown");
+		}
+		
 		Class<? extends DeviceDataInterface> funcInterface;
 		Class<? extends DeviceDataInterface> cl;
 		
