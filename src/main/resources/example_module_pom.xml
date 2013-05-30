@@ -4,7 +4,7 @@
 
   <groupId>edu.mines.ademaria.module</groupId>
   <artifactId>my_module</artifactId>
-  <version>0.0.1</version>
+  <version>1.0</version>
   <packaging>jar</packaging>
 
   <name>my_module</name>
@@ -43,7 +43,7 @@
     <dependency>
     	<groupId>edu.mines.acmX.exhibit</groupId>
     	<artifactId>interfacesdk</artifactId>
-    	<version>0.0.1</version>
+    	<version>0.0.2</version>
     </dependency>
     <dependency>
       <groupId>org.OpenNI</groupId>
