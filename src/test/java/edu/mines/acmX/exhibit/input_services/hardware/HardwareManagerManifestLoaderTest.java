@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 /**
@@ -18,6 +20,8 @@ import org.junit.Test;
  * @see {@link HardwareManagerManifestLoader}
  */
 public class HardwareManagerManifestLoaderTest {
+	
+	private static Logger log = LogManager.getLogger(HardwareManagerManifestLoaderTest.class.getName());
 	
 	public static final String BASE_FILE = "src/test/resources/input_services/";
 	
@@ -60,7 +64,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testNameConflict() throws HardwareManagerManifestException {
-		System.out.println("Running testNameConflict");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadNameConflictAttribute.xml");
 	}
 	
@@ -70,7 +73,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testNoFunctionalities() throws HardwareManagerManifestException  {
-		System.out.println("Running testNoFunctionalities");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadNoFunctionalities.xml");
 	}
 
@@ -80,7 +82,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testNoDevicesTag() throws HardwareManagerManifestException  {
-		System.out.println("Running testNoDevicestag");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadNoDevices.xml");
 	}
 
@@ -89,7 +90,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testNoManifestTag() throws HardwareManagerManifestException  {
-		System.out.println("Running testNoManifestTag");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadNoManifest.xml");
 	}
 
@@ -99,7 +99,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testMissingAttribute() throws HardwareManagerManifestException  {
-		System.out.println("Running testMissingAttribute");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadMissingAttribute.xml");
 	}
 
@@ -109,7 +108,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testMissingFunctionalityInterface() throws HardwareManagerManifestException  {
-		System.out.println("Running testMissingFuncitonalityInterface");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadMissingFunctionalityInterface.xml");
 	}
 
@@ -119,7 +117,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testNoDeviceTag() throws HardwareManagerManifestException  {
-		System.out.println("Running testNoDeviceTag");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadNoDevice.xml");
 	}
 
@@ -129,7 +126,6 @@ public class HardwareManagerManifestLoaderTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testNoSupportsTag() throws HardwareManagerManifestException  {
-		System.out.println("Running testNoSupportsTag");
 		HardwareManagerManifestLoader.load(BASE_FILE + "BadNoSupports.xml");
 	}
 }

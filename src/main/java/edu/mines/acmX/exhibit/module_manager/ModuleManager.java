@@ -131,7 +131,6 @@ public class ModuleManager {
         Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
         logger.info("Loading jars in [" + path + "]");
         File jarDir = new File(path);
-        //System.out.println(jarDir.getName());
 
         File[] listOfJarFiles = jarDir.listFiles(new JarFilter());
 
@@ -140,7 +139,6 @@ public class ModuleManager {
                 ModuleMetaData m = ModuleManifestLoader.load(each
                         .getCanonicalPath());
                 m.setJarFileName(each.getName());
-                //System.out.println("Setting jar name of " + each.getName() + " for " + m.getPackageName());
                 modConfigs.put(m.getPackageName(), m);
             } catch (ManifestLoadException e) {
                 logger.warn("Could not load manifest for " + each );

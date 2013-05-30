@@ -31,7 +31,6 @@ public class HardwareManagerTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testMissingDriverClass() throws HardwareManagerManifestException, DeviceConnectionException  {
-		System.out.println("Running testMissingDriverClass");
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadMissingDriverClass.xml");
 	}
 	
@@ -43,7 +42,6 @@ public class HardwareManagerTest {
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testMissingInterface() throws HardwareManagerManifestException, DeviceConnectionException  {
-		System.out.println("Running testMissingInterface");
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadMissingInterface.xml");
 	}
 	
@@ -56,7 +54,6 @@ public class HardwareManagerTest {
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testSupportsVersusAvailableFunctionalities()
 			throws HardwareManagerManifestException, DeviceConnectionException {
-		System.out.println("Running testSupportsVersusAvailableFunctionalities");
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadDisjointSupportList.xml");
 	}
 	
@@ -73,7 +70,6 @@ public class HardwareManagerTest {
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadDeviceFunctionalityRequestException {
 		
-		System.out.println("Running testModulePermissionsPassingOptional");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 		
@@ -96,7 +92,6 @@ public class HardwareManagerTest {
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadDeviceFunctionalityRequestException {
 		
-		System.out.println("Running testModulePermissionsPassingRequired");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 		
@@ -119,7 +114,6 @@ public class HardwareManagerTest {
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadDeviceFunctionalityRequestException {
 		
-		System.out.println("Running testModulePermissionsFailing");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
 		
 		HardwareManager hm = HardwareManager.getInstance();

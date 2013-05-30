@@ -17,12 +17,16 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
 public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
+	private static Logger log = LogManager.getLogger(ProcessingModule.class.getName());
 	/**
 	 * Due to the limitations of java in regards to inheritance, ProcessingModule
 	 * uses a ModuleHelper so that it can extend PApplet while keeping the 
@@ -122,7 +126,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
 		} catch (Exception e) {
-			System.out.println("Exception was hit: " + e.getClass().toString());
+			log.error("Exception was hit: " + e.getClass().toString());
 			return null;
 		}
 	}
@@ -136,7 +140,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
 		} catch (Exception e) {
-			System.out.println("Exception was hit: " + e.getClass().toString());
+			log.error("Exception was hit: " + e.getClass().toString());
 			return null;
 		}
 	}

@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.logging.log4j.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,6 +29,7 @@ import org.w3c.dom.NodeList;
  *  {@link HardwareManagerManifestException}
  */
 public class HardwareManagerManifestLoader {
+	private static Logger log = LogManager.getLogger(HardwareManagerManifestLoader.class.getName()); 
 	
 	/**
 	 * Loads a manifest given a specific file. 
@@ -85,12 +87,13 @@ public class HardwareManagerManifestLoader {
 		
 		NodeList funcTagList = element.getElementsByTagName("functionalities");
 		if (funcTagList.getLength() <= 0) {
-			System.out.println("No functionalities tag");
+			
+			log.info("No functionalities tag");
 			throw new HardwareManagerManifestException("No functionalities tag!");
 		}
 		NodeList deviceTagList = element.getElementsByTagName("devices");
 		if (deviceTagList.getLength() <= 0) {
-			System.out.println("No devices tag");
+			log.info("No devices tag");
 			throw new HardwareManagerManifestException("No devices tag!");
 		}
 		
@@ -125,7 +128,7 @@ public class HardwareManagerManifestLoader {
 				String intrface = supportTag.getAttribute("interface");
 				
 				if (name.isEmpty() || intrface.isEmpty()) {
-					System.out.println("No name or interface tag");
+					log.info("No name or interface tag");
 					throw new HardwareManagerManifestException("Missing attribute for support tag");
 				}
 				
