@@ -106,8 +106,12 @@ public class HardwareManagerTest {
 		hm.setRunningModulePermissions(inputTypes);
 	}
 	
-	@Test
-	public void testBadFunctionalityRequest() {
+	@Test(expected=BadFunctionalityRequestException.class)
+	public void testBadFunctionalityRequest()
+			throws 	HardwareManagerManifestException, DeviceConnectionException,
+					BadFunctionalityRequestException {
 		
+		HardwareManager hm = HardwareManager.getInstance();
+		hm.getDevices("BAD_FUNCTIONALITY_REQUEST");
 	}
 }

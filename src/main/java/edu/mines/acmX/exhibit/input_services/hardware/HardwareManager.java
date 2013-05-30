@@ -252,7 +252,12 @@ public class HardwareManager {
 		return "";
 	}
 	
-	public List<String> getDevices(String functionality) {
+	public List<String> getDevices(String functionality)
+			throws BadFunctionalityRequestException {
+		if (!metaData.getFunctionalities().containsKey(functionality)) {
+			throw new BadFunctionalityRequestException("Bad functionality requested");
+		}
+		
 		return devices.get(functionality);
 	}
 
