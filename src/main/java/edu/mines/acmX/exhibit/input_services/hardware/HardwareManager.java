@@ -7,6 +7,7 @@ import java.util.Set;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
+import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
 
 /**
  * The HardwareManager acts as a layer of communication for retrieving drivers.
@@ -32,6 +33,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 public class HardwareManager {
 	
 	private HardwareManagerMetaData metaData;
+	private ModuleMetaData currentModuleMetaData;
 	
 	private static HardwareManager instance = null;
 	private static String manifest_path = "";
@@ -71,9 +73,10 @@ public class HardwareManager {
 		instance = new HardwareManager();
 	}
 
-//	private void setRunningModulePermissions(ModuleMetaData mmd) {
-//		
-//	}
+	private void setRunningModulePermissions(ModuleMetaData mmd) {
+		currentModuleMetaData = mmd;
+		checkPermissions();
+	}
 	
 	/**
 	 * Loads the configuration file.
@@ -133,7 +136,7 @@ public class HardwareManager {
 		}
 	}
 	
-	public boolean checkPermissions() {
-		return false;
+	public void checkPermissions() {
+		
 	}
 }
