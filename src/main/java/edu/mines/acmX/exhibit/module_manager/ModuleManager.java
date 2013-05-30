@@ -56,10 +56,13 @@ public class ModuleManager {
 
     // core manager data variables
     private ModuleInterface currentModule;
-    private ModuleInterface nextModule;
+    /*
+     *private ModuleInterface nextModule;
+     */
+    private ModuleInterface defaultModule;
     private ModuleMetaData nextModuleMetaData;
 	private ModuleMetaData currentModuleMetaData;
-    private ModuleInterface defaultModule;
+    private ModuleMetaData defaultModuleMetaData;
     private boolean loadDefault;
     private Map<String, ModuleMetaData> moduleConfigs;
 
@@ -346,14 +349,13 @@ public class ModuleManager {
         	CountDownLatch waitForModule = new CountDownLatch(1);
         	
         	if (loadDefault) {
-        		currentModule = defaultModule;
+                setCurrentAsDefault();
         	} else {
         		try {
-					//TODO should currentModuleMetaData also be set here?
-					currentModule = loadModuleFromMetaData(nextModuleMetaData);
+                    setCurrentAsNextModule();
 				} catch (ModuleLoadException e) {
 					System.out.println("Loading default module because next module could not be loaded");
-					currentModule = defaultModule;
+                    setCurrentAsDefault();
 				} finally {
 	        		loadDefault = true;
 				}
@@ -388,8 +390,26 @@ public class ModuleManager {
     private void setDefaultModule(String name) throws ModuleLoadException {
         // TODO implement function
         // make sure we throw if we cant load
-        defaultModule = loadModuleFromMetaData( moduleConfigs.get(name) );
-		setCurrentModuleMetaData(name);
+        defaultModuleMetaData  = moduleConfigs.get(name);
+        defaultModule = loadModuleFromMetaData( defaultModuleMetaData );
+    }
+
+    /**
+     * Sets the current module as the default module including the required
+     * metaData.
+     */
+    private void setCurrentAsDefault() {
+        currentModule = defaultModule;
+        currentModuleMetaData = defaultModuleMetaData;
+    }
+
+    /**
+     * This will attempt to set the current module as the nextModule
+     * @throws ModuleLoadException 
+     */
+    private void setCurrentAsNextModule() throws ModuleLoadException {
+        currentModuleMetaData = nextModuleMetaData;
+        currentModule = loadModuleFromMetaData(nextModuleMetaData);
     }
 
     /**
@@ -409,12 +429,10 @@ public class ModuleManager {
         // BE CAREFUL!!!
 		
 		//check that currentModule can set this package in question
-		if (!currentModuleMetaData.moduleDependencies.containsKey(name) &&
-				!currentModuleMetaData.getOptionalAll()) {
+		if (!currentModuleMetaData.getOptionalAll() && !currentModuleMetaData.moduleDependencies.containsKey(name)) {
 			return false;
 		}
         try {
-			//nextModule = loadModuleFromMetaData( moduleConfigs.get(name) );
         	nextModuleMetaData = moduleConfigs.get(name);
         	if ( nextModuleMetaData == null ){
         		throw new ModuleLoadException("Metadata for the requested module is not available");
@@ -422,7 +440,7 @@ public class ModuleManager {
         	loadDefault = false;
 			return true;
 		} catch (ModuleLoadException e) {
-			nextModule = defaultModule;
+            loadDefault = true; // dont necessarily need since it wasnt changed.
 			return false;
 		}
     }
@@ -431,7 +449,12 @@ public class ModuleManager {
 		ModuleMetaData data = moduleConfigs.get( packageName );
 		try {
 			return ModuleLoader.loadResource(metaData.getPathToModules() + "/" + data.getJarFileName(), data, this.getClass().getClassLoader(), jarResourcePath);
-		} catch (MalformedURLException | ModuleLoadException e) {
+		} catch (MalformedURLException e) {
+			// TODO Logging
+			e.printStackTrace();
+			return null;
+		}
+		catch (ModuleLoadException e) {
 			// TODO Logging
 			e.printStackTrace();
 			return null;

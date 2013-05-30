@@ -31,7 +31,6 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 *
 	 * @return				true if next module can load, false otherwise
 	 */
-	@Override
 	public boolean setNextModuleToLoad(String moduleName) {
         return moduleHelper.setNextModuleToLoad( moduleName );
 	}
@@ -39,7 +38,6 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	/**
 	 * Calls moduleHelper.init().
 	 */
-	@Override
 	public void init(CountDownLatch waitForModule) {
 		moduleHelper.init(waitForModule);
 	}
@@ -56,7 +54,6 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * Sets up module environment and calls the implemented run function
 	 * of the module.
 	 */
-	@Override
 	public void execute() {
 		// TODO need a better way to set the size
 		setSize(500, 500);
@@ -69,7 +66,6 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * TODO should this be a private function, to discourage its use be 
 	 * module devs?
 	 */
-	@Override
 	public void finishExecution() {
 		moduleHelper.finishExecution();
 	}
