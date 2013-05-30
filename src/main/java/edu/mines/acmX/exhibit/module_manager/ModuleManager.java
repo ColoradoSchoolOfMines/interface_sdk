@@ -109,7 +109,7 @@ public class ModuleManager {
     // TODO document
 	/**
 	 * Utility class to filter the jar files from other files that may
-	 * exist in the modules' directory.
+	 * exist in the modules' directory. 
 	 */
     private class JarFilter implements FilenameFilter {
         public boolean accept(File dir, String filename) {
@@ -129,9 +129,9 @@ public class ModuleManager {
      */
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
         Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
-        System.out.println("Opening [" + path + "] to find yummy jars");
+        logger.info("Loading jars in [" + path + "]");
         File jarDir = new File(path);
-        System.out.println(jarDir.getName());
+        //System.out.println(jarDir.getName());
 
         File[] listOfJarFiles = jarDir.listFiles(new JarFilter());
 
@@ -140,14 +140,12 @@ public class ModuleManager {
                 ModuleMetaData m = ModuleManifestLoader.load(each
                         .getCanonicalPath());
                 m.setJarFileName(each.getName());
-                System.out.println("Setting jar name of " + each.getName() + " for " + m.getPackageName());
+                //System.out.println("Setting jar name of " + each.getName() + " for " + m.getPackageName());
                 modConfigs.put(m.getPackageName(), m);
             } catch (ManifestLoadException e) {
-                // TODO add proper logging
-                e.printStackTrace();
+                logger.warn("Could not load manifest for " + each );
             } catch (IOException e) {
-                // TODO add proper logging
-                e.printStackTrace();
+                logger.warn("Could not find manifest for " + each);
             }
         }
 
@@ -160,13 +158,9 @@ public class ModuleManager {
      *
      * @param   path    Path to the ModuleManager xml config file
      */
-    public void loadModuleManagerConfig(String path)
-            throws ManifestLoadException {
-    	System.out.println("Path: " + pathToModuleManagerManifest);
-        //InputStream moduleManifestStream = this.getClass().getClassLoader().getResourceAsStream(pathToModuleManagerManifest);
-//        if( moduleManifestStream == null ) {
-//            throw new ManifestLoadException("Could not find resource?");
-//        }
+    public void loadModuleManagerConfig(String path) throws ManifestLoadException {
+        logger.info("Loading Module Manager config file [" + pathToModuleManagerManifest + "]");
+
         metaData = ModuleManagerManifestLoader
                 .load(pathToModuleManagerManifest);
     }
@@ -284,12 +278,12 @@ public class ModuleManager {
 
         // This is the main part of the DFS algorithm
         checkedModules.put(current,CheckType.DIRTY);
-        System.out.println("Checking module dependencies for " + current );
+        logger.info("Checking module dependencies for " + current );
         ModuleMetaData meta = moduleConfigs.get(current);
         if( meta == null ) {
             // we ran into a module that does not exist! AHAHA... make sure
             // that this module does not exist, stop processing and return false
-            System.out.println("One of the required modules for " + current + 
+            logger.warn("One of the required modules for " + current + 
                     " does not exisit. Removing " + current);
             checkedModules.remove(current);
             moduleConfigs.remove(current); // slightly unnecessary at this point since we know it does not exist
@@ -326,12 +320,12 @@ public class ModuleManager {
         if( !moduleOkay ) {
             // we ran into a module that does not have all of its dependencies!
             // remove this module from our module listing
-            System.out.println("Removing module " + current + " from module list" );
+            logger.warn("Removing module " + current + " from module list" );
             checkedModules.remove(current);
             moduleConfigs.remove(current);
             return false;
         } else {
-            System.out.println( "Module " + current + " has all required dependencies.");
+            logger.info( "Module " + current + " has all required dependencies.");
             checkedModules.put(current, CheckType.CHECKED); // part of DFS
             return true;
         }
@@ -366,12 +360,15 @@ public class ModuleManager {
         	CountDownLatch waitForModule = new CountDownLatch(1);
         	
         	if (loadDefault) {
+                logger.info("Loaded default module");
                 setCurrentAsDefault();
         	} else {
         		try {
                     setCurrentAsNextModule();
+                    logger.info("Loaded module " + nextModuleMetaData.getPackageName());
 				} catch (ModuleLoadException e) {
-					System.out.println("Loading default module because next module could not be loaded");
+                    logger.error("Module [" + nextModuleMetaData.getPackageName() + "] could not be loaded");
+                    logger.warn("Loading default module");
                     setCurrentAsDefault();
 				} finally {
 	        		loadDefault = true;
@@ -384,10 +381,7 @@ public class ModuleManager {
             try {
 				waitForModule.await();
 			} catch (InterruptedException e) {
-				
-				// Unexpected Interuption
-				// TODO log this!
-				
+                logger.warn("Module execution was interrupted");
 			}
             
         }

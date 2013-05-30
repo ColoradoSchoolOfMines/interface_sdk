@@ -2,11 +2,17 @@
 <configuration status="WARN">
   <appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      <PatternLayout pattern="[%d %c{2}]%n >>%highlight{%p} %m%n%n"/>
     </Console>
+    <File name="File" fileName="logs/interface_sdk.log" append="false" >
+      <PatternLayout>
+        <pattern>%d %c{2}%n  %p %m%n%n</pattern>
+      </PatternLayout>
+    </File>
   </appenders>
   <loggers>
     <root level="trace">
+      <appender-ref ref="File"/>
       <appender-ref ref="Console"/>
     </root>
   </loggers>
