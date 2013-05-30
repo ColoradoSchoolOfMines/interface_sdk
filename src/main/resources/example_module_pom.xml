@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>edu.mines.acmX.exhibit.modules</groupId>
+  <artifactId>home_screen</artifactId>
+  <version>0.0.1</version>
+  <packaging>jar</packaging>
+
+  <name>home_screen</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <repositories>
+    <!-- This repo just hosts 3rd party jar files wrapped up as mavens -->
+    <repository>
+      <url>https://s3-us-west-2.amazonaws.com/jar.download.andrewdemaria.com/libs</url>
+      <id>additional_libraries</id>
+    </repository>
+    <!-- This repo holds the releases for the interface sdk library -->
+    <repository>
+      <url>https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release</url>
+      <id>interface_sdk_library</id>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>processing</groupId>
+    	<artifactId>core</artifactId>
+    	<version>1.5.1</version>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>edu.mines.acmX.exhibit</groupId>
+    	<artifactId>interfacesdk</artifactId>
+    	<version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.OpenNI</groupId>
+      <artifactId>OpenNI</artifactId>
+      <version>1.5.4.0</version>
+      <scope>compile</scope>
+		</dependency>
+  </dependencies>
+  
+  <build>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                  <source>1.5</source>
+                  <target>1.5</target>
+              </configuration>
+          </plugin>
+      </plugins>
+  </build>
+
+</project>
