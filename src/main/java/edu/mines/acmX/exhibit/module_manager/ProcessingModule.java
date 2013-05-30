@@ -1,5 +1,6 @@
 /**
  * Class that all modules that want to use processing should extend from.
+ * Extend from PApplet, so all normal processing should work with this.
  * Wraps a ModuleHeper in several methods so as to mimic multiple 
  * inheritance.
  *
@@ -10,9 +11,15 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import java.awt.Frame;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-import processing.core.*;
+import javax.imageio.ImageIO;
+
+import processing.core.PApplet;
+import processing.core.PConstants;
+import processing.core.PImage;
 
 public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
@@ -65,6 +72,14 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	module.finishExecution();
     }
     
+    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
+    	return module.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+		return module.loadResourceFromModule(jarResourcePath);
+	}
+    
     /**
      * This function does the dirty work for creating a new Processing window.
      * This will call Processing's init() function which does further Processing
@@ -74,7 +89,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * TODO try to run PApplet without creating a new frame.
      */
     public void execute(){
-    	frame.setSize(500, 500);
+		//TODO something smarter should be done with setting the size
+    	frame.setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
     	frame.add(this);
     	frame.setVisible(true);
         super.init();
@@ -94,6 +110,42 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	frame.dispose();
     	this.finishExecution();
     }
+    
+	// TODO: check if buffered image supports same image types asProcessing
+	// loadImage function
+	@Override
+	public PImage loadImage(String name) {
+		name = "images/" + name;
+		try {
+			InputStream stream = module.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
+			//InputStream stream = module.loadResourceFromModule(name);
+			BufferedImage buf = ImageIO.read(stream);
+			return buffImagetoPImage(buf);
+		} catch (Exception e) {
+			System.out.println("Exception was hit: " + e.getClass().toString());
+			return null;
+		}
+	}
+	
+	@Override 
+	public PImage loadImage(String name, String packageName) {
+		name = "images/" + name;
+		try {
+			InputStream stream = module.loadResourceFromModule(name, packageName);
+			//InputStream stream = module.loadResourceFromModule(name);
+			BufferedImage buf = ImageIO.read(stream);
+			return buffImagetoPImage(buf);
+		} catch (Exception e) {
+			System.out.println("Exception was hit: " + e.getClass().toString());
+			return null;
+		}
+	}
+
+    private static PImage buffImagetoPImage(BufferedImage bimg) {
+		PImage img = new PImage(bimg.getWidth(), bimg.getHeight(), PConstants.ARGB);
+		bimg.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
+		return img;
+	}
 
 
 

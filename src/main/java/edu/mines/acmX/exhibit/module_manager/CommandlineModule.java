@@ -1,5 +1,6 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -64,6 +65,14 @@ public abstract class CommandlineModule implements ModuleInterface {
     public final void finishExecution() {
     	module.finishExecution();
     }
+    
+    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
+    	return module.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+		return module.loadResourceFromModule(jarResourcePath);
+	}
     
     /**
      * This function should be overridden to provide the desired functionality

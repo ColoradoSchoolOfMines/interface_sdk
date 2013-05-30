@@ -25,15 +25,17 @@ public class ModuleHelperTest {
 			ModuleLoadException {
 		ModuleManager.createEmptyInstance();
 		ModuleManager m = ModuleManager.getInstance();
+		ModuleMetaData before = new ModuleMetaData(null, null, null, null, null, null, null, null, null, null, true);
+		m.setCurrentModuleMetaData(before);
 		Map<String, ModuleMetaData> meta = new HashMap<String, ModuleMetaData>();
 		String nextToLoad = "should.change.to.this";
 		ModuleMetaData garblygook = new ModuleMetaData(nextToLoad, nextToLoad,
 				nextToLoad, nextToLoad, nextToLoad, nextToLoad, nextToLoad,
-				nextToLoad, null, null);
+				nextToLoad, null, null, false);
 		meta.put(nextToLoad, garblygook);
 		m.setModuleMetaDataMap(meta);
 		ModuleHelper mod = new ModuleHelper();
-		mod.setNextModuleToLoad(nextToLoad);
+		assertTrue(mod.setNextModuleToLoad(nextToLoad));
 		assertEquals(nextToLoad, m.getNextModuleName());
 	}
 

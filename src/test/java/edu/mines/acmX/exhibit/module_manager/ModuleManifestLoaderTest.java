@@ -28,7 +28,8 @@ public class ModuleManifestLoaderTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
         
         ModuleMetaData expected = ModuleManifestLoader.load( pathToJar );
         
@@ -61,7 +62,8 @@ public class ModuleManifestLoaderTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
 
         assertEquals( shouldEqual, ModuleManifestLoader.load( pathToJar ));
     }

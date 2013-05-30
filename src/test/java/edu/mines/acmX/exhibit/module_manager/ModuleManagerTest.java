@@ -1,8 +1,9 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
@@ -48,7 +49,8 @@ public class ModuleManagerTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
         moduleToLoadData.setJarFileName("HorseSimpleGood.jar");
         ModuleManagerMetaData metaNeeded = new ModuleManagerMetaData("", "src/test/resources/modules/");
         ModuleManager m = ModuleManager.getInstance();
@@ -64,22 +66,6 @@ public class ModuleManagerTest {
         assertTrue( m instanceof ModuleManager);
         ModuleManager other = ModuleManager.getInstance();
         assertTrue( m == other );
-    }
-
-    // The module manager should have an instance of ModuleManagerMetaData that
-    // has been correctly instantiated with the given xml file.
-    @Test
-    public void testLoadModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
-        ModuleManager.removeInstance();
-        String xmlPath = "module_manager/testModuleManagerManifest.xml";
-        ModuleManager.setPathToManifest(xmlPath);
-        ModuleManager.createEmptyInstance();
-        ModuleManager m = ModuleManager.getInstance();
-        m.loadModuleManagerConfig(xmlPath);
-        ModuleManagerMetaData shouldEqual = new ModuleManagerMetaData("com.example.test","/home/andrew/");
-        System.out.println("should equal: " + shouldEqual);
-        System.out.println("Actual: " + m.getMetaData());
-        assertTrue( m.getMetaData().equals( shouldEqual ));
     }
 
     // expect a throw when the xml is baddly formed
@@ -150,7 +136,8 @@ public class ModuleManagerTest {
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
-                desiredModules);
+                desiredModules,
+                false);
 		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules/HorseSimpleGood.jar");
 		ModuleManager manager = ModuleManager.getInstance();
 		manager.setMetaData(data);
@@ -172,7 +159,8 @@ public class ModuleManagerTest {
                 "Andrew",
                 "0.1",
                 inputTypesA,
-                moduleDepA);
+                moduleDepA,
+                false);
         return a;
     }
 
@@ -292,7 +280,7 @@ public class ModuleManagerTest {
                 "com.andrew.random",
                 "Horses",null, null, null, null, null, null, 
                 new HashMap<InputType,DependencyType>(),
-                new HashMap<String, DependencyType>());
+                new HashMap<String, DependencyType>(), false);
         modMetas.put("com.andrew.random", defaultModMeta );
         URL pathToModules = this.getClass().getClassLoader().getResource("modules");
         System.out.println(pathToModules);
@@ -401,5 +389,44 @@ public class ModuleManagerTest {
         m.setCurrentModule(aModule);
         assertTrue(m.setNextModule("com.test.B") == false);
     }
+
+	/**
+	 * This test ensures that we can load resources as InputStreams
+	 * from the jars the Modules came from
+	 * @throws ModuleLoadException 
+	 * @throws ManifestLoadException 
+	 */
+	@Test
+	public void testLoadingResourcesFromDifferentModules() throws ManifestLoadException, ModuleLoadException {
+		// remove the instance so we can actually call the constructor
+		ModuleManager.removeInstance();
+		String xmlPath = "src/test/resources/module_manager/CLoaderModuleManagerManifest.xml";
+        ModuleManager.setPathToManifest(xmlPath);
+		ModuleManager m = ModuleManager.getInstance();
+
+		InputStream test = m.loadResourceFromModule("resources/images/horse.jpg", "com.andrew.random" );
+
+		assertTrue( test != null );
+	}
+
+	/**
+	 * This test ensures that the ModuleManager uses the current
+	 * module for loading resources from if it is not specified
+	 * @throws ModuleLoadException 
+	 * @throws ManifestLoadException 
+	 */
+	@Test
+	public void testLoadingResourcesFromCurrentModule() throws ManifestLoadException, ModuleLoadException {
+		ModuleManager.removeInstance();
+		String xmlPath = "src/test/resources/module_manager/CLoaderModuleManagerManifest.xml";
+        ModuleManager.setPathToManifest(xmlPath);
+		ModuleManager m = ModuleManager.getInstance();
+		ModuleMetaData current = m.getModuleMetaDataMap().get("com.andrew.random");
+		m.setCurrentModuleMetaData(current);
+		InputStream test = m.loadResourceFromModule("resources/images/horse.jpg");
+
+		assertTrue( test != null );
+
+	}
 
 }

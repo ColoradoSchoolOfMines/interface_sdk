@@ -21,7 +21,9 @@ import org.apache.logging.log4j.*;
  * TODO cleanup
  * TODO should module manager manifest be located outside of jar files?
  * This class is the main entry point for the exhibit using the interface sdk
- * library.
+ * library. This controls the lifecycle of modules and determines which modules
+ * can run by ensuring that they have all of their required dependencies. Also
+ * cycles through the next module to be run.
  *
  * Singleton
  *
@@ -32,7 +34,11 @@ import org.apache.logging.log4j.*;
 public class ModuleManager {
     
     static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
-
+     
+    /**
+	 * Main function for the ModuleManager framework. Creates an instance of 
+	 * ModuleManager and runs it.
+	 */
    public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
        logger.info("Loading a module manager manifest file");
         ModuleManager.setPathToManifest("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
@@ -52,10 +58,13 @@ public class ModuleManager {
 
     // core manager data variables
     private ModuleInterface currentModule;
-    private ModuleInterface nextModule;
+    /*
+     *private ModuleInterface nextModule;
+     */
+    private ModuleInterface defaultModule;
     private ModuleMetaData nextModuleMetaData;
 	private ModuleMetaData currentModuleMetaData;
-    private ModuleInterface defaultModule;
+    private ModuleMetaData defaultModuleMetaData;
     private boolean loadDefault;
     private Map<String, ModuleMetaData> moduleConfigs;
 
@@ -97,9 +106,10 @@ public class ModuleManager {
         return instance;
     }
 
+    // TODO document
 	/**
 	 * Utility class to filter the jar files from other files that may
-	 * exist in the modules' directory. 
+	 * exist in the modules' directory.
 	 */
     private class JarFilter implements FilenameFilter {
         public boolean accept(File dir, String filename) {
@@ -356,14 +366,13 @@ public class ModuleManager {
         	CountDownLatch waitForModule = new CountDownLatch(1);
         	
         	if (loadDefault) {
-        		currentModule = defaultModule;
+                setCurrentAsDefault();
         	} else {
         		try {
-					//TODO should currentModuleMetaData also be set here?
-					currentModule = loadModuleFromMetaData(nextModuleMetaData);
+                    setCurrentAsNextModule();
 				} catch (ModuleLoadException e) {
 					System.out.println("Loading default module because next module could not be loaded");
-					currentModule = defaultModule;
+                    setCurrentAsDefault();
 				} finally {
 	        		loadDefault = true;
 				}
@@ -397,8 +406,26 @@ public class ModuleManager {
      *
      */
     private void setDefaultModule(String name) throws ModuleLoadException {
-        defaultModule = loadModuleFromMetaData( moduleConfigs.get(name) );
-		setCurrentModuleMetaData(name);
+        defaultModuleMetaData  = moduleConfigs.get(name);
+        defaultModule = loadModuleFromMetaData( defaultModuleMetaData );
+    }
+
+    /**
+     * Sets the current module as the default module including the required
+     * metaData.
+     */
+    private void setCurrentAsDefault() {
+        currentModule = defaultModule;
+        currentModuleMetaData = defaultModuleMetaData;
+    }
+
+    /**
+     * This will attempt to set the current module as the nextModule
+     * @throws ModuleLoadException 
+     */
+    private void setCurrentAsNextModule() throws ModuleLoadException {
+        currentModuleMetaData = nextModuleMetaData;
+        currentModule = loadModuleFromMetaData(nextModuleMetaData);
     }
 
     /**
@@ -418,11 +445,10 @@ public class ModuleManager {
         // BE CAREFUL!!!
 		
 		//check that currentModule can set this package in question
-		if (!currentModuleMetaData.moduleDependencies.containsKey(name)) {
+		if (!currentModuleMetaData.getOptionalAll() && !currentModuleMetaData.moduleDependencies.containsKey(name)) {
 			return false;
 		}
         try {
-			//nextModule = loadModuleFromMetaData( moduleConfigs.get(name) );
         	nextModuleMetaData = moduleConfigs.get(name);
         	if ( nextModuleMetaData == null ){
         		throw new ModuleLoadException("Metadata for the requested module is not available");
@@ -430,17 +456,46 @@ public class ModuleManager {
         	loadDefault = false;
 			return true;
 		} catch (ModuleLoadException e) {
-			nextModule = defaultModule;
+            loadDefault = true; // dont necessarily need since it wasnt changed.
 			return false;
 		}
     }
 
-	//TODO should be private, make public for tests
+	public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) {
+		ModuleMetaData data = moduleConfigs.get( packageName );
+		try {
+			return ModuleLoader.loadResource(metaData.getPathToModules() + "/" + data.getJarFileName(), data, this.getClass().getClassLoader(), jarResourcePath);
+		} catch (MalformedURLException e) {
+			// TODO Logging
+			e.printStackTrace();
+			return null;
+		}
+		catch (ModuleLoadException e) {
+			// TODO Logging
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) {
+		return loadResourceFromModule(jarResourcePath, currentModuleMetaData.getPackageName());
+	}
+
+
+	//TODO should be private, made public for tests
 	public void setCurrentModuleMetaData(String name) {
 		currentModuleMetaData = moduleConfigs.get(name);
 	}
 
+	public String[] getAllAvailableModules() {
+		return moduleConfigs.keySet().toArray(new String[0]);
+	}
+
     // USED ONLY FOR TESTING BELOW THIS COMMENT
+	public void setCurrentModuleMetaData( ModuleMetaData current ) {
+		this.currentModuleMetaData = current;
+	}
+
     public ModuleManagerMetaData getMetaData() {
         return metaData;
     }

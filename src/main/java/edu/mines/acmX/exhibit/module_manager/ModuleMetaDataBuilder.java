@@ -29,9 +29,10 @@ public class ModuleMetaDataBuilder {
 
     // required modules
     Map<String, DependencyType> moduleDependencies = new HashMap<String, DependencyType>();
+	private boolean optionalAll;
 
     public ModuleMetaDataBuilder() {
-		
+		optionalAll = false;
 	}
 
 	/**
@@ -51,7 +52,8 @@ public class ModuleMetaDataBuilder {
                 author,
                 version,
                 inputTypes,
-                moduleDependencies);
+                moduleDependencies,
+				optionalAll);
     }
 
 	public void setPackageName(String packageName) {
@@ -101,6 +103,10 @@ public class ModuleMetaDataBuilder {
     public void addModuleDependency(String input, DependencyType depend) {
         moduleDependencies.put(input, depend);
     }
+
+	public void setOptionalAll(boolean opt) {
+		optionalAll = opt;
+	}
 }
 
 

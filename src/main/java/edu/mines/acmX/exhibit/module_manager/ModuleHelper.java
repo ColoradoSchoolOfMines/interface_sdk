@@ -1,5 +1,6 @@
 package edu.mines.acmX.exhibit.module_manager;
 
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -27,10 +28,15 @@ import java.util.concurrent.CountDownLatch;
 
 public class ModuleHelper implements ModuleInterface {
 	
-    /**
-     * @see ModuleManager#run
-     */
-    private CountDownLatch countDownWhenDone;
+	/**
+	 * The CountDownLatch is used by the ModuleManager to block it from
+	 * continuing executing commands, as some modules may spawn a new thread.
+	 * The CountDownLatch will block until it receives enough 'countdown' signals
+	 * to release the latch. In this case, it is set to one. this needs to be
+	 * counted down before the module exits, or else the ModuleManager will be 
+	 * unable to continue.
+	 */
+	private CountDownLatch countDownWhenDone;
 
     // just a slim layer for interfacing with a modulemanager and will return a
     // boolean on whether the requested module can be run.
@@ -61,11 +67,35 @@ public class ModuleHelper implements ModuleInterface {
 		}
     }
 
-    // Method should be overridden
+	public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
+		ModuleManager m = ModuleManager.getInstance();
+		return m.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+		ModuleManager m = ModuleManager.getInstance();
+		return m.loadResourceFromModule(jarResourcePath);
+		
+	}
+
+	/**
+	 * Performs all initialization tasks. Currently, it only
+	 * sets the CountDown latch created by the ModuleManger as a
+	 * member variable.
+	 *
+	 * @param	waitForModule	The CountDownLatch that needs to be
+	 *							counted down on when the module is
+	 *							ready to exit.
+	 */
 	public void init(CountDownLatch waitForModule) {
 		this.countDownWhenDone = waitForModule;
 	}
 	
+	/**
+	 * Finishes up any execution of the module. This function counts down
+	 * on the CountDownLatch that is blocking ModuleManager. After this is
+	 * called, ModuleManager should be able to continue to use its run loop.
+	 */
 	public void finishExecution() {
 		this.countDownWhenDone.countDown();
 	}
