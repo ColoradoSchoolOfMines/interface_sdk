@@ -16,7 +16,7 @@ public class ModuleManifestLoaderTest {
     @Test
     public void testLoadCorrectModuleWithoutExtraStuff() throws ManifestLoadException {
         String pathToJar = "src/test/resources/modules/HorseSimpleGood.jar";
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData shouldEqual = new ModuleMetaData(
                 "com.andrew.random",
@@ -42,11 +42,15 @@ public class ModuleManifestLoaderTest {
     @Test
     public void testLoadCorrectModuleWithOptionalModulesAndInputs() throws ManifestLoadException {
         String pathToJar = "src/test/resources/modules/PiggyGoodWithLotsOfDepend.jar";
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
 
-        desiredInputs.put(InputType.ACCELERATION, DependencyType.OPTIONAL);
-        desiredInputs.put(InputType.IMAGE2D, DependencyType.REQUIRED);
+        
+        //TODO Make sure we document the fact that the developers need to look into
+        // the hardware manifest file to figure out the names for functionalities.
+        // We also need to document what each functionality that WE provide entails.
+        desiredInputs.put("acceleration", DependencyType.OPTIONAL);
+        desiredInputs.put("image2d", DependencyType.REQUIRED);
 
         desiredModules.put("edu.mines.acmX.some_other_game", DependencyType.REQUIRED);
         desiredModules.put("edu.mines.acmX.another_game", DependencyType.OPTIONAL);

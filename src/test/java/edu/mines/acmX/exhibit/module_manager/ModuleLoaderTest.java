@@ -19,7 +19,7 @@ public class ModuleLoaderTest {
      */
     @Test
     public void testLoadModule() throws ModuleLoadException {
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.random",
@@ -38,7 +38,7 @@ public class ModuleLoaderTest {
 
     @Test
     public void testAnotherLoadModule() throws ModuleLoadException {
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "edu.mines.andrew.games",
@@ -57,7 +57,7 @@ public class ModuleLoaderTest {
 
     @Test(expected=ModuleLoadException.class)
     public void testLoadModuleWithoutProperClassImplementing() throws ModuleLoadException {
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.badclass",
@@ -78,7 +78,7 @@ public class ModuleLoaderTest {
 
     @Test(expected=ModuleLoadException.class)
     public void testLoadModuleWithoutExistingClass() throws ModuleLoadException {
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.classnotfound",
