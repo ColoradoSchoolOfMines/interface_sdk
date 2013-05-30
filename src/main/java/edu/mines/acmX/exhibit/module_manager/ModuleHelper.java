@@ -69,8 +69,8 @@ public class ModuleHelper implements ModuleInterface {
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
 		ModuleManager m = ModuleManager.getInstance();
-		m.loadResourceFromModule(jarResourcePath);
-		return null;
+		return m.loadResourceFromModule(jarResourcePath);
+		
 	}
 
 	/**

@@ -115,9 +115,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	// loadImage function
 	@Override
 	public PImage loadImage(String name) {
-		// name = "resources/" + name;
+		name = "images/" + name;
+		//System.out.println(name);
 		try {
-			InputStream stream = module.loadResourceFromModule(name);
+			InputStream stream = module.loadResourceFromModule(name, "edu.mines.acmX.exhibit.modules.home_screen");
+			//InputStream stream = module.loadResourceFromModule(name);
 			System.out.println("stream: " + stream.toString());
 			BufferedImage buf = ImageIO.read(stream);
 			System.out.println("buffImage: " + buf.toString());
