@@ -32,10 +32,6 @@ public class ModuleManifestLoaderTest {
                 false);
         
         ModuleMetaData expected = ModuleManifestLoader.load( pathToJar );
-        
-        System.out.println("Expected:" + shouldEqual.toString());
-        System.out.println();
-        System.out.println("Actual:" + expected.toString());
 
         assertTrue( shouldEqual.equals(expected));
     }
