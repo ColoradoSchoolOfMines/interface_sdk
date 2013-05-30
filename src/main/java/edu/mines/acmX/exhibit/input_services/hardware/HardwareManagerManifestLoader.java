@@ -122,7 +122,7 @@ public class HardwareManagerManifestLoader {
 			for (int j = 0; j < supportTagList.getLength(); ++j) {
 				Element supportTag = (Element) supportTagList.item(j);
 				String name = supportTag.getAttribute("name").toLowerCase();
-				String intrface = supportTag.getAttribute("interface").toLowerCase();
+				String intrface = supportTag.getAttribute("interface");
 				
 				if (name.isEmpty() || intrface.isEmpty()) {
 					System.out.println("No name or interface tag");
@@ -164,7 +164,7 @@ public class HardwareManagerManifestLoader {
 			for (int j = 0; j < devicesTagList.getLength(); ++j) {
 				Element deviceTag = (Element) deviceTagList.item(j);
 				String name = deviceTag.getAttribute("name").toLowerCase();
-				String driver = deviceTag.getAttribute("driver").toLowerCase();
+				String driver = deviceTag.getAttribute("driver");
 				
 				if (name.isEmpty() || driver.isEmpty()) {
 					throw new HardwareManagerManifestException("Missing attribute for device tag");

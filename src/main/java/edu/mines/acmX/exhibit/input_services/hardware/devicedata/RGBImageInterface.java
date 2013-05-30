@@ -4,4 +4,7 @@ import java.nio.ByteBuffer;
 
 public interface RGBImageInterface extends DeviceDataInterface {
 	public ByteBuffer getVisualData();
+	
+	public int getWidth();
+	public int getHeight();
 }

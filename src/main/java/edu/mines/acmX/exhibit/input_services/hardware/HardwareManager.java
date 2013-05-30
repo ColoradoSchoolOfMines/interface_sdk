@@ -172,7 +172,7 @@ public class HardwareManager {
 					// Go through each functionality for this driver
 					// Add it to our 'devices' storage unit
 					
-					List<String> funcs = deviceFuncs.get(driver);
+					List<String> funcs = deviceFuncs.get(device);
 					for (String func : funcs) {
 						if (devices.containsKey(func)) {
 							devices.get(func).add(driver);
@@ -181,7 +181,6 @@ public class HardwareManager {
 							availFuncs.add(driver);
 							devices.put(func, availFuncs);
 						}
-						System.out.println("Device " + driver + " is available to do " + func);
 					}
 					
 				}
@@ -225,7 +224,7 @@ public class HardwareManager {
 		return iDriver;
 	}
 	
-	public String getFunctionalityPath(String functionality) {
+	private String getFunctionalityPath(String functionality) {
 		Map<String, String> fPaths = metaData.getFunctionalities();
 		if (fPaths.containsKey(functionality)) {
 			return fPaths.get(functionality);
