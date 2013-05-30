@@ -6,17 +6,17 @@
 -->
 <?xml version="1.0" encoding="utf-8"?>
 <manifest 
-        package="edu.mines.acmx.some_game"
-        class="SomeGame" >
+        package="edu.mines.ademaria.module"
+        class="Module" >
 
     <uses-sdk 
             minSdkVersion="4"
             targetSdkVersion="5"/>
 
     <module 
-            icon="some_path.jpg" 
+            icon="some_image.jpg" 
             title="some_title"
-            author="some_author"
+            author="Andrew DeMaria"
             version="1.2">
 
         <inputs>
