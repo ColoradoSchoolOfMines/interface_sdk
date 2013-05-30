@@ -68,22 +68,6 @@ public class ModuleManagerTest {
         assertTrue( m == other );
     }
 
-    // The module manager should have an instance of ModuleManagerMetaData that
-    // has been correctly instantiated with the given xml file.
-    @Test
-    public void testLoadModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
-        ModuleManager.removeInstance();
-        String xmlPath = "module_manager/testModuleManagerManifest.xml";
-        ModuleManager.setPathToManifest(xmlPath);
-        ModuleManager.createEmptyInstance();
-        ModuleManager m = ModuleManager.getInstance();
-        m.loadModuleManagerConfig(xmlPath);
-        ModuleManagerMetaData shouldEqual = new ModuleManagerMetaData("com.example.test","/home/andrew/");
-        System.out.println("should equal: " + shouldEqual);
-        System.out.println("Actual: " + m.getMetaData());
-        assertTrue( m.getMetaData().equals( shouldEqual ));
-    }
-
     // expect a throw when the xml is baddly formed
     @Test( expected=Exception.class )
     public void testBadXMLModuleManagerConfig() throws ManifestLoadException, ModuleLoadException {
