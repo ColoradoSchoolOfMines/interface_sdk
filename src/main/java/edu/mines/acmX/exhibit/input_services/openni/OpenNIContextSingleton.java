@@ -1,11 +1,17 @@
 package edu.mines.acmX.exhibit.input_services.openni;
-import java.io.File;
-import java.io.IOException;
 
 import org.OpenNI.Context;
 import org.OpenNI.GeneralException;
 import org.OpenNI.OutArg;
 import org.OpenNI.ScriptNode;
+
+/**
+ * A singleton for the OpenNI Context that manages communication between
+ * the openni library and the kinect device.
+ * 
+ * @author Aakash Shah
+ * @author Ryan Stauffer
+ */
 public class OpenNIContextSingleton {
     private static Context context = null;
     private static OutArg<ScriptNode> scriptNode;

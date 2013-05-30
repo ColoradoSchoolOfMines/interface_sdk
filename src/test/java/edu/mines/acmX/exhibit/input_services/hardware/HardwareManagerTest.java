@@ -60,6 +60,14 @@ public class HardwareManagerTest {
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadDisjointSupportList.xml");
 	}
 	
+	/**
+	 * Ensures that optional functionalities requested by a module do not
+	 * prevent the module from running if not supported.
+	 * 
+	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException
+	 * @throws BadDeviceFunctionalityRequestException
+	 */
 	@Test
 	public void testModulePermissionsPassingOptional()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
@@ -70,11 +78,19 @@ public class HardwareManagerTest {
 		HardwareManager hm = HardwareManager.getInstance();
 		
 		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
-		inputTypes.put("depth", DependencyType.OPTIONAL);
+		inputTypes.put("image2d", DependencyType.OPTIONAL);
 		
 		hm.setRunningModulePermissions(inputTypes);
 	}
 	
+	/**
+	 * Ensures that requried functionalities prevent the module from running if
+	 * not supported.
+	 * 
+	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException
+	 * @throws BadDeviceFunctionalityRequestException
+	 */
 	@Test
 	public void testModulePermissionsPassingRequired()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
@@ -90,6 +106,14 @@ public class HardwareManagerTest {
 		hm.setRunningModulePermissions(inputTypes);
 	}
 	
+	/**
+	 * Ensures that required functionalities requested by a module that are not
+	 * supported, prevent the module from running.
+	 * 
+	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException
+	 * @throws BadDeviceFunctionalityRequestException
+	 */
 	@Test(expected=BadDeviceFunctionalityRequestException.class)
 	public void testModulePermissionsFailing()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
@@ -106,6 +130,14 @@ public class HardwareManagerTest {
 		hm.setRunningModulePermissions(inputTypes);
 	}
 	
+	/**
+	 * Checks whether a functionality that does not exist throws an exception
+	 * when requested the list of drivers that support it.
+	 * 
+	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException
+	 * @throws BadFunctionalityRequestException
+	 */
 	@Test(expected=BadFunctionalityRequestException.class)
 	public void testBadFunctionalityRequest()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,

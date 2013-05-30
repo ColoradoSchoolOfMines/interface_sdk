@@ -15,6 +15,14 @@ import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInter
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 
+/**
+ * Kinect driver that provides depth and rgb image functionality.
+ * Uses the openni the library for communication to the kinect device.
+ * 
+ * @author Aakash Shha
+ * @author Ryan Stauffer
+ *
+ */
 public class KinectOpenNIDriver 
 	implements DriverInterface, DepthImageInterface, RGBImageInterface {
 	
@@ -40,6 +48,9 @@ public class KinectOpenNIDriver
 		}
 	}
 	
+	/**
+	 * Ensures communication is possible between the openni and kinect.
+	 */
 	public boolean isAvailable() {
 		boolean ret = true;
 		try {

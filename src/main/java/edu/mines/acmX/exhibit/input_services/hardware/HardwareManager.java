@@ -18,11 +18,8 @@ import edu.mines.acmX.exhibit.module_manager.DependencyType;
  * The manager will choose the most appropriate driver given a functionality
  * and a specific module's set of permissions.
  * The manager is a singleton to reduce conflicts between driver requests.
- * 
- * <br/><br/>
- * 
- * TODO Verifying the HardwareDriverServiceMetaData
- * TODO Association with the ModuleMetaData - checkPermissions
+ * The manager also checks whether a module's required functionalities are
+ * available.
  * 
  * @author Aakash Shah
  * @author Ryan Stauffer
@@ -86,6 +83,13 @@ public class HardwareManager {
 		instance = new HardwareManager();
 	}
 
+	/**
+	 * Sets the currently running module and verifies the functionalities
+	 * of that module.
+	 * 
+	 * @param mmd The map of functionalities and their level of dependence 
+	 * @throws BadDeviceFunctionalityRequestException
+	 */
 	public void setRunningModulePermissions(Map<String, DependencyType> mmd)
 		throws BadDeviceFunctionalityRequestException {
 		
@@ -152,6 +156,13 @@ public class HardwareManager {
 		}
 	}
 	
+	/**
+	 * Checks to see whether the functionalities that are required by the
+	 * currently running module are supported through the HardwareManager
+	 * manifest.
+	 * 
+	 * @throws BadDeviceFunctionalityRequestException on failure
+	 */
 	public void checkPermissions() 
 			throws BadDeviceFunctionalityRequestException {
 		Set<String> functionalities = currentModuleInputTypes.keySet();
@@ -167,6 +178,12 @@ public class HardwareManager {
 		}
 	}
 	
+	/**
+	 * Goes through all functionalities in the manifest and constructs a list
+	 * of drivers that are available and support that functionality. 
+	 * 
+	 * @throws DeviceConnectionException If no devices are available.
+	 */
 	public void checkAvailableDevices() 
 		throws DeviceConnectionException {
 		
@@ -215,6 +232,14 @@ public class HardwareManager {
 		}
 	}
 	
+	/**
+	 * Constructs a driver object for a given functionality and driver path.
+	 * 
+	 * @param driverPath
+	 * @param functionality
+	 * @return An instance of a driver capable of supporting that functionality
+	 * @throws BadFunctionalityRequestException
+	 */
 	public DeviceDataInterface inflateDriver(String driverPath, String functionality)
 			throws BadFunctionalityRequestException {
 		String functionalityPath = getFunctionalityPath(functionality);
@@ -244,6 +269,12 @@ public class HardwareManager {
 		return iDriver;
 	}
 	
+	/**
+	 * Constructs return value from manifest.
+	 * 
+	 * @param functionality
+	 * @return Interface path for the given functionality
+	 */
 	private String getFunctionalityPath(String functionality) {
 		Map<String, String> fPaths = metaData.getFunctionalities();
 		if (fPaths.containsKey(functionality)) {
@@ -252,6 +283,12 @@ public class HardwareManager {
 		return "";
 	}
 	
+	/**
+	 * 
+	 * @param functionality
+	 * @return list of driver paths that support the given functionality
+	 * @throws BadFunctionalityRequestException
+	 */
 	public List<String> getDevices(String functionality)
 			throws BadFunctionalityRequestException {
 		if (!metaData.getFunctionalities().containsKey(functionality)) {
