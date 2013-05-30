@@ -59,7 +59,7 @@ public class ModuleMetaData {
 	public ModuleMetaData(String packageName, String className, String minSdkVersion,
 			String targetSdkVersion, String iconPath, String title,
 			String author, String version, Map<String, DependencyType> inputTypes,
-			Map<String, DependencyType> moduleDependencies) {
+			Map<String, DependencyType> moduleDependencies, boolean optionalAll) {
 		super();
 		this.packageName = packageName;
         this.className = className;
