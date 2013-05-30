@@ -39,18 +39,19 @@ public class HardwareManager {
 	private ModuleMetaData currentModuleMetaData;
 	
 	private static HardwareManager instance = null;
-	private static String manifest_path = "hardwaremanagermanifest.xml";	// TODO Actually make it
+	private static String manifest_path = "hardware_manager_manifest.xml";	// TODO Actually make it
 	
 	private Map<String, List<String>> devices;
 	
 	private HardwareManager() 
-			throws HardwareManagerManifestException {
+			throws 	HardwareManagerManifestException,
+					DeviceConnectionException {
 		
 		loadConfigFile();
 		validifyMetaData();
-		// checkDeviceAvailabilities
+		checkAvailableDevices();
 		/*
-		 * functionality -> List of available Devices
+		 * functionality -> available device driver path
 		 */
 	}
 	
@@ -60,7 +61,8 @@ public class HardwareManager {
 	 * @throws HardwareManagerManifestException
 	 */	
 	public static HardwareManager getInstance()
-			throws HardwareManagerManifestException{
+			throws 	HardwareManagerManifestException,
+					DeviceConnectionException {
 		if (instance == null) {
 			instance = new HardwareManager();				
 		}
@@ -78,7 +80,8 @@ public class HardwareManager {
 	 * 	{@link #HardwareManager()}
 	 */
 	public static void setManifestFilepath(String filepath)
-			throws HardwareManagerManifestException{
+			throws 	HardwareManagerManifestException, 
+					DeviceConnectionException {
 		manifest_path = filepath;
 		instance = new HardwareManager();
 	}
@@ -150,7 +153,9 @@ public class HardwareManager {
 		
 	}
 	
-	public void checkAvailableDevices() {
+	public void checkAvailableDevices() 
+		throws DeviceConnectionException {
+		
 		devices = new HashMap<String, List<String>>();
 		
 		Map<String, String> supportedDevices = metaData.getDevices();
@@ -176,6 +181,7 @@ public class HardwareManager {
 							availFuncs.add(driver);
 							devices.put(func, availFuncs);
 						}
+						System.out.println("Device " + driver + " is available to do " + func);
 					}
 					
 				}
@@ -190,5 +196,45 @@ public class HardwareManager {
 				e.printStackTrace();
 			}
 		}
+		
+		if (devices.isEmpty()) {
+			throw new DeviceConnectionException("No connected devices found");
+		}
 	}
+	
+	public DeviceDataInterface inflateDriver(String driverPath, String functionality) {
+		String functionalityPath = getFunctionalityPath(functionality);
+		Class<? extends DeviceDataInterface> funcInterface;
+		Class<? extends DeviceDataInterface> cl;
+		
+		DeviceDataInterface iDriver = null;
+		try {
+			funcInterface = Class.forName(functionalityPath).asSubclass(DeviceDataInterface.class);
+			cl = Class.forName(driverPath).asSubclass(funcInterface);
+			iDriver = cl.newInstance();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return iDriver;
+	}
+	
+	public String getFunctionalityPath(String functionality) {
+		Map<String, String> fPaths = metaData.getFunctionalities();
+		if (fPaths.containsKey(functionality)) {
+			return fPaths.get(functionality);
+		}
+		return "";
+	}
+	
+	public List<String> getDevices(String functionality) {
+		return devices.get(functionality);
+	}
+
 }
