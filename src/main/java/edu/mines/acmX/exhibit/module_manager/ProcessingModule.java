@@ -90,7 +90,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      */
     public void execute(){
 		//TODO something smarter should be done with setting the size
-    	frame.setSize(500, 500);
+    	frame.setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
     	frame.add(this);
     	frame.setVisible(true);
         super.init();
@@ -115,12 +115,25 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	// loadImage function
 	@Override
 	public PImage loadImage(String name) {
-		// name = "resources/" + name;
+		name = "images/" + name;
 		try {
-			InputStream stream = module.loadResourceFromModule(name);
-			System.out.println("stream: " + stream.toString());
+			InputStream stream = module.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
+			//InputStream stream = module.loadResourceFromModule(name);
 			BufferedImage buf = ImageIO.read(stream);
-			System.out.println("buffImage: " + buf.toString());
+			return buffImagetoPImage(buf);
+		} catch (Exception e) {
+			System.out.println("Exception was hit: " + e.getClass().toString());
+			return null;
+		}
+	}
+	
+	@Override 
+	public PImage loadImage(String name, String packageName) {
+		name = "images/" + name;
+		try {
+			InputStream stream = module.loadResourceFromModule(name, packageName);
+			//InputStream stream = module.loadResourceFromModule(name);
+			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
 		} catch (Exception e) {
 			System.out.println("Exception was hit: " + e.getClass().toString());
