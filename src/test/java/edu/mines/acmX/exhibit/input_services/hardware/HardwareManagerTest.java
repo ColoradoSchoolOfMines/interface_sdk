@@ -21,9 +21,10 @@ public class HardwareManagerTest {
 	 * Checks to ensure the driver classes given by the manifest file exists and 
 	 * is able to be initialized.
 	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException 
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
-	public void testMissingDriverClass() throws HardwareManagerManifestException  {
+	public void testMissingDriverClass() throws HardwareManagerManifestException, DeviceConnectionException  {
 		System.out.println("Running testMissingDriverClass");
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadMissingDriverClass.xml");
 	}
@@ -32,9 +33,10 @@ public class HardwareManagerTest {
 	 * Checks to ensure the interfaces given by the manifest file exists
 	 * and is able to be initialized.
 	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException 
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
-	public void testMissingInterface() throws HardwareManagerManifestException  {
+	public void testMissingInterface() throws HardwareManagerManifestException, DeviceConnectionException  {
 		System.out.println("Running testMissingInterface");
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadMissingInterface.xml");
 	}
@@ -43,10 +45,11 @@ public class HardwareManagerTest {
 	 * Checks for disjointness between the functionalities and those supported
 	 * by devices.
 	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException 
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testSupportsVersusAvailableFunctionalities()
-			throws HardwareManagerManifestException {
+			throws HardwareManagerManifestException, DeviceConnectionException {
 		System.out.println("Running testSupportsVersusAvailableFunctionalities");
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadDisjointSupportList.xml");
 	}
