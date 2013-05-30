@@ -140,11 +140,11 @@ public class HandTracker {
     /**
      * Creates a hand tracker, initializes gestures, and initializes buffers.
      */
-    public HandTracker() {
+    public HandTracker(Context ctx) {
         try {
-          System.out.println("constructor");
             // context setup
-            context = OpenNIContextSingleton.getContext();
+            //context = OpenNIContextSingleton.getContext();
+        	context = ctx;
 
             // wave to start tracking a hand
             gestureGen = GestureGenerator.create(context);
@@ -166,6 +166,7 @@ public class HandTracker {
             ImageMetaData imageMD = imageGen.getMetaData();
 
             // start everything
+            System.out.println("Beginning to track!");
 			context.startGeneratingAll();
 
             // keep a history of points
