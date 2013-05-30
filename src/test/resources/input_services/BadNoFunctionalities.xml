@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+
+	<!--
+		Devices dictates the functionalities that each device can provide.
+	-->
+	<devices>
+		<device name="kinect"
+						driver="path.to.driver">
+			<provides name="depth" />
+			<provides name="2dimage" />
+		</device>
+	</devices>
+
+</manifest>

@@ -1,0 +1,5 @@
+
+If the module is going to be extending PApplet, which extends a lot of java's
+functionality (such as mouse/keyboard), do we really need to provide subpackages
+for managing input from mouse/keyboard. THe move in taking recycler to
+processing may make those files obselete.
