@@ -63,7 +63,7 @@ public class HardwareManagerTest {
 	@Test
 	public void testModulePermissionsPassingOptional()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
-					DeviceFunctionalityNotSupportedException {
+					BadDeviceFunctionalityRequestException {
 		
 		System.out.println("Running testModulePermissionsPassingOptional");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
@@ -78,7 +78,7 @@ public class HardwareManagerTest {
 	@Test
 	public void testModulePermissionsPassingRequired()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
-					DeviceFunctionalityNotSupportedException {
+					BadDeviceFunctionalityRequestException {
 		
 		System.out.println("Running testModulePermissionsPassingRequired");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
@@ -90,10 +90,10 @@ public class HardwareManagerTest {
 		hm.setRunningModulePermissions(inputTypes);
 	}
 	
-	@Test(expected=DeviceFunctionalityNotSupportedException.class)
+	@Test(expected=BadDeviceFunctionalityRequestException.class)
 	public void testModulePermissionsFailing()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
-					DeviceFunctionalityNotSupportedException {
+					BadDeviceFunctionalityRequestException {
 		
 		System.out.println("Running testModulePermissionsFailing");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
@@ -104,5 +104,10 @@ public class HardwareManagerTest {
 		inputTypes.put("image2d", DependencyType.REQUIRED);
 		
 		hm.setRunningModulePermissions(inputTypes);
+	}
+	
+	@Test
+	public void testBadFunctionalityRequest() {
+		
 	}
 }

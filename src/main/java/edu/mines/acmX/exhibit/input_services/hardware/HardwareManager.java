@@ -11,7 +11,6 @@ import java.util.Set;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import edu.mines.acmX.exhibit.module_manager.DependencyType;
-import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
 
 /**
  * The HardwareManager acts as a layer of communication for retrieving drivers.
@@ -88,7 +87,7 @@ public class HardwareManager {
 	}
 
 	public void setRunningModulePermissions(Map<String, DependencyType> mmd)
-		throws DeviceFunctionalityNotSupportedException {
+		throws BadDeviceFunctionalityRequestException {
 		
 		currentModuleInputTypes = mmd;
 		checkPermissions();
@@ -154,7 +153,7 @@ public class HardwareManager {
 	}
 	
 	public void checkPermissions() 
-			throws DeviceFunctionalityNotSupportedException {
+			throws BadDeviceFunctionalityRequestException {
 		Set<String> functionalities = currentModuleInputTypes.keySet();
 		for (String functionality : functionalities) {
 			DependencyType dt = currentModuleInputTypes.get(functionality);
@@ -162,7 +161,7 @@ public class HardwareManager {
 			if (dt == DependencyType.REQUIRED) {
 				// Make sure we support this functionality
 				if (!metaData.getFunctionalities().containsKey(functionality)) {
-					throw new DeviceFunctionalityNotSupportedException(functionality + " not supported.");
+					throw new BadDeviceFunctionalityRequestException(functionality + " not supported.");
 				}
 			}
 		}
@@ -216,8 +215,14 @@ public class HardwareManager {
 		}
 	}
 	
-	public DeviceDataInterface inflateDriver(String driverPath, String functionality) {
+	public DeviceDataInterface inflateDriver(String driverPath, String functionality)
+			throws BadFunctionalityRequestException {
 		String functionalityPath = getFunctionalityPath(functionality);
+		
+		if ("".equals(functionalityPath)) {
+			throw new BadFunctionalityRequestException(functionality + " is unknown");
+		}
+		
 		Class<? extends DeviceDataInterface> funcInterface;
 		Class<? extends DeviceDataInterface> cl;
 		
