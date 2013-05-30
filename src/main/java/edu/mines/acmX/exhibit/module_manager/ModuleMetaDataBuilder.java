@@ -25,7 +25,7 @@ public class ModuleMetaDataBuilder {
 
     // inputs
     // document what boolean means
-    Map<InputType, DependencyType> inputTypes = new HashMap<InputType, DependencyType>();
+    Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
 
     // required modules
     Map<String, DependencyType> moduleDependencies = new HashMap<String, DependencyType>();
@@ -88,11 +88,11 @@ public class ModuleMetaDataBuilder {
 		this.version = version;
 	}
 
-	public void setInputTypes(Map<InputType, DependencyType> inputTypes) {
+	public void setInputTypes(Map<String, DependencyType> inputTypes) {
 		this.inputTypes = inputTypes;
 	}
 
-    public void addInputType(InputType inputType, DependencyType depend) {
+    public void addInputType(String inputType, DependencyType depend) {
         inputTypes.put(inputType, depend);
     }
 

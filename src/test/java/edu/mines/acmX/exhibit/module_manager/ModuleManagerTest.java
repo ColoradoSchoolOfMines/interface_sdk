@@ -1,8 +1,8 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -37,7 +37,7 @@ public class ModuleManagerTest {
     @Test
     public void testLoadModuleInModuleManager() throws ManifestLoadException,
             ModuleLoadException {
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.random",
@@ -124,7 +124,7 @@ public class ModuleManagerTest {
         // not sure if we need this since it will be calling another tested
         // function.
         // TODO
-        Map<InputType, DependencyType> desiredInputs =  new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.random",
@@ -147,7 +147,7 @@ public class ModuleManagerTest {
     }
 
     private ModuleMetaData createEmptyModuleMetaData(String packageName, String className) {
-        Map<InputType, DependencyType> inputTypesA = new HashMap<InputType, DependencyType>();
+        Map<String, DependencyType> StringsA = new HashMap<String, DependencyType>();
         Map<String, DependencyType> moduleDepA = new HashMap<String, DependencyType>();
         ModuleMetaData a = new ModuleMetaData(
                 packageName,
@@ -158,7 +158,7 @@ public class ModuleManagerTest {
                 "Title" + className,
                 "Andrew",
                 "0.1",
-                inputTypesA,
+                StringsA,
                 moduleDepA,
                 false);
         return a;
@@ -279,7 +279,7 @@ public class ModuleManagerTest {
         ModuleMetaData defaultModMeta = new ModuleMetaData(
                 "com.andrew.random",
                 "Horses",null, null, null, null, null, null, 
-                new HashMap<InputType,DependencyType>(),
+                new HashMap<String,DependencyType>(),
                 new HashMap<String, DependencyType>(), false);
         modMetas.put("com.andrew.random", defaultModMeta );
         URL pathToModules = this.getClass().getClassLoader().getResource("modules");

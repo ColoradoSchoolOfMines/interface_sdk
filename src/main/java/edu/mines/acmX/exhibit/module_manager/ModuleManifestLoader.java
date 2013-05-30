@@ -128,7 +128,7 @@ public class ModuleManifestLoader {
 	 * @param	builder	The builder object that is gathering data
 	 */
     private static void parseInput( Element input, ModuleMetaDataBuilder builder ) {
-        InputType inputType = InputType.valueOf(input.getAttribute("input-type").toUpperCase());
+    	String inputType = input.getAttribute("input-type").toLowerCase();
         builder.addInputType(inputType, parseDependencyType(input));
     }
 

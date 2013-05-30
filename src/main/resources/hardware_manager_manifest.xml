@@ -5,8 +5,8 @@
 		supports. It also is not device specific.
 	-->
 	<functionalities>
-		<supports name="depth"
-							interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface" />
+		<supports name="image2d"
+							interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface" />
 	</functionalities>
 
 	<!--
@@ -15,7 +15,7 @@
 	<devices>
 		<device name="kinectopenni"
 						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver">
-			<provides name="depth" />
+			<provides name="image2d" />
 		</device>
 	</devices>
 
