@@ -34,8 +34,12 @@ import org.OpenNI.ImageMetaData;
 import org.OpenNI.InactiveHandEventArgs;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HandTracker {
+	private static Logger log = LogManager.getLogger(HandTracker.class.getName());
+	
     // the size of the history for locations, for drawing paths
 	private static final int HISTORY_SIZE = 2;
 
@@ -72,7 +76,7 @@ public class HandTracker {
             // start tracking the position of the wave, which is the hand
 			try {
 				handsGen.StartTracking(args.getEndPosition());
-				System.out.println("Got the wave gesture");
+				log.info("Got the wave gesture");
 			} catch (StatusException e) {
 				e.printStackTrace();
 			}
@@ -85,7 +89,7 @@ public class HandTracker {
 	class MyHandCreateEvent implements IObserver<ActiveHandEventArgs> {
 		public void update(IObservable<ActiveHandEventArgs> observable,
                            ActiveHandEventArgs args) {
-                  System.out.println("create event: " + args);
+                  log.info("create event: " + args);
             // create a new list of historical points for the newly-detected
             // hand and add the current location
 			List<Point3D> newList = Collections.synchronizedList(new LinkedList<Point3D>());
@@ -112,7 +116,7 @@ public class HandTracker {
 	class MyHandUpdateEvent implements IObserver<ActiveHandEventArgs> {
 		public void update(IObservable<ActiveHandEventArgs> observable,
                            ActiveHandEventArgs args) {
-                  System.out.println(args.getPosition());
+                  log.info(args.getPosition());
             // add the current location to the history of points
 			List<Point3D> historyList = history.get(args.getId());
 			historyList.add(args.getPosition());
@@ -166,7 +170,7 @@ public class HandTracker {
             ImageMetaData imageMD = imageGen.getMetaData();
 
             // start everything
-            System.out.println("Beginning to track!");
+            log.info("Beginning to track!");
 			context.startGeneratingAll();
 
             // keep a history of points

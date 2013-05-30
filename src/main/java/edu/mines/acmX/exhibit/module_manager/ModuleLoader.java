@@ -6,6 +6,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * This class loads an instance of a module interface given an absolute path to
  * the top level directory containing the jar(s) for the module(s).
@@ -15,7 +18,8 @@ import java.net.URLClassLoader;
  */
 
 public class ModuleLoader {
-
+	
+	private static Logger log = LogManager.getLogger(ModuleLoader.class.getName());
     /**
 	 * Takes a path to a module jar and returns a Module object as specified in the
      * module's manifest.
@@ -56,7 +60,7 @@ public class ModuleLoader {
 		// Generate a url list of places to look for the jar.  currently we 
 		// just have one location
 		URL[] urlList = { new File(jarPath).toURI().toURL() };
-		System.out.println("module Url looks like: " + urlList[0].toString());
+		log.debug("module Url looks like: " + urlList[0].toString());
 		// Get the class loader that we currently have and transform it into a 
 		// class loader for urls
 		URLClassLoader loader = new URLClassLoader( urlList, classLoader);

@@ -3,6 +3,9 @@ package edu.mines.acmX.exhibit.module_manager;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * This class is meant to be used as a delegated class instance inside other
  * classes implementing ModuleInterface such as ProcessingModule,
@@ -28,6 +31,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class ModuleHelper implements ModuleInterface {
 	
+	private static Logger log = LogManager.getLogger(ModuleHelper.class);
 	/**
 	 * The CountDownLatch is used by the ModuleManager to block it from
 	 * continuing executing commands, as some modules may spawn a new thread.
@@ -55,13 +59,13 @@ public class ModuleHelper implements ModuleInterface {
 		} catch (ManifestLoadException e) {
 			// This should never happen because ModuleManager is already past the point
 			// of throwing errors when a default module cannot be loaded
-			System.out.println("ManifestLoadException thrown to ModuleHelper");
+			log.error("ManifestLoadException thrown to ModuleHelper");
 			System.exit(1);
 			return false;
 		} catch (ModuleLoadException e) {
 			// This should never happen because ModuleManager is already past the point
 			// of throwing errors when a default module cannot be loaded
-			System.out.println("ModuleLoadException thrown to ModuleHelper");
+			log.error("ModuleLoadException thrown to ModuleHelper");
 			System.exit(1);
 			return false;
 		}

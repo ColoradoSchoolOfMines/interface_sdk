@@ -3,6 +3,13 @@ package edu.mines.acmX.exhibit.stdlib.input_processing.imaging;
 import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
+/**
+ * Utilities for processing raw data for the Depth Image functionality.
+ * 
+ * @author Aakash Shah
+ * @author Ryan Stauffer
+ *
+ */
 public class DepthImageUtilities {
 	// TODO Change name
 	

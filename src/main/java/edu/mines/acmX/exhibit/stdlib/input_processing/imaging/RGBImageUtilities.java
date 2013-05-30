@@ -4,6 +4,13 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
+/**
+ * Utilities for processing raw data for the RGB Image functionality.
+ * 
+ * @author Aakash Shah
+ * @author Ryan Stauffer
+ *
+ */
 public class RGBImageUtilities {
 	public static BufferedImage byteBufferToImage(ByteBuffer bb,
 			int width, int height) {

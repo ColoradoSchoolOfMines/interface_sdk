@@ -10,7 +10,7 @@ import java.util.Set;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
-import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_manager.DependencyType;
 
 /**
  * The HardwareManager acts as a layer of communication for retrieving drivers.
@@ -18,11 +18,8 @@ import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
  * The manager will choose the most appropriate driver given a functionality
  * and a specific module's set of permissions.
  * The manager is a singleton to reduce conflicts between driver requests.
- * 
- * <br/><br/>
- * 
- * TODO Verifying the HardwareDriverServiceMetaData
- * TODO Association with the ModuleMetaData - checkPermissions
+ * The manager also checks whether a module's required functionalities are
+ * available.
  * 
  * @author Aakash Shah
  * @author Ryan Stauffer
@@ -36,7 +33,7 @@ import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
 public class HardwareManager {
 	
 	private HardwareManagerMetaData metaData;
-	private ModuleMetaData currentModuleMetaData;
+	private Map<String, DependencyType> currentModuleInputTypes;
 	
 	private static HardwareManager instance = null;
 	private static String manifest_path = "hardware_manager_manifest.xml";	// TODO Actually make it
@@ -86,9 +83,19 @@ public class HardwareManager {
 		instance = new HardwareManager();
 	}
 
-	public void setRunningModulePermissions(ModuleMetaData mmd) {
-		currentModuleMetaData = mmd;
+	/**
+	 * Sets the currently running module and verifies the functionalities
+	 * of that module.
+	 * 
+	 * @param mmd The map of functionalities and their level of dependence 
+	 * @throws BadDeviceFunctionalityRequestException
+	 */
+	public void setRunningModulePermissions(Map<String, DependencyType> mmd)
+		throws BadDeviceFunctionalityRequestException {
+		
+		currentModuleInputTypes = mmd;
 		checkPermissions();
+		
 	}
 	
 	/**
@@ -149,10 +156,34 @@ public class HardwareManager {
 		}
 	}
 	
-	public void checkPermissions() {
-		
+	/**
+	 * Checks to see whether the functionalities that are required by the
+	 * currently running module are supported through the HardwareManager
+	 * manifest.
+	 * 
+	 * @throws BadDeviceFunctionalityRequestException on failure
+	 */
+	public void checkPermissions() 
+			throws BadDeviceFunctionalityRequestException {
+		Set<String> functionalities = currentModuleInputTypes.keySet();
+		for (String functionality : functionalities) {
+			DependencyType dt = currentModuleInputTypes.get(functionality);
+			// Ignore optional ones
+			if (dt == DependencyType.REQUIRED) {
+				// Make sure we support this functionality
+				if (!metaData.getFunctionalities().containsKey(functionality)) {
+					throw new BadDeviceFunctionalityRequestException(functionality + " not supported.");
+				}
+			}
+		}
 	}
 	
+	/**
+	 * Goes through all functionalities in the manifest and constructs a list
+	 * of drivers that are available and support that functionality. 
+	 * 
+	 * @throws DeviceConnectionException If no devices are available.
+	 */
 	public void checkAvailableDevices() 
 		throws DeviceConnectionException {
 		
@@ -201,8 +232,22 @@ public class HardwareManager {
 		}
 	}
 	
-	public DeviceDataInterface inflateDriver(String driverPath, String functionality) {
+	/**
+	 * Constructs a driver object for a given functionality and driver path.
+	 * 
+	 * @param driverPath
+	 * @param functionality
+	 * @return An instance of a driver capable of supporting that functionality
+	 * @throws BadFunctionalityRequestException
+	 */
+	public DeviceDataInterface inflateDriver(String driverPath, String functionality)
+			throws BadFunctionalityRequestException {
 		String functionalityPath = getFunctionalityPath(functionality);
+		
+		if ("".equals(functionalityPath)) {
+			throw new BadFunctionalityRequestException(functionality + " is unknown");
+		}
+		
 		Class<? extends DeviceDataInterface> funcInterface;
 		Class<? extends DeviceDataInterface> cl;
 		
@@ -224,6 +269,12 @@ public class HardwareManager {
 		return iDriver;
 	}
 	
+	/**
+	 * Constructs return value from manifest.
+	 * 
+	 * @param functionality
+	 * @return Interface path for the given functionality
+	 */
 	private String getFunctionalityPath(String functionality) {
 		Map<String, String> fPaths = metaData.getFunctionalities();
 		if (fPaths.containsKey(functionality)) {
@@ -232,7 +283,18 @@ public class HardwareManager {
 		return "";
 	}
 	
-	public List<String> getDevices(String functionality) {
+	/**
+	 * 
+	 * @param functionality
+	 * @return list of driver paths that support the given functionality
+	 * @throws BadFunctionalityRequestException
+	 */
+	public List<String> getDevices(String functionality)
+			throws BadFunctionalityRequestException {
+		if (!metaData.getFunctionalities().containsKey(functionality)) {
+			throw new BadFunctionalityRequestException("Bad functionality requested");
+		}
+		
 		return devices.get(functionality);
 	}
 

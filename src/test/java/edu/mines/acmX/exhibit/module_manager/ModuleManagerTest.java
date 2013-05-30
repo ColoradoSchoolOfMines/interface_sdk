@@ -147,7 +147,7 @@ public class ModuleManagerTest {
     }
 
     private ModuleMetaData createEmptyModuleMetaData(String packageName, String className) {
-        Map<String, DependencyType> StringsA = new HashMap<String, DependencyType>();
+        Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
         Map<String, DependencyType> moduleDepA = new HashMap<String, DependencyType>();
         ModuleMetaData a = new ModuleMetaData(
                 packageName,
@@ -158,7 +158,7 @@ public class ModuleManagerTest {
                 "Title" + className,
                 "Andrew",
                 "0.1",
-                StringsA,
+                inputTypes,
                 moduleDepA,
                 false);
         return a;
@@ -283,7 +283,6 @@ public class ModuleManagerTest {
                 new HashMap<String, DependencyType>(), false);
         modMetas.put("com.andrew.random", defaultModMeta );
         URL pathToModules = this.getClass().getClassLoader().getResource("modules");
-        System.out.println(pathToModules);
         m.setMetaData(new ModuleManagerMetaData("com.andrew.random", pathToModules.toString()));
         m.setModuleMetaDataMap( modMetas );
         Method setDefault = ModuleManager.class.getDeclaredMethod("setDefaultModule",String.class);
