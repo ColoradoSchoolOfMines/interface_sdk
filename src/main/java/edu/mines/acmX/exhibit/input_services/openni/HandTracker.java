@@ -98,20 +98,6 @@ public class HandTracker {
 			
 			
 			/*
-			 * update data
-			 * send to all the listeners
-			 * 
-			 * Map<String, List<Receivers>> map;
-			 * fireEvent(String, Data) {
-			 *  synchronized(map) {
-			 * 	List<Receiver> receivers = map.get(String);
-			 * 	for (Receiver r : receivers) {
-			 * 		r.receiveInput(String, Data);
-			 * 	}
-			 * }
-			 *  // add to a queue?
-			 * 
-			 * }
 			 * 
 			 * registerReceiver(String, Receiver) {
 			 * 

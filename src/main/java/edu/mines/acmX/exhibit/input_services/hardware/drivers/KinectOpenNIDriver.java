@@ -3,6 +3,7 @@ package edu.mines.acmX.exhibit.input_services.hardware.drivers;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import org.OpenNI.ActiveHandEventArgs;
 import org.OpenNI.Context;
 import org.OpenNI.DepthGenerator;
 import org.OpenNI.DepthMap;
@@ -15,8 +16,11 @@ import org.OpenNI.IObservable;
 import org.OpenNI.IObserver;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
+import org.OpenNI.InactiveHandEventArgs;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import edu.mines.acmX.exhibit.input_services.InputReceiver;
+import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
@@ -26,13 +30,15 @@ import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
  * Kinect driver that provides depth and rgb image functionality.
  * Uses the openni the library for communication to the kinect device.
  * 
- * @author Aakash Shha
+ * @author Aakash Shah
  * @author Ryan Stauffer
  *
  */
 public class KinectOpenNIDriver 
 	implements 	DriverInterface, DepthImageInterface, RGBImageInterface,
 				HandTrackerInterface {
+	
+	private static Logger log = LogManager.getLogger(KinectOpenNIDriver.class);
 	
 	private Context context;
 	
@@ -67,6 +73,9 @@ public class KinectOpenNIDriver
 					  .addObserver(new GestureRecognized());
 			
 			handsGen = HandsGenerator.create(context);
+			handsGen.getHandCreateEvent().addObserver(new HandCreated());
+			handsGen.getHandUpdateEvent().addObserver(new HandUpdated());
+			handsGen.getHandDestroyEvent().addObserver(new HandDestroyed());
 			
 			context.startGeneratingAll();
 		} catch (GeneralException e) {
@@ -80,15 +89,45 @@ public class KinectOpenNIDriver
 		public void update(IObservable<GestureRecognizedEventArgs> obs,
 				GestureRecognizedEventArgs e) {
 			try {
+				log.info("Beginning tracking hand");
 				handsGen.StartTracking(e.getEndPosition());
-				// fireEvent("gesture_recognized", data);
 				
 			} catch (GeneralException err) {
 				// TODO: Handle?
+				log.error("Caught GeneralException while trying to capture wave");
 			}
+		}
+	}
+	
+	class HandCreated implements IObserver<ActiveHandEventArgs> {
+
+		@Override
+		public void update(IObservable<ActiveHandEventArgs> obs,
+				ActiveHandEventArgs e) {
+			log.info("Hand created!");			
 		}
 		
 	}
+	
+	class HandUpdated implements IObserver<ActiveHandEventArgs> {
+
+		@Override
+		public void update(IObservable<ActiveHandEventArgs> arg0,
+				ActiveHandEventArgs arg1) {
+			log.info("Updated hand position");
+		}
+	}
+	
+	class HandDestroyed implements IObserver<InactiveHandEventArgs> {
+
+		@Override
+		public void update(IObservable<InactiveHandEventArgs> arg0,
+				InactiveHandEventArgs arg1) {
+			log.info("Hand destroyed!");
+		}
+		
+	}
+	
 	
 	// DriverInterface
 	public boolean isAvailable() {
@@ -134,8 +173,28 @@ public class KinectOpenNIDriver
 		return depthHeight;
 	}
 
-	// HandTrackerInterface
-	public void setInputReceiver(InputReceiver r) {
+	@Override
+	public void registerGestureRecognized(InputReceiver r) {
+		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void registerHandCreated(InputReceiver r) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registerHandUpdated(InputReceiver r) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registerHandDestoryed(InputReceiver r) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

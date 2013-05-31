@@ -9,6 +9,8 @@
 			interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface" />
 		<supports name="depth"
 			interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface" />
+		<supports name="handtracking"
+			interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface" />
 	</functionalities>
 
 	<!--
@@ -19,6 +21,7 @@
 						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver">
 			<provides name="image2d" />
 			<provides name="depth" />
+			<provides name="handtracking" />
 		</device>
 	</devices>
 

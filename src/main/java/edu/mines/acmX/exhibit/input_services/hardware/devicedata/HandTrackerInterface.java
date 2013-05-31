@@ -1,16 +1,14 @@
 package edu.mines.acmX.exhibit.input_services.hardware.devicedata;
 
-import edu.mines.acmX.exhibit.input_services.InputReceiver;
+import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
+
 
 public interface HandTrackerInterface extends DeviceDataInterface {
 	public static final String GESTURE_RECOGNIZED = "S";
-	/*
-	registerGestureRecognize(Receiver arg) {
-		eventMgr.register(GESTURE_RECOGNIZED, arg)
-	}
 	
-	eventMgr.fireEvent(GETSURE_RECOGNIZED, data);
-	*/
+	public void registerGestureRecognized(InputReceiver r);
+	public void registerHandCreated(InputReceiver r);
+	public void registerHandUpdated(InputReceiver r);
+	public void registerHandDestoryed(InputReceiver r);
 	
-	// kinectDriver.registerGestureRecor(this);
 }
