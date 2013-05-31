@@ -11,6 +11,8 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
@@ -95,6 +97,12 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     public void execute(){
 		//TODO something smarter should be done with setting the size
     	frame.setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
+        frame.addWindowListener( new WindowAdapter() {
+            public void windowClosing( WindowEvent e ) {
+                exit();
+            }
+        });
+
     	frame.add(this);
     	frame.setVisible(true);
         super.init();
