@@ -6,7 +6,9 @@
 	-->
 	<functionalities>
 		<supports name="image2d"
-							interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface" />
+			interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface" />
+		<supports name="depth"
+			interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface" />
 	</functionalities>
 
 	<!--
@@ -16,6 +18,7 @@
 		<device name="kinectopenni"
 						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver">
 			<provides name="image2d" />
+			<provides name="depth" />
 		</device>
 	</devices>
 

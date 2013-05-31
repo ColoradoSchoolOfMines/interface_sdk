@@ -8,10 +8,17 @@ import org.OpenNI.DepthGenerator;
 import org.OpenNI.DepthMap;
 import org.OpenNI.DepthMetaData;
 import org.OpenNI.GeneralException;
+import org.OpenNI.GestureGenerator;
+import org.OpenNI.GestureRecognizedEventArgs;
+import org.OpenNI.HandsGenerator;
+import org.OpenNI.IObservable;
+import org.OpenNI.IObserver;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
 
+import edu.mines.acmX.exhibit.input_services.InputReceiver;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 
@@ -24,12 +31,15 @@ import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
  *
  */
 public class KinectOpenNIDriver 
-	implements DriverInterface, DepthImageInterface, RGBImageInterface {
+	implements 	DriverInterface, DepthImageInterface, RGBImageInterface,
+				HandTrackerInterface {
 	
 	private Context context;
 	
 	private DepthGenerator depthGen;
 	private ImageGenerator imageGen;
+	private GestureGenerator gestureGen;
+	private HandsGenerator handsGen;
 	
 	private int imageWidth;
 	private int imageHeight;
@@ -50,14 +60,37 @@ public class KinectOpenNIDriver
 			DepthMetaData depthMD = depthGen.getMetaData();
 			depthWidth = depthMD.getFullXRes();
 			depthHeight = depthMD.getFullYRes();
+			
+			gestureGen = GestureGenerator.create(context);
+			gestureGen.addGesture("Wave");
+			gestureGen.getGestureRecognizedEvent()
+					  .addObserver(new GestureRecognized());
+			
+			handsGen = HandsGenerator.create(context);
+			
+			context.startGeneratingAll();
 		} catch (GeneralException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	/**
-	 * Ensures communication is possible between the openni and kinect.
-	 */
+	class GestureRecognized implements IObserver<GestureRecognizedEventArgs> {
+
+		@Override
+		public void update(IObservable<GestureRecognizedEventArgs> obs,
+				GestureRecognizedEventArgs e) {
+			try {
+				handsGen.StartTracking(e.getEndPosition());
+				// fireEvent("gesture_recognized", data);
+				
+			} catch (GeneralException err) {
+				// TODO: Handle?
+			}
+		}
+		
+	}
+	
+	// DriverInterface
 	public boolean isAvailable() {
 		boolean ret = true;
 		try {
@@ -68,6 +101,7 @@ public class KinectOpenNIDriver
 		return ret;
 	}
 	
+	// RGBImageInterface
 	public ShortBuffer getDepthImageData() {
 		DepthMetaData depthMD = depthGen.getMetaData();
 		
@@ -75,12 +109,6 @@ public class KinectOpenNIDriver
 		ShortBuffer data = dm.createShortBuffer();
 		data.rewind();
 		return data;
-	}
-	
-	public ByteBuffer getVisualData() {
-        ImageMetaData imageMD = imageGen.getMetaData();
-		ByteBuffer rgbBuffer = imageMD.getData().createByteBuffer();
-		return rgbBuffer;
 	}
 	
 	public int getRGBImageWidth() {
@@ -91,11 +119,23 @@ public class KinectOpenNIDriver
 		return imageHeight;
 	}
 	
+	// DepthDataInterface
+	public ByteBuffer getVisualData() {
+		ImageMetaData imageMD = imageGen.getMetaData();
+		ByteBuffer rgbBuffer = imageMD.getData().createByteBuffer();
+		return rgbBuffer;
+	}
+	
 	public int getDepthImageWidth() {
 		return depthWidth;
 	}
 	
 	public int getDepthImageHeight() {
 		return depthHeight;
+	}
+
+	// HandTrackerInterface
+	public void setInputReceiver(InputReceiver r) {
+		
 	}
 }

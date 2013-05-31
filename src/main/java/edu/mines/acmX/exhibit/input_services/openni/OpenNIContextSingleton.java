@@ -1,5 +1,7 @@
 package edu.mines.acmX.exhibit.input_services.openni;
 
+import java.net.URL;
+
 import org.OpenNI.Context;
 import org.OpenNI.GeneralException;
 import org.OpenNI.OutArg;
@@ -21,7 +23,8 @@ public class OpenNIContextSingleton {
     	
     	if (context == null) {
     		scriptNode = new OutArg<ScriptNode>();
-    		context = Context.createFromXmlFile(SAMPLE_XML_FILE, scriptNode);    		
+    		URL u = OpenNIContextSingleton.class.getClassLoader().getResource(SAMPLE_XML_FILE);
+    		context = Context.createFromXmlFile(u.getFile(), scriptNode);    		
     	}
         return context;
     }
