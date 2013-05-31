@@ -21,7 +21,7 @@ import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
 
 public class HardwareManagerTest {
 	
-	public static final String BASE_FILE = "src/test/resources/input_services/";
+	public static final String BASE_FILE = "input_services/";
 	
 	/**
 	 * Checks to ensure the driver classes given by the manifest file exists and 

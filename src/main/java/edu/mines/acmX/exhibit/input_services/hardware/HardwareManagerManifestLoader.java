@@ -40,14 +40,7 @@ public class HardwareManagerManifestLoader {
 	 */
 	public static HardwareManagerMetaData load(String filename) 
 			throws HardwareManagerManifestException {
-		try {
-			return load(new FileInputStream(filename));
-		} catch (FileNotFoundException e) {
-			throw new HardwareManagerManifestException("File not found "
-					+ filename);
-		}
-		
-		
+		return load(HardwareManagerManifestLoader.class.getClassLoader().getResourceAsStream(filename));		
 	}
 	
 	/**

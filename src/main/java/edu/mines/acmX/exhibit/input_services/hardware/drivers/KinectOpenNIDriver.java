@@ -27,11 +27,15 @@ public class KinectOpenNIDriver
 	implements DriverInterface, DepthImageInterface, RGBImageInterface {
 	
 	private Context context;
+	
 	private DepthGenerator depthGen;
 	private ImageGenerator imageGen;
 	
-	private int width;
-	private int height;
+	private int imageWidth;
+	private int imageHeight;
+	
+	private int depthWidth;
+	private int depthHeight;
 	
 	public KinectOpenNIDriver(){
          try {
@@ -40,9 +44,12 @@ public class KinectOpenNIDriver
 			imageGen = ImageGenerator.create(context);
 			
 			ImageMetaData imageMD = imageGen.getMetaData();
-			width = imageMD.getFullXRes();
-			height = imageMD.getFullYRes();
+			imageWidth = imageMD.getFullXRes();
+			imageHeight = imageMD.getFullYRes();
 			
+			DepthMetaData depthMD = depthGen.getMetaData();
+			depthWidth = depthMD.getFullXRes();
+			depthHeight = depthMD.getFullYRes();
 		} catch (GeneralException e) {
 			e.printStackTrace();
 		}
@@ -76,11 +83,19 @@ public class KinectOpenNIDriver
 		return rgbBuffer;
 	}
 	
-	public int getWidth() {
-		return width;
+	public int getRGBImageWidth() {
+		return imageWidth;
 	}
 	
-	public int getHeight() {
-		return height;
+	public int getRGBImageHeight() {
+		return imageHeight;
+	}
+	
+	public int getDepthImageWidth() {
+		return depthWidth;
+	}
+	
+	public int getDepthImageHeight() {
+		return depthHeight;
 	}
 }

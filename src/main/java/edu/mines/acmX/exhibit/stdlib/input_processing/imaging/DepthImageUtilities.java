@@ -12,6 +12,8 @@ import java.nio.ShortBuffer;
  */
 public class DepthImageUtilities {
 	// TODO Change name
+	// TODO documentation
+	// TODO thread it?
 	
 	public static BufferedImage shortBuffToImage(ShortBuffer sb,
 			int width, int height) {
