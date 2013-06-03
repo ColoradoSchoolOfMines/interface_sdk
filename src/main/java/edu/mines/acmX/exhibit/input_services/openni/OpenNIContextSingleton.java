@@ -22,6 +22,7 @@ public class OpenNIContextSingleton {
     public static Context getContext() throws GeneralException {
     	
     	if (context == null) {
+    		
     		scriptNode = new OutArg<ScriptNode>();
     		URL u = OpenNIContextSingleton.class.getClassLoader().getResource(SAMPLE_XML_FILE);
     		System.out.println("Building new context");

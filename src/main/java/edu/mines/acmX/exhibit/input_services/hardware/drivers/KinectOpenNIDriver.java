@@ -148,7 +148,7 @@ public class KinectOpenNIDriver
 		return ret;
 	}
 	
-	// RGBImageInterface
+	// DepthDataInterface
 	public ShortBuffer getDepthImageData() {
 		DepthMetaData depthMD = depthGen.getMetaData();
 		
@@ -166,7 +166,7 @@ public class KinectOpenNIDriver
 		return imageHeight;
 	}
 	
-	// DepthDataInterface
+	// RGBImageInterface
 	public ByteBuffer getVisualData() {
 		ImageMetaData imageMD = imageGen.getMetaData();
 		ByteBuffer rgbBuffer = imageMD.getData().createByteBuffer();
