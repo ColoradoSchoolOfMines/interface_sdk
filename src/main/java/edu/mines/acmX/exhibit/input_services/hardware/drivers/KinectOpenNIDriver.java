@@ -1,5 +1,6 @@
 package edu.mines.acmX.exhibit.input_services.hardware.drivers;
 
+import java.awt.geom.Point2D;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInter
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
+import edu.mines.acmX.exhibit.stdlib.input_processing.imaging.HandTrackingUtilities;
 
 /**
  * Kinect driver that provides depth and rgb image functionality.
@@ -102,6 +104,19 @@ public class KinectOpenNIDriver
 		} catch (StatusException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Map<Integer, List<Point2D>> getCurrentPositions() {
+		Map<Integer, List<Point2D>> ret = new HashMap<Integer, List<Point2D>>();
+		for (int i : history.keySet()) {
+			List<Point2D> points = new ArrayList<Point2D>();
+			List<Point3D> handPoints = history.get(i);
+			for (Point3D p : handPoints) {
+				points.add(HandTrackingUtilities.convertOpenNIPoint(depthGen, p));
+			}
+			ret.put(i, points);
+		}
+		return ret;
 	}
 	
 	class GestureRecognized implements IObserver<GestureRecognizedEventArgs>
