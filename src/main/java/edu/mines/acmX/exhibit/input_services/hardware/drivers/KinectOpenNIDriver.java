@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.input_services.events.EventManager;
+import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
 import edu.mines.acmX.exhibit.input_services.hardware.HandPosition;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
@@ -110,19 +111,6 @@ public class KinectOpenNIDriver
 		}
 	}
 	
-	public Map<Integer, List<Point2D>> getCurrentPositions() {
-		Map<Integer, List<Point2D>> ret = new HashMap<Integer, List<Point2D>>();
-		for (int i : history.keySet()) {
-			List<Point2D> points = new ArrayList<Point2D>();
-			List<Point3D> handPoints = history.get(i);
-			for (Point3D p : handPoints) {
-				points.add(HandTrackingUtilities.convertOpenNIPoint(depthGen, p));
-			}
-			ret.put(i, points);
-		}
-		return ret;
-	}
-	
 	class GestureRecognized implements IObserver<GestureRecognizedEventArgs>
 	{
 
@@ -130,9 +118,9 @@ public class KinectOpenNIDriver
 		public void update(IObservable<GestureRecognizedEventArgs> observable,
 				GestureRecognizedEventArgs args)
 		{
-			log.info("Found a wave!");
 			
 			try {
+				log.info("Found a wave");
 				handsGen.StartTracking(args.getEndPosition());
 			} catch (StatusException e) {
 				e.printStackTrace();
@@ -145,8 +133,7 @@ public class KinectOpenNIDriver
 		@Override
 		public void update(IObservable<ActiveHandEventArgs> obs,
 				ActiveHandEventArgs e) {
-			log.info("Hand created!");
-			evtMgr.fireEvent(HAND_CREATED, e.getId());
+			evtMgr.fireEvent(EventType.HAND_CREATED, e.getId());
 			List<Point3D> newList = new ArrayList<Point3D>();
 			newList.add(e.getPosition());
 			history.put(e.getId(), newList);
@@ -159,14 +146,13 @@ public class KinectOpenNIDriver
 		@Override
 		public void update(IObservable<ActiveHandEventArgs> obs,
 				ActiveHandEventArgs e) {
-//			log.info("Updated hand position " + e.getPosition());
 			List<Point3D> historyList = history.get(e.getId());
 			historyList.add(e.getPosition());
 			
 			HandPosition pos = new HandPosition(e.getId(),
 					HandTrackingUtilities.convertOpenNIPoint(depthGen, e.getPosition()));
 			
-			evtMgr.fireEvent(HAND_UPDATED, pos);
+			evtMgr.fireEvent(EventType.HAND_UPDATED, pos);
 			
 			if (historyList.size() > HISTORY_SIZE) {
 				historyList.remove(0);
@@ -179,7 +165,7 @@ public class KinectOpenNIDriver
 		@Override
 		public void update(IObservable<InactiveHandEventArgs> obs,
 				InactiveHandEventArgs e) {
-			log.info("Hand destroyed!");
+			evtMgr.fireEvent(EventType.HAND_DESTROYED, e.getId());
 			history.remove(e.getId());
 			
 		}
