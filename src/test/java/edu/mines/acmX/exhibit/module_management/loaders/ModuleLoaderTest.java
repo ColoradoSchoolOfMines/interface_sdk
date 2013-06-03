@@ -1,11 +1,18 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management.loaders;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoader;
+import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
  * Unit test for ModuleLoader

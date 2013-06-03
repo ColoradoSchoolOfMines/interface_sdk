@@ -8,9 +8,11 @@
  * @author	Austin Diviness
  */
 
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
@@ -19,6 +21,9 @@ import javax.imageio.ImageIO;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -95,6 +100,12 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     public void execute(){
 		//TODO something smarter should be done with setting the size
     	frame.setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
+        frame.addWindowListener( new WindowAdapter() {
+            public void windowClosing( WindowEvent e ) {
+                exit();
+            }
+        });
+
     	frame.add(this);
     	frame.setVisible(true);
         super.init();

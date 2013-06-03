@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management.loaders;
 
 /**
  * Exception that is thrown when a module can't be loaded.

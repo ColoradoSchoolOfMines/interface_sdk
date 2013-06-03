@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management;
 
 
 import java.io.File;
@@ -15,6 +15,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.apache.logging.log4j.*;
+
+import edu.mines.acmX.exhibit.module_management.loaders.*;
+import edu.mines.acmX.exhibit.module_management.metas.*;
+import edu.mines.acmX.exhibit.module_management.modules.*;
 
 
 /**
@@ -72,7 +76,12 @@ public class ModuleManager {
         loadModuleManagerConfig(pathToModuleManagerManifest);
         moduleConfigs = loadAllModuleConfigs(metaData.getPathToModules());
         checkDependencies();
-        setDefaultModule(metaData.getDefaultModuleName());
+        try {
+            setDefaultModule(metaData.getDefaultModuleName());
+        } catch (ModuleLoadException e) {
+            logger.fatal("Could not load the default module");
+            throw e;
+        }
         loadDefault = true;
     }
 
@@ -437,7 +446,7 @@ public class ModuleManager {
         // BE CAREFUL!!!
 		
 		//check that currentModule can set this package in question
-		if (!currentModuleMetaData.getOptionalAll() && !currentModuleMetaData.moduleDependencies.containsKey(name)) {
+		if (!currentModuleMetaData.getOptionalAll() && !currentModuleMetaData.getModuleDependencies().containsKey(name)) {
 			return false;
 		}
         try {

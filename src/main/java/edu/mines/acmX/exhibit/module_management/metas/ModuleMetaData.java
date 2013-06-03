@@ -8,7 +8,7 @@
  * @author  Austin Diviness
  */
 
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management.metas;
 
 import java.util.Map;
 

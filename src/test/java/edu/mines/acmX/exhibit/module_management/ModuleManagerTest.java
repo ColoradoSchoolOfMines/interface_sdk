@@ -1,9 +1,10 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
@@ -11,6 +12,15 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import edu.mines.acmX.exhibit.module_management.ModuleManager;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.CommandlineModule;
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
  * Unit test for ModuleManager
@@ -126,6 +136,8 @@ public class ModuleManagerTest {
         // TODO
         Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        Map<String, ModuleMetaData> moduleMetas = new HashMap<String, ModuleMetaData>();
+        String jarName = "HorseSimpleGood.jar";
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.random",
                 "Horses",
@@ -138,8 +150,11 @@ public class ModuleManagerTest {
                 desiredInputs,
                 desiredModules,
                 false);
-		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules/HorseSimpleGood.jar");
+        moduleToLoadData.setJarFileName(jarName);
+        moduleMetas.put("com.andrew.random", moduleToLoadData);
+		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules");
 		ModuleManager manager = ModuleManager.getInstance();
+		manager.setModuleMetaDataMap(moduleMetas);
 		manager.setMetaData(data);
 		manager.setCurrentModuleMetaData("com.andrew.random");
 		assertTrue(manager.loadModuleFromMetaData(moduleToLoadData) instanceof ModuleInterface);
@@ -276,31 +291,21 @@ public class ModuleManagerTest {
         ModuleManager.createEmptyInstance();
         ModuleManager m = ModuleManager.getInstance();
         Map<String,ModuleMetaData> modMetas = new HashMap<String,ModuleMetaData>();
+        String jarPath = "HorseSimpleGood.jar";
         ModuleMetaData defaultModMeta = new ModuleMetaData(
                 "com.andrew.random",
                 "Horses",null, null, null, null, null, null, 
                 new HashMap<String,DependencyType>(),
                 new HashMap<String, DependencyType>(), false);
+        defaultModMeta.setJarFileName(jarPath);
         modMetas.put("com.andrew.random", defaultModMeta );
-        URL pathToModules = this.getClass().getClassLoader().getResource("modules");
-        m.setMetaData(new ModuleManagerMetaData("com.andrew.random", pathToModules.toString()));
+        m.setMetaData(new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules"));
         m.setModuleMetaDataMap( modMetas );
         Method setDefault = ModuleManager.class.getDeclaredMethod("setDefaultModule",String.class);
         setDefault.setAccessible( true );
 
         setDefault.invoke(m, "com.andrew.random" );
         assertEquals("com.andrew.random", m.getMetaData().getDefaultModuleName());
-    }
-
-    @Test(expected=ModuleLoadException.class)
-    public void testSetDefaultModuleInvalid() throws ModuleLoadException, ManifestLoadException {
-        String path = "src/test/resources/module_manager/HorseyBadManifest.xml";
-        String defaultModuleName = "com.example.test";
-        ModuleManager.setPathToManifest(path);
-        ModuleManager m = ModuleManager.getInstance();
-        m.setMetaData(new ModuleManagerMetaData(defaultModuleName, "src/test/resources/modules"));
-        m.testSetDefaultModule(defaultModuleName);
-        
     }
 
     // default case
