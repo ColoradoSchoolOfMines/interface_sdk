@@ -2,17 +2,17 @@ package edu.mines.acmX.exhibit.input_services.events;
 
 public class Event {
 	
-	private String name;
+	private EventType name;
 	private Object data;
 	
-	public Event(String name, Object data) {
+	public Event(EventType name, Object data) {
 		this.name = name;
 		this.data = data;
 	}
-	public String getName() {
+	public EventType getName() {
 		return name;
 	}
-	public void setName(String name) {
+	public void setName(EventType name) {
 		this.name = name;
 	}
 	public Object getData() {

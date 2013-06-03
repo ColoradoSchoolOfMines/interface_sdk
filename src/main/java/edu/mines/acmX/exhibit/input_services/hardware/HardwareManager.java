@@ -40,12 +40,15 @@ public class HardwareManager {
 	
 	private Map<String, List<String>> devices;
 	
+	private Map<String, DriverInterface> deviceDriverCache;
+	
 	private HardwareManager() 
 			throws 	HardwareManagerManifestException,
 					DeviceConnectionException {
 		
 		loadConfigFile();
 		validifyMetaData();
+		deviceDriverCache = new HashMap<String, DriverInterface>();
 		checkAvailableDevices();
 		/*
 		 * functionality -> available device driver path
@@ -199,7 +202,11 @@ public class HardwareManager {
 				Class<? extends DriverInterface> cl = 
 						Class.forName(driver).asSubclass(DriverInterface.class);
 				DriverInterface iDriver = cl.newInstance();
+				
 				if (iDriver.isAvailable()) {
+					// Cache the driver
+					deviceDriverCache.put(driver, iDriver);
+					
 					// Go through each functionality for this driver
 					// Add it to our 'devices' storage unit
 					
@@ -248,24 +255,8 @@ public class HardwareManager {
 			throw new BadFunctionalityRequestException(functionality + " is unknown");
 		}
 		
-		Class<? extends DeviceDataInterface> funcInterface;
-		Class<? extends DeviceDataInterface> cl;
-		
 		DeviceDataInterface iDriver = null;
-		try {
-			funcInterface = Class.forName(functionalityPath).asSubclass(DeviceDataInterface.class);
-			cl = Class.forName(driverPath).asSubclass(funcInterface);
-			iDriver = cl.newInstance();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		iDriver = (DeviceDataInterface) deviceDriverCache.get(driverPath);
 		return iDriver;
 	}
 	

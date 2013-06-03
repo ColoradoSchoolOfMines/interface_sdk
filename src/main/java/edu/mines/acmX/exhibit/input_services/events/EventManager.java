@@ -30,12 +30,12 @@ public class EventManager {
 	private static Logger log = LogManager.getLogger(EventManager.class);
 	private static EventManager instance = null;	
 	
-	Map<String, List<InputReceiver>> eventReceivers;
+	Map<EventType, List<InputReceiver>> eventReceivers;
 	Queue<Event> events;
 	Thread fireEventThread;
 	
 	private EventManager() {
-		eventReceivers = new HashMap<String, List<InputReceiver>>();
+		eventReceivers = new HashMap<EventType, List<InputReceiver>>();
 		events = new ConcurrentLinkedQueue<Event>();
 //		fireEventThread = new EventThread();
 //		fireEventThread.start();
@@ -48,14 +48,14 @@ public class EventManager {
 		return instance;
 	}
 	
-	public void fireEvent(String eventName, Object data) {
+	public void fireEvent(EventType eventName, Object data) {
 		Event ev = new Event(eventName, data);
 		events.add(ev);
 		sendEvent();
 		
 	}
 	
-	public void registerReceiver(String eventName, InputReceiver receiver) {
+	public void registerReceiver(EventType eventName, InputReceiver receiver) {
 		if (eventReceivers.containsKey(eventName)) {
 			eventReceivers.get(eventName).add(receiver);
 		} else {
