@@ -76,7 +76,12 @@ public class ModuleManager {
         loadModuleManagerConfig(pathToModuleManagerManifest);
         moduleConfigs = loadAllModuleConfigs(metaData.getPathToModules());
         checkDependencies();
-        setDefaultModule(metaData.getDefaultModuleName());
+        try {
+            setDefaultModule(metaData.getDefaultModuleName());
+        } catch (ModuleLoadException e) {
+            logger.fatal("Could not load the default module");
+            throw e;
+        }
         loadDefault = true;
     }
 

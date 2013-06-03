@@ -71,7 +71,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>edu.mines.acmX.exhibit.module_manager.ModuleManager</mainClass>
+              <mainClass>edu.mines.acmX.exhibit.module_management.ModuleManager</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -118,7 +118,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>edu.mines.acmX.exhibit.module_manager.ModuleManager</mainClass>
+          <mainClass>edu.mines.acmX.exhibit.module_management.ModuleManager</mainClass>
         </configuration>
       </plugin>
     </plugins>

@@ -71,6 +71,10 @@ public class ModuleLoader {
 			String msg = "Class does not properly implement an abstract module\n" + e.toString();
 			log.error(msg);
 			throw new ModuleLoadException(msg);
+		} catch (NoClassDefFoundError e) {
+			String msg = "Could not find the module class\n" + e.toString();
+			log.error(msg);
+			throw new ModuleLoadException(msg);
 		}
 
     }
