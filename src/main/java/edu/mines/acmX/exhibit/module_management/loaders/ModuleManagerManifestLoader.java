@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager.loaders;
+package edu.mines.acmX.exhibit.module_management.loaders;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import edu.mines.acmX.exhibit.module_manager.metas.ModuleManagerMetaData;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 
 /**
  * This class loads a single manifest for a ModuleManager.

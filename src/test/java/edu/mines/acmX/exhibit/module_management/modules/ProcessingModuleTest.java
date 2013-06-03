@@ -1,10 +1,12 @@
-package edu.mines.acmX.exhibit.module_manager.modules;
+package edu.mines.acmX.exhibit.module_management.modules;
 
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 
 import org.junit.Test;
+
+import edu.mines.acmX.exhibit.module_management.modules.ProcessingModule;
 
 /**
  * Unit test for ProcessingModule

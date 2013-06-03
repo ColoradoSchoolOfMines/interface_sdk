@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager.loaders;
+package edu.mines.acmX.exhibit.module_management.loaders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,8 +8,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import edu.mines.acmX.exhibit.module_manager.metas.DependencyType;
-import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleManifestLoader;
+import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 /**
  * Unit test for ModuleManifestLoader.

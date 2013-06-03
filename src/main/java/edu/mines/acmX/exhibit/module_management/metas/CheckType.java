@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager.metas;
+package edu.mines.acmX.exhibit.module_management.metas;
 
 /**
  * Enum used by ModuleManager in its checkDependencies function. Used to

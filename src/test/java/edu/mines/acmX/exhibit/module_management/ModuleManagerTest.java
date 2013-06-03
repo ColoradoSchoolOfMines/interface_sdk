@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -13,13 +13,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.mines.acmX.exhibit.module_manager.loaders.ManifestLoadException;
-import edu.mines.acmX.exhibit.module_manager.loaders.ModuleLoadException;
-import edu.mines.acmX.exhibit.module_manager.metas.DependencyType;
-import edu.mines.acmX.exhibit.module_manager.metas.ModuleManagerMetaData;
-import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaData;
-import edu.mines.acmX.exhibit.module_manager.modules.CommandlineModule;
-import edu.mines.acmX.exhibit.module_manager.modules.ModuleInterface;
+import edu.mines.acmX.exhibit.module_management.ModuleManager;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.CommandlineModule;
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
  * Unit test for ModuleManager

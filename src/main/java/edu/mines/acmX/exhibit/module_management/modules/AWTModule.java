@@ -1,11 +1,11 @@
-package edu.mines.acmX.exhibit.module_manager.modules;
+package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-import edu.mines.acmX.exhibit.module_manager.loaders.ManifestLoadException;
-import edu.mines.acmX.exhibit.module_manager.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 
 /**
  * Abstract module for AWT projects. Used to create modules that want to

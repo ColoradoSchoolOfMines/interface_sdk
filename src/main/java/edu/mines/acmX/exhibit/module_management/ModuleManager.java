@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_management;
 
 
 import java.io.File;
@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.apache.logging.log4j.*;
 
-import edu.mines.acmX.exhibit.module_manager.loaders.*;
-import edu.mines.acmX.exhibit.module_manager.metas.*;
-import edu.mines.acmX.exhibit.module_manager.modules.*;
+import edu.mines.acmX.exhibit.module_management.loaders.*;
+import edu.mines.acmX.exhibit.module_management.metas.*;
+import edu.mines.acmX.exhibit.module_management.modules.*;
 
 
 /**

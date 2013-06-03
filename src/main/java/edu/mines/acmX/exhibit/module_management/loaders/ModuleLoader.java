@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager.loaders;
+package edu.mines.acmX.exhibit.module_management.loaders;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import java.net.URLClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaData;
-import edu.mines.acmX.exhibit.module_manager.modules.ModuleInterface;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
  * This class loads an instance of a module interface given an absolute path to

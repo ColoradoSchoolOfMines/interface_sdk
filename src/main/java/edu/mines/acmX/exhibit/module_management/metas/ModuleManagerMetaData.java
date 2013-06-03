@@ -8,7 +8,7 @@
  * @author  Austin Diviness
  */
 
-package edu.mines.acmX.exhibit.module_manager.metas;
+package edu.mines.acmX.exhibit.module_management.metas;
 
 public class ModuleManagerMetaData {
     /**

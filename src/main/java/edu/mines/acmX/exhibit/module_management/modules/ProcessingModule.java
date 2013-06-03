@@ -8,7 +8,7 @@
  * @author	Austin Diviness
  */
 
-package edu.mines.acmX.exhibit.module_manager.modules;
+package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
@@ -22,8 +22,8 @@ import javax.imageio.ImageIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.mines.acmX.exhibit.module_manager.loaders.ManifestLoadException;
-import edu.mines.acmX.exhibit.module_manager.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 
 import processing.core.PApplet;
 import processing.core.PConstants;

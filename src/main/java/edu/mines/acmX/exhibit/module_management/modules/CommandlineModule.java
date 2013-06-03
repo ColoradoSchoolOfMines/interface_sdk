@@ -1,10 +1,10 @@
-package edu.mines.acmX.exhibit.module_manager.modules;
+package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-import edu.mines.acmX.exhibit.module_manager.loaders.ManifestLoadException;
-import edu.mines.acmX.exhibit.module_manager.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 
 /**
  * Non graphical versions of Module should extend from this.
