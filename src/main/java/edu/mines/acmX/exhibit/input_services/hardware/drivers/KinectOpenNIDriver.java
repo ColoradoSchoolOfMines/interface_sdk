@@ -27,7 +27,9 @@ import org.OpenNI.StatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
+import edu.mines.acmX.exhibit.input_services.hardware.HandPosition;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
@@ -48,6 +50,7 @@ public class KinectOpenNIDriver
 	
 	private static Logger log = LogManager.getLogger(KinectOpenNIDriver.class);
 	public static final int HISTORY_SIZE = 10;
+	public static final EventManager evtMgr = EventManager.getInstance();
 	
 	private Context context;
 	
@@ -65,6 +68,7 @@ public class KinectOpenNIDriver
 	private int depthHeight;
 	
 	public KinectOpenNIDriver(){
+		log.info("In the driver constructor");
          try {
         	context = OpenNIContextSingleton.getContext();
         	
@@ -127,6 +131,7 @@ public class KinectOpenNIDriver
 				GestureRecognizedEventArgs args)
 		{
 			log.info("Found a wave!");
+			
 			try {
 				handsGen.StartTracking(args.getEndPosition());
 			} catch (StatusException e) {
@@ -141,6 +146,7 @@ public class KinectOpenNIDriver
 		public void update(IObservable<ActiveHandEventArgs> obs,
 				ActiveHandEventArgs e) {
 			log.info("Hand created!");
+			evtMgr.fireEvent(HAND_CREATED, e.getId());
 			List<Point3D> newList = new ArrayList<Point3D>();
 			newList.add(e.getPosition());
 			history.put(e.getId(), newList);
@@ -153,9 +159,14 @@ public class KinectOpenNIDriver
 		@Override
 		public void update(IObservable<ActiveHandEventArgs> obs,
 				ActiveHandEventArgs e) {
-			log.info("Updated hand position " + e.getPosition());
+//			log.info("Updated hand position " + e.getPosition());
 			List<Point3D> historyList = history.get(e.getId());
 			historyList.add(e.getPosition());
+			
+			HandPosition pos = new HandPosition(e.getId(),
+					HandTrackingUtilities.convertOpenNIPoint(depthGen, e.getPosition()));
+			
+			evtMgr.fireEvent(HAND_UPDATED, pos);
 			
 			if (historyList.size() > HISTORY_SIZE) {
 				historyList.remove(0);
