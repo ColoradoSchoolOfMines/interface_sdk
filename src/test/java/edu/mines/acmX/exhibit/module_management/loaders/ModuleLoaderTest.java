@@ -50,17 +50,17 @@ public class ModuleLoaderTest {
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "edu.mines.andrew.games",
-                "HelloWorld",
-                "0.0.0",
-                "0.0.0",
-                "",
-                "helloworld",
+                "Hello",
+                "0.0.3",
+                "0.0.3",
+                "hi.png",
+                "Hello World",
                 "andrew demaria",
                 "1.2",
                 desiredInputs,
                 desiredModules,
                 false);
-        ModuleInterface m = ModuleLoader.loadModule("src/test/resources/modules/HelloWorldGood.jar", moduleToLoadData, this.getClass().getClassLoader());
+        ModuleInterface m = ModuleLoader.loadModule("src/test/resources/modules/HelloWorld.jar", moduleToLoadData, this.getClass().getClassLoader());
         assertTrue( m != null );
     }
 
