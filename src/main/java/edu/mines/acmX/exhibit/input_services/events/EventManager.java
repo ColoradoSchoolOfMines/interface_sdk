@@ -68,9 +68,13 @@ public class EventManager {
 	
 	public synchronized void sendEvent() {
 		Event e = events.poll();
-		List<InputReceiver> receivers = eventReceivers.get(e.getName());
-		for (InputReceiver r : receivers) {
-			r.receiveInput(e.getName(), e.getData());
+		if (eventReceivers.containsKey(e.getName())) {
+			// Check if anyone is actually listening for this event
+			List<InputReceiver> receivers = eventReceivers.get(e.getName());
+			
+			for (InputReceiver r : receivers) {
+				r.receiveInput(e.getName(), e.getData());
+			}
 		}
 	}
 	
