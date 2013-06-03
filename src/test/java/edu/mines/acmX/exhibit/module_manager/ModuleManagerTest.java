@@ -126,6 +126,8 @@ public class ModuleManagerTest {
         // TODO
         Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
+        Map<String, ModuleMetaData> moduleMetas = new HashMap<String, ModuleMetaData>();
+        String jarName = "HorseSimpleGood.jar";
         ModuleMetaData moduleToLoadData = new ModuleMetaData(
                 "com.andrew.random",
                 "Horses",
@@ -138,8 +140,11 @@ public class ModuleManagerTest {
                 desiredInputs,
                 desiredModules,
                 false);
-		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules/HorseSimpleGood.jar");
+        moduleToLoadData.setJarFileName(jarName);
+        moduleMetas.put("com.andrew.random", moduleToLoadData);
+		ModuleManagerMetaData data = new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules");
 		ModuleManager manager = ModuleManager.getInstance();
+		manager.setModuleMetaDataMap(moduleMetas);
 		manager.setMetaData(data);
 		manager.setCurrentModuleMetaData("com.andrew.random");
 		assertTrue(manager.loadModuleFromMetaData(moduleToLoadData) instanceof ModuleInterface);
