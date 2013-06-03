@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_manager.loaders;
 
 /**
  * Exception that is raised when a manifest of any type can't be 

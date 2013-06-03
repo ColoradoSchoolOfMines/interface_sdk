@@ -1,5 +1,5 @@
 
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_manager.metas;
 
 import java.util.HashMap;
 import java.util.Map;

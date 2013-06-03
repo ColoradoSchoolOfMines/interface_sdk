@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_manager.metas;
 
 /**
  * Enum for declaring if a module/input service dependency is required

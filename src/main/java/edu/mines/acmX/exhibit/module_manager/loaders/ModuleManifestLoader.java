@@ -1,4 +1,4 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_manager.loaders;
 
 import java.io.InputStream;
 import java.util.jar.JarEntry;
@@ -10,6 +10,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import edu.mines.acmX.exhibit.module_manager.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaDataBuilder;
 
 /**
  * This class loads a single module manifest file and returns a ModuleMetaData object.

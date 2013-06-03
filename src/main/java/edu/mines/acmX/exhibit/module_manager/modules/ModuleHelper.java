@@ -1,10 +1,14 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_manager.modules;
 
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import edu.mines.acmX.exhibit.module_manager.ModuleManager;
+import edu.mines.acmX.exhibit.module_manager.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_manager.loaders.ModuleLoadException;
 
 /**
  * This class is meant to be used as a delegated class instance inside other
