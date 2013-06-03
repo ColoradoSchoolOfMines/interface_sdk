@@ -1,7 +1,10 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_manager.loaders;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import edu.mines.acmX.exhibit.module_manager.metas.ModuleManagerMetaData;
 
 /**
  * Unit test for ModuleManagerManifestLoader.

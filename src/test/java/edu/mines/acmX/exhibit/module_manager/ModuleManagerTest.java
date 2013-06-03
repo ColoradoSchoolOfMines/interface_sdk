@@ -1,8 +1,8 @@
 package edu.mines.acmX.exhibit.module_manager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,6 +12,14 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import edu.mines.acmX.exhibit.module_manager.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_manager.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_manager.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_manager.metas.ModuleManagerMetaData;
+import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_manager.modules.CommandlineModule;
+import edu.mines.acmX.exhibit.module_manager.modules.ModuleInterface;
 
 /**
  * Unit test for ModuleManager

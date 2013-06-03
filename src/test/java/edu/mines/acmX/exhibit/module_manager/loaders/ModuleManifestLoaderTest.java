@@ -1,11 +1,15 @@
-package edu.mines.acmX.exhibit.module_manager;
+package edu.mines.acmX.exhibit.module_manager.loaders;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+
+import edu.mines.acmX.exhibit.module_manager.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaData;
 
 /**
  * Unit test for ModuleManifestLoader.
