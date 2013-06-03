@@ -1,6 +1,7 @@
 package edu.mines.acmX.exhibit.module_manager;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,22 +30,42 @@ public class ModuleLoader {
      *						relevant to the desired Module to be loaded.
 	 * @param	classLoader	class loader //TODO needs better description
      */
-    public static ModuleInterface loadModule(String jarPath, ModuleMetaData data, ClassLoader classLoader) throws ModuleLoadException {
-        try {
-
+	public static ModuleInterface loadModule(String jarPath,
+			ModuleMetaData data, ClassLoader classLoader)
+			throws ModuleLoadException {
+		Class<? extends ModuleInterface> moduleClassToLoad;
+		try {
+			log.debug("Trying to set class loader for jar file: " + jarPath);
 			URLClassLoader loader = getClassLoader(jarPath, classLoader);
 
-			// We now will load the class by searching the jar for the package and 
-			// class as dictated in the module manifest file.  
-			// We set the second argument to true to instantiate the class 
+			// We now will load the class by searching the jar for the package
+			// and
+			// class as dictated in the module manifest file.
+			// We set the second argument to true to instantiate the class
 			// TODO change later?
 			// Finally, cast it into the usable ModuleInterface class
-			Class<? extends ModuleInterface> moduleClassToLoad = Class.forName(data.getPackageName() + "." + data.getClassName(), true, loader).asSubclass(ModuleInterface.class);
+			moduleClassToLoad = Class.forName(
+					data.getPackageName() + "." + data.getClassName(), true,
+					loader).asSubclass(ModuleInterface.class);
 			return moduleClassToLoad.newInstance();
-			
-		} catch (Exception e) {
-			throw new ModuleLoadException("Could not load module" + "\n" + e.toString());
-		} 
+		} catch (IOException e) {
+			String msg = "Jar file not found\n" + e.toString();
+			log.error(msg);
+			throw new ModuleLoadException(msg);
+		} catch (ClassNotFoundException e) {
+			String msg = "Class not found\n" + e.toString();
+			log.error(msg);
+			throw new ModuleLoadException(msg);
+		} catch (InstantiationException e) {
+			String msg = "Class does not properly implement an abstract module\n" + e.toString();
+			log.error(msg);
+			throw new ModuleLoadException(msg);
+		} catch (IllegalAccessException e) {
+			String msg = "There was a security issue with the module loader\n" + e.toString();
+			log.error(msg);
+			throw new ModuleLoadException(msg);
+		}
+
     }
 
 	public static InputStream loadResource(String jarPath, ModuleMetaData

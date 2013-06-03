@@ -281,14 +281,16 @@ public class ModuleManagerTest {
         ModuleManager.createEmptyInstance();
         ModuleManager m = ModuleManager.getInstance();
         Map<String,ModuleMetaData> modMetas = new HashMap<String,ModuleMetaData>();
+        String jarPath = "HorseSimpleGood.jar";
         ModuleMetaData defaultModMeta = new ModuleMetaData(
                 "com.andrew.random",
                 "Horses",null, null, null, null, null, null, 
                 new HashMap<String,DependencyType>(),
                 new HashMap<String, DependencyType>(), false);
+        defaultModMeta.setJarFileName(jarPath);
         modMetas.put("com.andrew.random", defaultModMeta );
         URL pathToModules = this.getClass().getClassLoader().getResource("modules");
-        m.setMetaData(new ModuleManagerMetaData("com.andrew.random", pathToModules.toString()));
+        m.setMetaData(new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules"));
         m.setModuleMetaDataMap( modMetas );
         Method setDefault = ModuleManager.class.getDeclaredMethod("setDefaultModule",String.class);
         setDefault.setAccessible( true );
