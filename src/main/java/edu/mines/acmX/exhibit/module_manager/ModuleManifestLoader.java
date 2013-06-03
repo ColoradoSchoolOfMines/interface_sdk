@@ -51,17 +51,27 @@ public class ModuleManifestLoader {
     	return toReturn;
     }
 
+    private static void checkAttribute( Element node, String attr ) throws ManifestLoadException {
+        if( !node.hasAttribute(attr)) {
+            throw new ManifestLoadException("Could not find the " + attr + " attribute");
+        }
+    }
+
+
 	/**
 	 * Helper function that parses the xml file to create a ModuleMetaData object.
 	 *
 	 * @param	manifest	The xml document to be parsed
 	 *
 	 * @return				ModuleMetaData object describing the manifest
+	 * @throws ManifestLoadException 
 	 */
-    private static ModuleMetaData parseManifest( Document manifest ) {
+    private static ModuleMetaData parseManifest( Document manifest ) throws ManifestLoadException {
         ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
         Element manifestTag = (Element) manifest.getElementsByTagName("manifest").item(0);
+        checkAttribute(manifestTag, "package");
         builder.setPackageName(manifestTag.getAttribute("package"));
+        checkAttribute(manifestTag, "class");
         builder.setClassName(manifestTag.getAttribute("class"));
         
         NodeList sdk = manifestTag.getElementsByTagName("uses-sdk");
@@ -79,9 +89,12 @@ public class ModuleManifestLoader {
 	 *
 	 * @param	sdkTag	The NodeList of all instances of the 'uses-sdk' tag
 	 * @param	builder	The builder object that is gathering data
+	 * @throws ManifestLoadException 
 	 */
-    private static void parseSdkVersion( NodeList sdkTag, ModuleMetaDataBuilder builder) {
+    private static void parseSdkVersion( NodeList sdkTag, ModuleMetaDataBuilder builder) throws ManifestLoadException {
         Element singleUsesTag = (Element) sdkTag.item(0);
+        checkAttribute(singleUsesTag, "minSdkVersion");
+        checkAttribute(singleUsesTag, "targetSdkVersion");
         builder.setMinSdkVersion(singleUsesTag.getAttribute("minSdkVersion"));
         builder.setTargetSdkVersion(singleUsesTag.getAttribute("targetSdkVersion"));
     }
@@ -91,12 +104,17 @@ public class ModuleManifestLoader {
 	 *
 	 * @param	module	The NodeList of all instances of the 'module' tag
 	 * @param	builder	The builder object that is gathering data
+	 * @throws ManifestLoadException 
 	 */
-    private static void parseModuleInfo( NodeList module,  ModuleMetaDataBuilder builder ) {
+    private static void parseModuleInfo( NodeList module,  ModuleMetaDataBuilder builder ) throws ManifestLoadException {
         Element singleModuleTag = (Element) module.item(0);
+        checkAttribute( singleModuleTag, "icon");
         builder.setIconPath( singleModuleTag.getAttribute("icon"));
+        checkAttribute( singleModuleTag, "title");
         builder.setTitle( singleModuleTag.getAttribute("title"));
+        checkAttribute( singleModuleTag, "author");
         builder.setAuthor( singleModuleTag.getAttribute("author"));
+        checkAttribute( singleModuleTag, "version");
         builder.setVersion( singleModuleTag.getAttribute("version"));
         
         
@@ -111,8 +129,9 @@ public class ModuleManifestLoader {
 	 *
 	 * @param	inputs	The NodeList of all instances of the 'required-inputs' tag
 	 * @param	builder	The builder object that is gathering data
+	 * @throws ManifestLoadException 
 	 */
-    private static void parseInputs( NodeList inputs, ModuleMetaDataBuilder builder ) {
+    private static void parseInputs( NodeList inputs, ModuleMetaDataBuilder builder ) throws ManifestLoadException {
         Element singleInputTag = (Element) inputs.item(0);
         NodeList nodeList = singleInputTag.getElementsByTagName("input");
         for( int i = 0; i < nodeList.getLength(); ++i ) {
@@ -126,8 +145,10 @@ public class ModuleManifestLoader {
 	 *
 	 * @param	input	An  element representing a single input service requirement
 	 * @param	builder	The builder object that is gathering data
+	 * @throws ManifestLoadException 
 	 */
-    private static void parseInput( Element input, ModuleMetaDataBuilder builder ) {
+    private static void parseInput( Element input, ModuleMetaDataBuilder builder ) throws ManifestLoadException {
+        checkAttribute( input, "input-type" );
     	String inputType = input.getAttribute("input-type").toLowerCase();
         builder.addInputType(inputType, parseDependencyType(input));
     }
@@ -137,8 +158,9 @@ public class ModuleManifestLoader {
 	 *
 	 * @param	nodeList	The NodeList of all instances of the 'required-module' tag
 	 * @param	builder		The builder object that is gathering data
+	 * @throws ManifestLoadException 
 	 */
-    private static void parseModuleDependencies(NodeList nodeList, ModuleMetaDataBuilder builder) {
+    private static void parseModuleDependencies(NodeList nodeList, ModuleMetaDataBuilder builder) throws ManifestLoadException {
         Element element = (Element) nodeList.item(0);
 		NodeList moduleAll = element.getElementsByTagName("optional-all");
 		if (moduleAll.getLength() > 0) {
@@ -156,8 +178,10 @@ public class ModuleManifestLoader {
 	 *
 	 * @param	element	A single module dependency element
 	 * @param	builder	The builder object that is gathering data
+	 * @throws ManifestLoadException 
 	 */
-    private static void parseModuleDependency(Element element, ModuleMetaDataBuilder builder) {
+    private static void parseModuleDependency(Element element, ModuleMetaDataBuilder builder) throws ManifestLoadException {
+        checkAttribute(element, "package");
         builder.addModuleDependency(element.getAttribute("package"), parseDependencyType(element));
     }
 
