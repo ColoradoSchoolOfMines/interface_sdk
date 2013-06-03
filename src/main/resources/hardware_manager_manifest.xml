@@ -18,7 +18,7 @@
 	-->
 	<devices>
 		<device name="kinectopenni"
-						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver">
+						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni.KinectOpenNIDriver">
 			<provides name="image2d" />
 			<provides name="depth" />
 			<provides name="handtracking" />
