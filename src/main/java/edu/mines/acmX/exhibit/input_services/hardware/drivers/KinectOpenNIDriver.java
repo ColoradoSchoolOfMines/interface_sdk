@@ -17,6 +17,7 @@ import org.OpenNI.IObserver;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
 import org.OpenNI.InactiveHandEventArgs;
+import org.OpenNI.StatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,46 +57,53 @@ public class KinectOpenNIDriver
 	public KinectOpenNIDriver(){
          try {
         	context = OpenNIContextSingleton.getContext();
+        	
+        	gestureGen = GestureGenerator.create(context);
+        	gestureGen.addGesture("Wave");
+        	gestureGen.getGestureRecognizedEvent().addObserver(new GestureRecognized());
+        	
+        	handsGen = HandsGenerator.create(context);
+        	handsGen.getHandCreateEvent().addObserver(new HandCreated());
+        	handsGen.getHandUpdateEvent().addObserver(new HandUpdated());
+        	handsGen.getHandDestroyEvent().addObserver(new HandDestroyed());
+        	        	
 			depthGen = DepthGenerator.create(context);
+			DepthMetaData depthMD = depthGen.getMetaData();
+			
+			context.startGeneratingAll();
+			
 			imageGen = ImageGenerator.create(context);
 			
 			ImageMetaData imageMD = imageGen.getMetaData();
 			imageWidth = imageMD.getFullXRes();
 			imageHeight = imageMD.getFullYRes();
 			
-			DepthMetaData depthMD = depthGen.getMetaData();
 			depthWidth = depthMD.getFullXRes();
 			depthHeight = depthMD.getFullYRes();
 			
-			gestureGen = GestureGenerator.create(context);
-			gestureGen.addGesture("Wave");
-			gestureGen.getGestureRecognizedEvent()
-					  .addObserver(new GestureRecognized());
-			
-			handsGen = HandsGenerator.create(context);
-			handsGen.getHandCreateEvent().addObserver(new HandCreated());
-			handsGen.getHandUpdateEvent().addObserver(new HandUpdated());
-			handsGen.getHandDestroyEvent().addObserver(new HandDestroyed());
-			
-			context.startGeneratingAll();
 		} catch (GeneralException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	class GestureRecognized implements IObserver<GestureRecognizedEventArgs> {
+	public void updateDriver() {
+		try {
+			context.waitAnyUpdateAll();
+		} catch (StatusException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	class GestureRecognized implements IObserver<GestureRecognizedEventArgs>
+	{
 
 		@Override
-		public void update(IObservable<GestureRecognizedEventArgs> obs,
-				GestureRecognizedEventArgs e) {
-			try {
-				log.info("Beginning tracking hand");
-				handsGen.StartTracking(e.getEndPosition());
-				
-			} catch (GeneralException err) {
-				// TODO: Handle?
-				log.error("Caught GeneralException while trying to capture wave");
-			}
+		public void update(IObservable<GestureRecognizedEventArgs> observable,
+				GestureRecognizedEventArgs args)
+		{
+			log.info("Found a wave!");
+//				handsGen.StartTracking(args.getEndPosition());
+//				gestureGen.removeGesture("Click");
 		}
 	}
 	
