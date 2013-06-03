@@ -1,6 +1,5 @@
-package edu.mines.acmX.exhibit.input_services.hardware.drivers;
+package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni;
 
-import java.awt.geom.Point2D;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -34,8 +33,11 @@ import edu.mines.acmX.exhibit.input_services.hardware.HandPosition;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
+import edu.mines.acmX.exhibit.stdlib.graphics.Coordinate3D;
 import edu.mines.acmX.exhibit.stdlib.input_processing.imaging.HandTrackingUtilities;
+
 
 /**
  * Kinect driver that provides depth and rgb image functionality.
@@ -50,7 +52,6 @@ public class KinectOpenNIDriver
 				HandTrackerInterface {
 	
 	private static Logger log = LogManager.getLogger(KinectOpenNIDriver.class);
-	public static final int HISTORY_SIZE = 10;
 	public static final EventManager evtMgr = EventManager.getInstance();
 	
 	private Context context;
@@ -59,8 +60,6 @@ public class KinectOpenNIDriver
 	private ImageGenerator imageGen;
 	private GestureGenerator gestureGen;
 	private HandsGenerator handsGen;
-	
-	private Map<Integer, List<Point3D>> history;
 	
 	private int imageWidth;
 	private int imageHeight;
@@ -86,8 +85,6 @@ public class KinectOpenNIDriver
 			DepthMetaData depthMD = depthGen.getMetaData();
 			
 			context.startGeneratingAll();
-			
-			history = new HashMap<Integer, List<Point3D>>();
 			
 			imageGen = ImageGenerator.create(context);
 			
@@ -120,8 +117,8 @@ public class KinectOpenNIDriver
 		{
 			
 			try {
-				log.info("Found a wave");
 				handsGen.StartTracking(args.getEndPosition());
+				
 			} catch (StatusException e) {
 				e.printStackTrace();
 			}
@@ -134,9 +131,9 @@ public class KinectOpenNIDriver
 		public void update(IObservable<ActiveHandEventArgs> obs,
 				ActiveHandEventArgs e) {
 			evtMgr.fireEvent(EventType.HAND_CREATED, e.getId());
-			List<Point3D> newList = new ArrayList<Point3D>();
-			newList.add(e.getPosition());
-			history.put(e.getId(), newList);
+			HandPosition pos = new HandPosition(e.getId(),
+					HandTrackingUtilities.convertOpenNIPoint(depthGen, e.getPosition()));
+			evtMgr.fireEvent(EventType.HAND_UPDATED, pos);
 		}
 		
 	}
@@ -146,17 +143,12 @@ public class KinectOpenNIDriver
 		@Override
 		public void update(IObservable<ActiveHandEventArgs> obs,
 				ActiveHandEventArgs e) {
-			List<Point3D> historyList = history.get(e.getId());
-			historyList.add(e.getPosition());
-			
+	
 			HandPosition pos = new HandPosition(e.getId(),
 					HandTrackingUtilities.convertOpenNIPoint(depthGen, e.getPosition()));
 			
 			evtMgr.fireEvent(EventType.HAND_UPDATED, pos);
-			
-			if (historyList.size() > HISTORY_SIZE) {
-				historyList.remove(0);
-			}
+
 		}
 	}
 	
@@ -166,8 +158,6 @@ public class KinectOpenNIDriver
 		public void update(IObservable<InactiveHandEventArgs> obs,
 				InactiveHandEventArgs e) {
 			evtMgr.fireEvent(EventType.HAND_DESTROYED, e.getId());
-			history.remove(e.getId());
-			
 		}
 		
 	}
