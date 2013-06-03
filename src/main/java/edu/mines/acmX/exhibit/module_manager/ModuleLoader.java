@@ -64,6 +64,10 @@ public class ModuleLoader {
 			String msg = "There was a security issue with the module loader\n" + e.toString();
 			log.error(msg);
 			throw new ModuleLoadException(msg);
+		} catch (ClassCastException e) {
+			String msg = "Class does not properly implement an abstract module\n" + e.toString();
+			log.error(msg);
+			throw new ModuleLoadException(msg);
 		}
 
     }

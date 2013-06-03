@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
@@ -289,7 +290,6 @@ public class ModuleManagerTest {
                 new HashMap<String, DependencyType>(), false);
         defaultModMeta.setJarFileName(jarPath);
         modMetas.put("com.andrew.random", defaultModMeta );
-        URL pathToModules = this.getClass().getClassLoader().getResource("modules");
         m.setMetaData(new ModuleManagerMetaData("com.andrew.random", "src/test/resources/modules"));
         m.setModuleMetaDataMap( modMetas );
         Method setDefault = ModuleManager.class.getDeclaredMethod("setDefaultModule",String.class);
@@ -297,17 +297,6 @@ public class ModuleManagerTest {
 
         setDefault.invoke(m, "com.andrew.random" );
         assertEquals("com.andrew.random", m.getMetaData().getDefaultModuleName());
-    }
-
-    @Test(expected=ModuleLoadException.class)
-    public void testSetDefaultModuleInvalid() throws ModuleLoadException, ManifestLoadException {
-        String path = "src/test/resources/module_manager/HorseyBadManifest.xml";
-        String defaultModuleName = "com.example.test";
-        ModuleManager.setPathToManifest(path);
-        ModuleManager m = ModuleManager.getInstance();
-        m.setMetaData(new ModuleManagerMetaData(defaultModuleName, "src/test/resources/modules"));
-        m.testSetDefaultModule(defaultModuleName);
-        
     }
 
     // default case
