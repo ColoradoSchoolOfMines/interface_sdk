@@ -10,7 +10,7 @@ import java.util.Set;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
-import edu.mines.acmX.exhibit.module_manager.DependencyType;
+import edu.mines.acmX.exhibit.module_manager.metas.DependencyType;
 
 /**
  * The HardwareManager acts as a layer of communication for retrieving drivers.

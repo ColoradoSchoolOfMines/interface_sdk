@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import edu.mines.acmX.exhibit.module_manager.DependencyType;
-import edu.mines.acmX.exhibit.module_manager.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_manager.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_manager.metas.ModuleMetaData;
 
 /**
  * JUnit tests for the HardwareManager.
