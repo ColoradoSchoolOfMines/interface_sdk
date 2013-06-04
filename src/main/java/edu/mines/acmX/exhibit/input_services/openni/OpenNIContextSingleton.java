@@ -26,8 +26,12 @@ public class OpenNIContextSingleton {
     	
     	if (context == null) {    		
     		scriptNode = new OutArg<ScriptNode>();    		
-    		context = Context.createFromXmlFile(SAMPLE_XML_FILE, scriptNode);    		
+    		context = Context.createFromXmlFile(SAMPLE_XML_FILE, scriptNode);
     	}
         return context;
+    }
+    
+    public static void destroy() {
+    	// TODO: Call release/dispose/stopGeneratingAll() ??
     }
 }
