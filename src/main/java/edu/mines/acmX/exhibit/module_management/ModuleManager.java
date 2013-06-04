@@ -50,6 +50,13 @@ public class ModuleManager {
     	try {
     		cmd = cl.parse( generateCLOptions(), args );
 
+            if( cmd.getArgs().length != 0 ) {
+                logger.warn("Left over args: " + cmd.getArgs().toString());
+            }
+            logger.debug("manifest was: " + cmd.getOptionValue("manifest"));
+            logger.debug("modules-path was: " + cmd.getOptionValue("modules-path"));
+            logger.debug("default-module was: " + cmd.getOptionValue("default-module"));
+
     		if( cmd.hasOption("manifest") ) {
     			ModuleManager.configure(cmd.getOptionValue("manifest"));
     		} else if (cmd.hasOption("default-module") && cmd.hasOption("modules-path")) {
@@ -58,6 +65,7 @@ public class ModuleManager {
     			logger.warn("Using deprecated default module path");
     			ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
     		}
+
     	} catch (ParseException e) {
     		logger.error("Incorrect command line arguments");
     	}
@@ -130,7 +138,6 @@ public class ModuleManager {
      * @throws ManifestLoadException 
      */
     private static void configure( String moduleManifestPath ) throws ManifestLoadException {
-       logger.info("Loading a module manager manifest file");
         metaData = loadModuleManagerConfig( moduleManifestPath );
     }
 
@@ -236,10 +243,10 @@ public class ModuleManager {
      * @param   path    Path to the ModuleManager xml config file
      */
     public static ModuleManagerMetaData loadModuleManagerConfig(String path) throws ManifestLoadException {
-        logger.info("Loading Module Manager config file [" + pathToModuleManagerManifest + "]");
+        logger.info("Loading Module Manager config file [" + path + "]");
 
         return ModuleManagerManifestLoader
-                .load(pathToModuleManagerManifest);
+                .load(path);
     }
 
     /**
