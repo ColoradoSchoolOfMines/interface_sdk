@@ -117,11 +117,9 @@ public class HardwareManager {
 		
 	}
 	
-	public void resetAllDrivers() {
-		for (String driverName : deviceDriverCache.keySet()) {
-			DriverInterface driver = deviceDriverCache.get(driverName);
-			driver.reset();
-		}
+	public void resetAllDrivers() throws DeviceConnectionException {
+		deviceDriverCache.clear();
+		checkAvailableDevices();
 	}
 	
 	/**

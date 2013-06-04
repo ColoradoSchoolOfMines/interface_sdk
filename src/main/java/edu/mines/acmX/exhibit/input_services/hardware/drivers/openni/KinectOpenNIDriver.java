@@ -181,16 +181,6 @@ public class KinectOpenNIDriver
 		return ret;
 	}
 	
-	public void reset() {
-		try {
-			context.stopGeneratingAll();
-			context.startGeneratingAll();
-		} catch (StatusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	// DepthDataInterface
 	public ShortBuffer getDepthImageData() {
 		DepthMetaData depthMD = depthGen.getMetaData();
