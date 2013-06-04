@@ -181,6 +181,15 @@ public class KinectOpenNIDriver
 		return ret;
 	}
 	
+	public void destroy() {
+		try {
+			handsGen.StopTrackingAll();
+			context.stopGeneratingAll();
+		} catch (StatusException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// DepthDataInterface
 	public ShortBuffer getDepthImageData() {
 		DepthMetaData depthMD = depthGen.getMetaData();
