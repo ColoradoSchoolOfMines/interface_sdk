@@ -45,16 +45,22 @@ public class ModuleManager {
 	 * ModuleManager and runs it.
 	 */
     public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
-        CommandLineParser cl = new DefaultParser();
-        CommandLine cmd = cl.parse( generateCLOptions(), args );
-        if( cmd.hasOption("manifest") ) {
-            ModuleManager.configure(cmd.getOptionValue("manifest"));
-        } else if (cmd.hasOption("default-module") && cmd.hasOption("modules-path")) {
-            ModuleManager.configure( cmd.getOptionValue("default-module"), cmd.getOptionValue("modules-path"));
-        } else {
-            logger.warn("Using deprecated default module path");
-            ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
-        }
+    	CommandLineParser cl = new GnuParser();
+    	CommandLine cmd;
+    	try {
+    		cmd = cl.parse( generateCLOptions(), args );
+
+    		if( cmd.hasOption("manifest") ) {
+    			ModuleManager.configure(cmd.getOptionValue("manifest"));
+    		} else if (cmd.hasOption("default-module") && cmd.hasOption("modules-path")) {
+    			ModuleManager.configure( cmd.getOptionValue("default-module"), cmd.getOptionValue("modules-path"));
+    		} else {
+    			logger.warn("Using deprecated default module path");
+    			ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
+    		}
+    	} catch (ParseException e) {
+    		logger.error("Incorrect command line arguments");
+    	}
 
         ModuleManager m = ModuleManager.getInstance();
         m.run();

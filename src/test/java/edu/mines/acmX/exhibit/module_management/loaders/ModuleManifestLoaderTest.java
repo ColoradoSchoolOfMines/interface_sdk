@@ -26,7 +26,7 @@ public class ModuleManifestLoaderTest {
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData shouldEqual = new ModuleMetaData(
                 "edu.mines.andrew.games",
-                "HelloWorld",
+                "Hello",
                 "0.0.3",
                 "0.0.3",
                 "hi.png",
@@ -37,9 +37,9 @@ public class ModuleManifestLoaderTest {
                 desiredModules,
                 false);
         
-        ModuleMetaData expected = ModuleManifestLoader.load( pathToJar );
-
-        assertTrue( shouldEqual.equals(expected));
+        ModuleMetaData actual = ModuleManifestLoader.load( pathToJar );
+        System.out.println("Actual: " + actual);
+        assertTrue( shouldEqual.equals(actual));
     }
 
     @Test
