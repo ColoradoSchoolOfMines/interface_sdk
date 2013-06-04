@@ -41,7 +41,7 @@ public class HardwareManager {
 	private Map<String, DependencyType> currentModuleInputTypes;
 	
 	private static HardwareManager instance = null;
-	private static String manifest_path = "hardware_manager_manifest.xml";	// TODO Actually make it
+	private static String manifest_path = "hardware_manager_manifest.xml";
 	
 	private Map<String, List<String>> devices;
 	
@@ -115,6 +115,13 @@ public class HardwareManager {
 		currentModuleInputTypes = mmd;
 		checkPermissions();
 		
+	}
+	
+	public void resetAllDrivers() {
+		for (String driverName : deviceDriverCache.keySet()) {
+			DriverInterface driver = deviceDriverCache.get(driverName);
+			driver.reset();
+		}
 	}
 	
 	/**
