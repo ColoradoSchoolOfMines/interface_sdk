@@ -1,5 +1,8 @@
 package edu.mines.acmX.exhibit.input_services.events;
 
+import java.awt.Dimension;
+
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
 
 /**
@@ -23,6 +26,7 @@ public class HandReceiver implements InputReceiver {
 	public void handCreated(HandPosition pos) {}
 	public void handUpdated(HandPosition pos) {}
 	public void handDestroyed(int id) {}
+	public void viewportDimensionChange(Dimension dim) {}
 	
 	/**
 	 * This should not be overridden, and provides the implementation details
@@ -39,6 +43,8 @@ public class HandReceiver implements InputReceiver {
 			case HAND_DESTROYED:
 				handDestroyed((int) data);
 				break;
+			case VIEWPORT_DIMENSION:
+				viewportDimensionChange((Dimension) data);
 			default:
 				break;
 		}

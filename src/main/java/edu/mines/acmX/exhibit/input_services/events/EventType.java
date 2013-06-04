@@ -13,5 +13,7 @@ public enum EventType {
 	// Hand Tracker Events
 	HAND_CREATED,
 	HAND_UPDATED,
-	HAND_DESTROYED
+	HAND_DESTROYED,
+	VIEWPORT_DIMENSION
+	
 }

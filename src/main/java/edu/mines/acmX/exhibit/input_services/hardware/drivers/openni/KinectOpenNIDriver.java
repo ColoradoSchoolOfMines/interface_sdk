@@ -1,11 +1,8 @@
 package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni;
 
+import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.OpenNI.ActiveHandEventArgs;
 import org.OpenNI.Context;
@@ -21,7 +18,6 @@ import org.OpenNI.IObserver;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
 import org.OpenNI.InactiveHandEventArgs;
-import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +30,6 @@ import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInte
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
-import edu.mines.acmX.exhibit.stdlib.graphics.Coordinate3D;
 import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
 import edu.mines.acmX.exhibit.stdlib.input_processing.imaging.HandTrackingUtilities;
 
@@ -68,7 +63,6 @@ public class KinectOpenNIDriver
 	private int depthHeight;
 	
 	public KinectOpenNIDriver(){
-		log.info("In the driver constructor");
          try {
         	context = OpenNIContextSingleton.getContext();
         	
@@ -94,6 +88,10 @@ public class KinectOpenNIDriver
 			
 			depthWidth = depthMD.getFullXRes();
 			depthHeight = depthMD.getFullYRes();
+			
+			EventManager.getInstance()
+						.fireEvent(EventType.VIEWPORT_DIMENSION,
+								   new Dimension(depthWidth, depthHeight));
 			
 		} catch (GeneralException e) {
 			e.printStackTrace();
@@ -240,4 +238,8 @@ public class KinectOpenNIDriver
 		EventManager.getInstance().registerReceiver(EventType.HAND_DESTROYED, r);
 	}
 
+	public void registerViewportDimension(InputReceiver r) {
+		EventManager.getInstance().
+			registerReceiver(EventType.VIEWPORT_DIMENSION, r);
+	}
 }
