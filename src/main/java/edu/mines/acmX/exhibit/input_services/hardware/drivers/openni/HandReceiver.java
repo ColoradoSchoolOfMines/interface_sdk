@@ -6,14 +6,14 @@ import edu.mines.acmX.exhibit.input_services.hardware.HandPosition;
 
 public class HandReceiver implements InputReceiver {
 
-	public void handCreated(int id) {}
+	public void handCreated(HandPosition pos) {}
 	public void handUpdated(HandPosition pos) {}
 	public void handDestroyed(int id) {}
 	
 	public void receiveInput(EventType type, Object data) {
 		switch (type) {
 			case HAND_CREATED:
-				handCreated((int) data);
+				handCreated((HandPosition) data);
 				break;
 			case HAND_UPDATED:
 				handUpdated((HandPosition) data);

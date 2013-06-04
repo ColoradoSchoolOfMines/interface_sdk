@@ -130,10 +130,10 @@ public class KinectOpenNIDriver
 		@Override
 		public void update(IObservable<ActiveHandEventArgs> obs,
 				ActiveHandEventArgs e) {
-			evtMgr.fireEvent(EventType.HAND_CREATED, e.getId());
+			
 			HandPosition pos = new HandPosition(e.getId(),
 					HandTrackingUtilities.convertOpenNIPoint(depthGen, e.getPosition()));
-			evtMgr.fireEvent(EventType.HAND_UPDATED, pos);
+			evtMgr.fireEvent(EventType.HAND_CREATED, pos);
 		}
 		
 	}
