@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.apache.logging.log4j.*;
+import org.apache.commons.cli.*;
 
 import edu.mines.acmX.exhibit.module_management.loaders.*;
 import edu.mines.acmX.exhibit.module_management.metas.*;
@@ -43,12 +44,58 @@ public class ModuleManager {
 	 * Main function for the ModuleManager framework. Creates an instance of 
 	 * ModuleManager and runs it.
 	 */
-   public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
-       logger.info("Loading a module manager manifest file");
-        ModuleManager.setPathToManifest("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
+    public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
+        CommandLineParser cl = new DefaultParser();
+        CommandLine cmd = cl.parse( generateCLOptions(), args );
+        if( cmd.hasOption("manifest") ) {
+            ModuleManager.configure(cmd.getOptionValue("manifest"));
+        } else if (cmd.hasOption("default-module") && cmd.hasOption("modules-path")) {
+            ModuleManager.configure( cmd.getOptionValue("default-module"), cmd.getOptionValue("modules-path"));
+        } else {
+            logger.warn("Using deprecated default module path");
+            ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
+        }
+
         ModuleManager m = ModuleManager.getInstance();
         m.run();
     }
+
+   private static Options generateCLOptions() {
+       Options options = new Options();
+       options.addOptionGroup( optionsUsingIndividualAgruments() );
+       options.addOption( optionsUsingManifest() );
+       return options;
+
+   }
+
+   private static OptionGroup optionsUsingIndividualAgruments() {
+       OptionGroup group = new OptionGroup();
+
+       group.addOption( 
+               OptionBuilder.withLongOpt( "default-module" )
+                            .withDescription( "Use this module as the default module to load")
+                            .hasArg()
+                            .withArgName( "MODULE_PACKAGE" )
+                            .create());
+
+       group.addOption( 
+               OptionBuilder.withLongOpt( "modules-path" )
+                            .withDescription( "Use this path to load modules from")
+                            .hasArg()
+                            .withArgName( "PATH" )
+                            .create());
+
+       return group;
+   }
+
+   private static Option optionsUsingManifest() {
+	   return 
+               OptionBuilder.withLongOpt( "manifest" )
+                            .withDescription( "Use a custom module manager manifest file")
+                            .hasArg()
+                            .withArgName( "PATH" )
+                            .create();
+   }
 
     /**
      * Singleton instance of ModuleManager
@@ -57,7 +104,7 @@ public class ModuleManager {
     private static volatile ModuleManager instance = null;
 
     // config variables
-    private ModuleManagerMetaData metaData;
+    private static ModuleManagerMetaData metaData;
     private static String pathToModuleManagerManifest;
 
     // core manager data variables
@@ -72,8 +119,25 @@ public class ModuleManager {
     private boolean loadDefault;
     private Map<String, ModuleMetaData> moduleConfigs;
 
+    /**
+     * TODO
+     * @throws ManifestLoadException 
+     */
+    private static void configure( String moduleManifestPath ) throws ManifestLoadException {
+       logger.info("Loading a module manager manifest file");
+        metaData = loadModuleManagerConfig( moduleManifestPath );
+    }
+
+    private static void configure( String defaultModule, String pathToModules ) {
+        logger.info("Using explicitly given configuration");
+        metaData = new ModuleManagerMetaData( defaultModule, pathToModules );
+    }
+
     private ModuleManager() throws ManifestLoadException, ModuleLoadException {
-        loadModuleManagerConfig(pathToModuleManagerManifest);
+        if( metaData == null ) {
+            logger.fatal("ModuleManager must be configured before you can create an instance");
+            throw new ManifestLoadException("Module Manager was not properly configured");
+        }
         moduleConfigs = loadAllModuleConfigs(metaData.getPathToModules());
         checkDependencies();
         try {
@@ -165,10 +229,10 @@ public class ModuleManager {
      *
      * @param   path    Path to the ModuleManager xml config file
      */
-    public void loadModuleManagerConfig(String path) throws ManifestLoadException {
+    public static ModuleManagerMetaData loadModuleManagerConfig(String path) throws ManifestLoadException {
         logger.info("Loading Module Manager config file [" + pathToModuleManagerManifest + "]");
 
-        metaData = ModuleManagerManifestLoader
+        return ModuleManagerManifestLoader
                 .load(pathToModuleManagerManifest);
     }
 
