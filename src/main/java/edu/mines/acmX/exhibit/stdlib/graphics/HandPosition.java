@@ -8,11 +8,19 @@ package edu.mines.acmX.exhibit.stdlib.graphics;
  *
  */
 public class HandPosition {
-	public int id;
-	public Coordinate3D position;
+	private int id;
+	private Coordinate3D position;
 	
 	public HandPosition(int id, Coordinate3D pos) {
 		this.id = id;
 		this.position = pos;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public Coordinate3D getPosition() {
+		return position;
 	}
 }
