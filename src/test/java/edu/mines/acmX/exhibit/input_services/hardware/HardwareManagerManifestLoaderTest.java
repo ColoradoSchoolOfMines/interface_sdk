@@ -23,7 +23,7 @@ public class HardwareManagerManifestLoaderTest {
 	
 	private static Logger log = LogManager.getLogger(HardwareManagerManifestLoaderTest.class.getName());
 	
-	public static final String BASE_FILE = "src/test/resources/input_services/";
+	public static final String BASE_FILE = "input_services/";
 	
 	/**
 	 * Compares the expected HardwareManagerMetaData against one loaded from
@@ -43,10 +43,10 @@ public class HardwareManagerManifestLoaderTest {
 		Map<String, String> devices = new HashMap<String, String>();
 		Map<String, List<String>> deviceSupports = new HashMap<String, List<String>>();
 		
-		functionalities.put("depth", "edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface".toLowerCase());
+		functionalities.put("depth", "edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface");
 		expected.setFunctionalities(functionalities);
 		
-		devices.put("kinectopenni", "edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver".toLowerCase());
+		devices.put("kinectopenni", "edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver");
 		expected.setDevices(devices);
 		
 		List<String> supports = new ArrayList<String>();

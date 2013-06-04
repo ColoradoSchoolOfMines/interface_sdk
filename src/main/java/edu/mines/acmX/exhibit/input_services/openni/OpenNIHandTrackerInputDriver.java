@@ -1,14 +1,13 @@
 package edu.mines.acmX.exhibit.input_services.openni;
 
 import java.awt.Component;
+import java.awt.event.InputEvent;
 import java.util.Map;
 
 import org.OpenNI.GeneralException;
 import org.OpenNI.Point3D;
 
-import edu.mines.acmX.exhibit.input_services.InputDriver;
-import edu.mines.acmX.exhibit.input_services.InputEvent;
-import edu.mines.acmX.exhibit.input_services.InputReceiver;
+import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
 
 /**
  * Tracks hands as pointers from OpenNI.
@@ -16,7 +15,7 @@ import edu.mines.acmX.exhibit.input_services.InputReceiver;
  * Note that this class completely takes over pointer tracking, and will
  * override the mouse driver if present.
  */
-public class OpenNIHandTrackerInputDriver implements InputDriver {
+public class OpenNIHandTrackerInputDriver {
   private HandTracker handTracker;
   private Component manager;
   /* Maps hand IDs to pointer indices, or -1 for none. */
@@ -41,7 +40,7 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
     manager = man;
   }
 
-  public void pumpInput(InputReceiver dst) {
+  public void pumpInput() {
     Map<Integer,Point3D> points = handTracker.getCurrentPositions();
 
     //Clear pointerMap elts which no longer have meaning
@@ -83,8 +82,10 @@ public class OpenNIHandTrackerInputDriver implements InputDriver {
       pointers[pointer][0] = x;
       pointers[pointer][1] = y;
       //Send event
-      dst.receiveInput(new InputEvent(InputEvent.TYPE_POINTER_MOVEMENT,
-                                      pointer, x, y));
+      //TODO fire event??
+      System.out.println("Firing hand pos: (" + x + ", " + y + ")");
+//      dst.receiveInput(new InputEvent(InputEvent.TYPE_POINTER_MOVEMENT,
+//                                      pointer, x, y));
     }
 
     //Clear pointers which are no longer mapped
