@@ -181,6 +181,10 @@ public class KinectOpenNIDriver
 		return ret;
 	}
 	
+	/**
+	 * Ends tracking on the hand tracker as well ensures that all generators
+	 * are stopped on the context singleton.
+	 */
 	public void destroy() {
 		try {
 			handsGen.StopTrackingAll();
