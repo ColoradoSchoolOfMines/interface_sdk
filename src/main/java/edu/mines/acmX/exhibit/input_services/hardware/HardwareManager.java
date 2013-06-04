@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
@@ -32,16 +35,32 @@ import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 
 public class HardwareManager {
 	
+	private static final Logger log = LogManager.getLogger(HardwareManager.class);
+	
 	private HardwareManagerMetaData metaData;
 	private Map<String, DependencyType> currentModuleInputTypes;
 	
 	private static HardwareManager instance = null;
-	private static String manifest_path = "hardware_manager_manifest.xml";	// TODO Actually make it
+	private static String manifest_path = "hardware_manager_manifest.xml";
 	
 	private Map<String, List<String>> devices;
 	
 	private Map<String, DriverInterface> deviceDriverCache;
 	
+	/**
+	 * The constructor of the HardwareManager. This method loads the config
+	 * file, and ensures that the file is valid.
+	 * <br/>
+	 * This will also check to see which devices are available, so that when a
+	 * module is loaded in, we are able to verify that the module's
+	 * dependencies are satisfied.
+	 * 
+	 * @throws HardwareManagerManifestException
+	 * @throws DeviceConnectionException
+	 * 
+	 * @see {@link #validifyMetaData()} {@link #checkAvailableDevices()}
+	 * 
+	 */
 	private HardwareManager() 
 			throws 	HardwareManagerManifestException,
 					DeviceConnectionException {
@@ -50,9 +69,6 @@ public class HardwareManager {
 		validifyMetaData();
 		deviceDriverCache = new HashMap<String, DriverInterface>();
 		checkAvailableDevices();
-		/*
-		 * functionality -> available device driver path
-		 */
 	}
 	
 	/**
@@ -101,6 +117,11 @@ public class HardwareManager {
 		
 	}
 	
+	public void resetAllDrivers() throws DeviceConnectionException {
+		deviceDriverCache.clear();
+		checkAvailableDevices();
+	}
+	
 	/**
 	 * Loads the configuration file.
 	 * @throws HardwareManagerManifestException
@@ -114,15 +135,14 @@ public class HardwareManager {
 	
 	/**
 	 * Responsible for verifying the HardwareManagerMetaData after having been
-	 * loaded from the manifest file. This will ensure there the driver and
-	 * interface classes exist as specific from within the metadata. Also checks
-	 * to see whether there is a disjoint between the functionalities each
+	 * loaded from the manifest file. This will ensure that the driver and
+	 * interface classes exist as specified from within the meta-data. Also 
+	 * checks to see whether there is a disjoint between the functionalities
 	 * each device supports and interfaces mapped to it.
 	 * 
-	 * @throws HardwareManagerManifestException
+	 * @throws HardwareManagerManifestException If the meta-data is incorrect.
 	 * 
-	 * @see
-	 * 	{@link HardwareManagerMetaData}  
+	 * @see {@link HardwareManagerMetaData}  
 	 */
 	private void validifyMetaData() throws HardwareManagerManifestException {
 		// verify classes existing
@@ -146,6 +166,7 @@ public class HardwareManager {
 		
 		
 		// check support list for being disjoint
+		// Builds a list of all the functionalities requested by all drivers
 		Set<String> supports = new HashSet<String>();
 		for (List<String> deviceSupports : metaData.getDeviceSupports().values()) {
 			for (String s : deviceSupports) {
@@ -153,6 +174,9 @@ public class HardwareManager {
 			}
 		}
 		
+		// Checks to see whether the built list is a subset of all provided
+		// functionalities. Note the exception is thrown when a functionality
+		// may not exist in the <functionalities> tag
 		Set<String> available = metaData.getFunctionalities().keySet();
 		if (!available.containsAll(supports)) {
 			throw new HardwareManagerManifestException("Unknown functionality supported by device");
@@ -197,18 +221,23 @@ public class HardwareManager {
 		Set<String> keys = supportedDevices.keySet();
 		
 		for (String device : keys) {
+			// Grab all the devices from the meta-data
 			String driver = supportedDevices.get(device);
 			try {
 				Class<? extends DriverInterface> cl = 
 						Class.forName(driver).asSubclass(DriverInterface.class);
 				DriverInterface iDriver = cl.newInstance();
 				
+				// Check whether the device is available
 				if (iDriver.isAvailable()) {
 					// Cache the driver
 					deviceDriverCache.put(driver, iDriver);
 					
 					// Go through each functionality for this driver
 					// Add it to our 'devices' storage unit
+					// This is because we assume if a device is available,
+					// then all the functionalities it supports are also
+					// available.
 					
 					List<String> funcs = deviceFuncs.get(device);
 					for (String func : funcs) {
@@ -223,17 +252,15 @@ public class HardwareManager {
 					
 				}
 			} catch (ClassNotFoundException e) {
-				// TODO log error
-				e.printStackTrace();
+				log.error("Class not found while checking device availibilities.");
 			} catch (InstantiationException e) {
-				// TODO log error
-				e.printStackTrace();
+				log.error("Error instantiating driver while checking it's availibility");
 			} catch (IllegalAccessException e) {
-				// TODO log error
-				e.printStackTrace();
+				log.error("Invalid access to the driver while checking it's availibility");
 			}
 		}
 		
+		// If no devices were found to be available, throw error
 		if (devices.isEmpty()) {
 			throw new DeviceConnectionException("No connected devices found");
 		}
@@ -245,7 +272,8 @@ public class HardwareManager {
 	 * @param driverPath
 	 * @param functionality
 	 * @return An instance of a driver capable of supporting that functionality
-	 * @throws BadFunctionalityRequestException
+	 * @throws BadFunctionalityRequestException no devices support that
+	 * functionality
 	 */
 	public DeviceDataInterface inflateDriver(String driverPath, String functionality)
 			throws BadFunctionalityRequestException {
@@ -278,7 +306,8 @@ public class HardwareManager {
 	 * 
 	 * @param functionality
 	 * @return list of driver paths that support the given functionality
-	 * @throws BadFunctionalityRequestException
+	 * @throws BadFunctionalityRequestException no devices support that
+	 * functionality
 	 */
 	public List<String> getDevices(String functionality)
 			throws BadFunctionalityRequestException {
@@ -287,6 +316,20 @@ public class HardwareManager {
 		}
 		
 		return devices.get(functionality);
+	}
+	
+	/**
+	 * Allows the user to get an instance of the first available driver
+	 * supporting the specified functionality.
+	 * @param functionality
+	 * @return An instance of a driver capable of supporting that functionality
+	 * @throws BadFunctionalityRequestException no devices support that
+	 * functionality
+	 */
+	public DeviceDataInterface getInitialDriver(String functionality)
+			throws BadFunctionalityRequestException {
+		List<String> drivers = getDevices(functionality);
+		return inflateDriver(drivers.get(0), functionality);
 	}
 
 }

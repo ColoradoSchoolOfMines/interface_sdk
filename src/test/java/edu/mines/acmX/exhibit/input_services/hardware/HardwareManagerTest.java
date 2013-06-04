@@ -136,7 +136,7 @@ public class HardwareManagerTest {
 	public void testBadFunctionalityRequest()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadFunctionalityRequestException {
-		
+		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 		hm.getDevices("BAD_FUNCTIONALITY_REQUEST");
 	}
