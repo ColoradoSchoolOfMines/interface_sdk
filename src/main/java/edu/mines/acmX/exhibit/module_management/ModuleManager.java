@@ -151,8 +151,7 @@ public class ModuleManager {
             logger.fatal("ModuleManager must be configured before you can create an instance");
             throw new ManifestLoadException("Module Manager was not properly configured");
         }
-        moduleConfigs = loadAllModuleConfigs(metaData.getPathToModules());
-        checkDependencies();
+        refreshModules();
         try {
             setDefaultModule(metaData.getDefaultModuleName());
         } catch (ModuleLoadException e) {
@@ -160,6 +159,23 @@ public class ModuleManager {
             throw e;
         }
         loadDefault = true;
+    }
+
+    /**
+     * This method will refresh any modules that are not the default module.
+     * The default module is cached and will not be affected by this function.
+     * Any other modules may be affected in the following ways:
+     *
+     * a new module will be added if it meets the requirements for dependencies
+     *
+     * an exisiting module will be removed if the jar file was removed
+     *
+     * an exisiting module will be removed if the dependencies change.
+     * 
+     */
+    private void refreshModules() {
+        moduleConfigs = loadAllModuleConfigs( metaData.getPathToModules());
+        checkDependencies();
     }
 
     /**
@@ -214,6 +230,7 @@ public class ModuleManager {
      *                  meta data gathered from that module's manifest file
      */
     public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
+        // TODO caching
         Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
         logger.info("Loading jars in [" + path + "]");
         File jarDir = new File(path);
@@ -283,7 +300,7 @@ public class ModuleManager {
     }
     
     /**
-     * This function is used internally for performing its checkDepencies
+     * This function is used internally for performing its checkDependencies
      * operation
      *
      * @return  Returns the first module name ( or key in this case ) of a
@@ -467,6 +484,9 @@ public class ModuleManager {
 			} catch (InterruptedException e) {
                 logger.warn("Module execution was interrupted");
 			}
+
+            // refresh modules
+            refreshModules();
             
         }
     }
@@ -493,6 +513,8 @@ public class ModuleManager {
      * metaData.
      */
     private void setCurrentAsDefault() {
+        // TODO check that defaultModule still exists? 
+        // actually we may not care.
         currentModule = defaultModule;
         currentModuleMetaData = defaultModuleMetaData;
     }
