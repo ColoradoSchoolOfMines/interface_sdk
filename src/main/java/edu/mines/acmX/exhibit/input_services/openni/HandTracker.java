@@ -98,8 +98,12 @@ public class HandTracker {
 			
 			
 			/*
-			 * update data
-			 * send to all the listeners
+			 * 
+			 * registerReceiver(String, Receiver) {
+			 * 
+			 * }
+			 * ex registerReceiver("Hand_update", this)
+			 * Have a thread continuously polling a queue for events
 			 */
 			
 		}

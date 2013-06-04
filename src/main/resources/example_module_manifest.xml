@@ -1,9 +1,3 @@
-<!-- 
-  Some random notes:
-  The package is essentially the name for the module
-  The class is the name the entry point for the module which should be a class
-  implementing one of the ModuleInterfaces (i.e. CommandlineModule)
--->
 <?xml version="1.0" encoding="utf-8"?>
 <manifest 
         package="edu.mines.ademaria.module"

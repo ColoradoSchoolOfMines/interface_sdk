@@ -21,16 +21,16 @@ public class ModuleManifestLoaderTest {
 
     @Test
     public void testLoadCorrectModuleWithoutExtraStuff() throws ManifestLoadException {
-        String pathToJar = "src/test/resources/modules/HorseSimpleGood.jar";
+        String pathToJar = "src/test/resources/modules/HelloWorld.jar";
         Map<String, DependencyType> desiredInputs =  new HashMap<String, DependencyType>();
         Map<String, DependencyType> desiredModules =  new HashMap<String, DependencyType>();
         ModuleMetaData shouldEqual = new ModuleMetaData(
-                "com.andrew.random",
-                "Horses",
-                "0.0.0",
-                "0.0.0",
-                "horse.jpg",
-                "i_love_horseys",
+                "edu.mines.andrew.games",
+                "HelloWorld",
+                "0.0.3",
+                "0.0.3",
+                "hi.png",
+                "Hello World",
                 "andrew demaria",
                 "0.1",
                 desiredInputs,
