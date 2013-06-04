@@ -29,13 +29,13 @@ import org.apache.logging.log4j.Logger;
 import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
-import edu.mines.acmX.exhibit.input_services.hardware.HandPosition;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.stdlib.graphics.Coordinate3D;
+import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
 import edu.mines.acmX.exhibit.stdlib.input_processing.imaging.HandTrackingUtilities;
 
 
@@ -100,6 +100,11 @@ public class KinectOpenNIDriver
 		}
 	}
 	
+	/**
+	 * This updates all the nodes being observed by the context for any
+	 * available data. This should be called whenever updated information is
+	 * desired.
+	 */
 	public void updateDriver() {
 		try {
 			context.waitAnyUpdateAll();
@@ -164,6 +169,10 @@ public class KinectOpenNIDriver
 	
 	
 	// DriverInterface
+	/**
+	 * The Kinect openni device is considered available if an openni
+	 * context can be created.
+	 */
 	public boolean isAvailable() {
 		boolean ret = true;
 		try {
@@ -206,29 +215,29 @@ public class KinectOpenNIDriver
 	public int getDepthImageHeight() {
 		return depthHeight;
 	}
-
-	@Override
-	public void registerGestureRecognized(InputReceiver r) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
+	
+	/**
+	 * Registers a hand created event given an input receiver
+	 * @param r the input receiver
+	 */
 	public void registerHandCreated(InputReceiver r) {
-		// TODO Auto-generated method stub
-		
+		EventManager.getInstance().registerReceiver(EventType.HAND_CREATED, r);
 	}
 
-	@Override
+	/**
+	 * Registers a hand updated event given an input receiver
+	 * @param r the input receiver
+	 */
 	public void registerHandUpdated(InputReceiver r) {
-		// TODO Auto-generated method stub
-		
+		EventManager.getInstance().registerReceiver(EventType.HAND_UPDATED, r);
 	}
 
-	@Override
-	public void registerHandDestoryed(InputReceiver r) {
-		// TODO Auto-generated method stub
-		
+	/**
+	 * Registers a hand destroyed event given an input receiver
+	 * @param r the input receiver
+	 */
+	public void registerHandDestroyed(InputReceiver r) {
+		EventManager.getInstance().registerReceiver(EventType.HAND_DESTROYED, r);
 	}
 
 }

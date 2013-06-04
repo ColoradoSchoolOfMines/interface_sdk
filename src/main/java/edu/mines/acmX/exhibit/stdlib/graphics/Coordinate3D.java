@@ -1,8 +1,13 @@
 package edu.mines.acmX.exhibit.stdlib.graphics;
 
+/**
+ * A POJO that manages a 3-dimensional coordinate of floats
+ * @author Aakash Shah
+ * @author Ryan Stauffer
+ *
+ */
 public class Coordinate3D {
-	
-	
+
 	private float X;
 	private float Y;
 	private float Z;
