@@ -46,7 +46,7 @@ public class HardwareManagerManifestLoaderTest {
 		functionalities.put("depth", "edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface");
 		expected.setFunctionalities(functionalities);
 		
-		devices.put("kinectopenni", "edu.mines.acmX.exhibit.input_services.hardware.drivers.KinectOpenNIDriver");
+		devices.put("kinectopenni", "edu.mines.acmX.exhibit.input_services.hardware.drivers.openni.KinectOpenNIDriver");
 		expected.setDevices(devices);
 		
 		List<String> supports = new ArrayList<String>();
