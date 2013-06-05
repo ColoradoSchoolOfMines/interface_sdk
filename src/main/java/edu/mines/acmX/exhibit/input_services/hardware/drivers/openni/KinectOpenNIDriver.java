@@ -66,6 +66,7 @@ public class KinectOpenNIDriver
 	public KinectOpenNIDriver(){
          try {
         	try {
+        		//OpenNIContextSingleton.setConfigurationFile(hwMgr.getInstance().getConfigFor("kinectoppeni"));
 				context = OpenNIContextSingleton.getContext();
 			} catch (OpenNIConfigurationException e) {
 				log.error("No configuration file found");

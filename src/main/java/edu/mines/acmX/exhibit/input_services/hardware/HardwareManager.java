@@ -217,6 +217,9 @@ public class HardwareManager {
 	 * Goes through all functionalities in the manifest and constructs a list
 	 * of drivers that are available and support that functionality. 
 	 * 
+	 * TODO: Loop through currentModuleInputTypes and build the cache off that
+	 * instead of looking at EVERY driver.
+	 * 
 	 * @throws DeviceConnectionException If no devices are available.
 	 */
 	public void buildAvailableDevices() {
@@ -231,6 +234,7 @@ public class HardwareManager {
 			// Grab all the devices from the meta-data
 			String driver = supportedDevices.get(device);
 			try {
+				
 				Class<? extends DriverInterface> cl = 
 						Class.forName(driver).asSubclass(DriverInterface.class);
 				DriverInterface iDriver = cl.newInstance();
