@@ -27,6 +27,9 @@ import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
  * @author Aakash Shah
  * @author Ryan Stauffer
  * 
+ * -mod mgr passes the module dependencies list to us so it can check required dependencies
+ * -integrate the run/exit of the module into here
+ * 
  * @see
  * 	{@link HardwareManagerMetaData}
  * 	{@link HardwareManagerManifestLoader}
@@ -58,17 +61,15 @@ public class HardwareManager {
 	 * @throws HardwareManagerManifestException
 	 * @throws DeviceConnectionException
 	 * 
-	 * @see {@link #validifyMetaData()} {@link #checkAvailableDevices()}
+	 * @see {@link #validifyMetaData()} {@link #buildAvailableDevices()}
 	 * 
 	 */
 	private HardwareManager() 
-			throws 	HardwareManagerManifestException,
-					DeviceConnectionException {
+			throws HardwareManagerManifestException {
 		
 		loadConfigFile();
 		validifyMetaData();
 		deviceDriverCache = new HashMap<String, DriverInterface>();
-		checkAvailableDevices();
 	}
 	
 	/**
@@ -77,8 +78,7 @@ public class HardwareManager {
 	 * @throws HardwareManagerManifestException
 	 */	
 	public static HardwareManager getInstance()
-			throws 	HardwareManagerManifestException,
-					DeviceConnectionException {
+			throws 	HardwareManagerManifestException {
 		if (instance == null) {
 			instance = new HardwareManager();				
 		}
@@ -114,7 +114,6 @@ public class HardwareManager {
 		
 		currentModuleInputTypes = mmd;
 		checkPermissions();
-		
 	}
 	
 	/**
@@ -128,7 +127,7 @@ public class HardwareManager {
 			driver.destroy();
 		}
 		deviceDriverCache.clear();
-		checkAvailableDevices();
+		buildAvailableDevices();
 	}
 	
 	/**
@@ -220,8 +219,7 @@ public class HardwareManager {
 	 * 
 	 * @throws DeviceConnectionException If no devices are available.
 	 */
-	public void checkAvailableDevices() 
-		throws DeviceConnectionException {
+	public void buildAvailableDevices() {
 		
 		devices = new HashMap<String, List<String>>();
 		
@@ -267,11 +265,6 @@ public class HardwareManager {
 				log.error("Invalid access to the driver while checking it's availibility");
 			}
 		}
-		
-		// If no devices were found to be available, throw error
-		if (devices.isEmpty()) {
-			throw new DeviceConnectionException("No connected devices found");
-		}
 	}
 	
 	/**
@@ -284,7 +277,7 @@ public class HardwareManager {
 	 * functionality
 	 */
 	public DeviceDataInterface inflateDriver(String driverPath, String functionality)
-			throws BadFunctionalityRequestException {
+			throws BadFunctionalityRequestException, DeviceConnectionException {
 		String functionalityPath = getFunctionalityPath(functionality);
 		
 		if ("".equals(functionalityPath)) {
@@ -292,12 +285,17 @@ public class HardwareManager {
 		}
 		
 		DeviceDataInterface iDriver = null;
+		if (!deviceDriverCache.containsKey(driverPath)) {
+			throw new DeviceConnectionException("Requested driver " + 
+												driverPath + 
+												" is not available");
+		}
 		iDriver = (DeviceDataInterface) deviceDriverCache.get(driverPath);
 		return iDriver;
 	}
 	
 	/**
-	 * Constructs return value from manifest.
+	 * Returns the function class path for a given functionality.
 	 * 
 	 * @param functionality
 	 * @return Interface path for the given functionality
@@ -333,9 +331,10 @@ public class HardwareManager {
 	 * @return An instance of a driver capable of supporting that functionality
 	 * @throws BadFunctionalityRequestException no devices support that
 	 * functionality
+	 * @throws DeviceConnectionException 
 	 */
 	public DeviceDataInterface getInitialDriver(String functionality)
-			throws BadFunctionalityRequestException {
+			throws BadFunctionalityRequestException, DeviceConnectionException {
 		List<String> drivers = getDevices(functionality);
 		return inflateDriver(drivers.get(0), functionality);
 	}
