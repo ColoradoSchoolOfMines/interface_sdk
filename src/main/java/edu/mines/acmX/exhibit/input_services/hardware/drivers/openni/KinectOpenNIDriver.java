@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
+import edu.mines.acmX.exhibit.input_services.hardware.OpenNIConfigurationException;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
@@ -64,7 +65,11 @@ public class KinectOpenNIDriver
 	
 	public KinectOpenNIDriver(){
          try {
-        	context = OpenNIContextSingleton.getContext();
+        	try {
+				context = OpenNIContextSingleton.getContext();
+			} catch (OpenNIConfigurationException e) {
+				log.error("No configuration file found");
+			}
         	
         	gestureGen = GestureGenerator.create(context);
         	gestureGen.addGesture("Wave");
@@ -94,7 +99,7 @@ public class KinectOpenNIDriver
 								   new Dimension(depthWidth, depthHeight));
 			
 		} catch (GeneralException e) {
-			e.printStackTrace();
+			log.error("Error loading Kinect OpenNI driver");
 		}
 	}
 	
@@ -176,6 +181,8 @@ public class KinectOpenNIDriver
 		try {
 			context = OpenNIContextSingleton.getContext();
 		} catch (GeneralException e) {
+			ret = false;
+		} catch (OpenNIConfigurationException e) {
 			ret = false;
 		}
 		return ret;
