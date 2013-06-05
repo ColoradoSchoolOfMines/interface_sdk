@@ -6,20 +6,33 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import org.apache.logging.log4j.*;
-import org.apache.commons.cli.*;
 
-import edu.mines.acmX.exhibit.module_management.loaders.*;
-import edu.mines.acmX.exhibit.module_management.metas.*;
-import edu.mines.acmX.exhibit.module_management.modules.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoader;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleManagerManifestLoader;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleManifestLoader;
+import edu.mines.acmX.exhibit.module_management.metas.CheckType;
+import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 
 /**
@@ -44,62 +57,104 @@ public class ModuleManager {
 	 * Main function for the ModuleManager framework. Creates an instance of 
 	 * ModuleManager and runs it.
 	 */
-    public static void main(String[] args) throws ManifestLoadException, ModuleLoadException {
+    public static void main(String[] args) {
     	CommandLineParser cl = new GnuParser();
-    	CommandLine cmd;
-    	try {
-    		cmd = cl.parse( generateCLOptions(), args );
+        CommandLine cmd;
+        Options opts = generateCLOptions();
+        try {
+            cmd = cl.parse( opts, args );
 
             if( cmd.getArgs().length != 0 ) {
                 logger.warn("Left over args: " + cmd.getArgs().toString());
             }
-            logger.debug("manifest was: " + cmd.getOptionValue("manifest"));
-            logger.debug("modules-path was: " + cmd.getOptionValue("modules-path"));
-            logger.debug("default-module was: " + cmd.getOptionValue("default-module"));
 
-    		if( cmd.hasOption("manifest") ) {
-    			ModuleManager.configure(cmd.getOptionValue("manifest"));
-    		} else if (cmd.hasOption("default-module") && cmd.hasOption("modules-path")) {
-    			ModuleManager.configure( cmd.getOptionValue("default-module"), cmd.getOptionValue("modules-path"));
-    		} else {
-    			logger.warn("Using deprecated default module path");
-    			ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
-    		}
+            String[] debugArgs = { "openni-config", "manifest", "modules-path", "default-module", "help" };
+            debugArgs( cmd, debugArgs );
 
-    	} catch (ParseException e) {
-    		logger.error("Incorrect command line arguments");
-    	}
+            if( cmd.hasOption("help") ) {
+                printHelp( opts );
+            } else {
 
-        ModuleManager m = ModuleManager.getInstance();
-        m.run();
+                // If the openni configuration is found populate the path to this
+                // config file
+                if( cmd.hasOption("openni-config" ) ) {
+                    // TODO
+                    ModuleManager.setOpenNiConfiguration( cmd.getOptionValue("openni-config"));
+                }
+
+                if( cmd.hasOption("manifest") ) {
+                    ModuleManager.configure(cmd.getOptionValue("manifest"));
+                } else if (cmd.hasOption("default-module") && cmd.hasOption("modules-path")) {
+                    ModuleManager.configure( cmd.getOptionValue("default-module"), cmd.getOptionValue("modules-path"));
+                } else {
+                    logger.warn("Using deprecated default module path");
+                    ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
+                }
+                ModuleManager m;
+                m = ModuleManager.getInstance();
+                m.run();
+            }
+
+        } catch (ParseException e) {
+            printHelp( opts );
+            logger.error("Incorrect command line arguments");
+        } catch (ManifestLoadException e) {
+            logger.fatal("Could not load the module manager manifest");
+            e.printStackTrace();
+        } catch (ModuleLoadException e) {
+            logger.fatal("Could not load the default module");
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private static void printHelp( Options opts ) {
+        HelpFormatter formatter = new HelpFormatter();
+        // TODO header and footer
+        formatter.printHelp("java -jar [JARNAME]", "header", opts, "footer", true);
+    }
+
+    private static void debugArgs( CommandLine cmd, String[] args ) {
+        for( String arg : args ) {
+            logger.debug(arg + " was: " + cmd.getOptionValue(arg));
+        }
     }
 
    private static Options generateCLOptions() {
        Options options = new Options();
-       options.addOptionGroup( optionsUsingIndividualAgruments() );
+       options = optionsUsingIndividualAgruments(options);
        options.addOption( optionsUsingManifest() );
+       options.addOption( openNiArguments() );
+       options.addOption( "h", "help", false, "Print these helpful hints");
        return options;
+   }
+
+   private static Option openNiArguments() {
+       return OptionBuilder.withLongOpt( "openni-config" )
+                           .withDescription( "If using openNI, this argument must be populated with a path " +
+                                             "to a openNI xml configuration file." )
+                           .hasArg()
+                           .withArgName( "PATH" )
+                           .create();
 
    }
 
-   private static OptionGroup optionsUsingIndividualAgruments() {
-       OptionGroup group = new OptionGroup();
-
-       group.addOption( 
+   private static Options optionsUsingIndividualAgruments(Options opts) {
+       opts.addOption(
                OptionBuilder.withLongOpt( "default-module" )
                             .withDescription( "Use this module as the default module to load")
                             .hasArg()
                             .withArgName( "MODULE_PACKAGE" )
                             .create());
 
-       group.addOption( 
+       opts.addOption(
                OptionBuilder.withLongOpt( "modules-path" )
                             .withDescription( "Use this path to load modules from")
                             .hasArg()
                             .withArgName( "PATH" )
                             .create());
-
-       return group;
+       return opts;
    }
 
    private static Option optionsUsingManifest() {
@@ -120,6 +175,7 @@ public class ModuleManager {
     // config variables
     private static ModuleManagerMetaData metaData;
     private static String pathToModuleManagerManifest;
+    private static String pathToOpenNIConfig;
 
     // core manager data variables
     private ModuleInterface currentModule;
@@ -580,6 +636,10 @@ public class ModuleManager {
 	public InputStream loadResourceFromModule( String jarResourcePath ) {
 		return loadResourceFromModule(jarResourcePath, currentModuleMetaData.getPackageName());
 	}
+
+    private static void setOpenNiConfiguration( String path ) {
+        pathToOpenNIConfig = path;
+    }
 
 
 	//TODO should be private, made public for tests
