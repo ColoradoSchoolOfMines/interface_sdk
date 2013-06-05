@@ -236,7 +236,6 @@ public class HardwareManager {
 				Class<? extends DriverInterface> cl = 
 						Class.forName(driver).asSubclass(DriverInterface.class);
 				DriverInterface iDriver = cl.newInstance();
-				
 				// Check whether the device is available
 				if (iDriver.isAvailable()) {
 					// Cache the driver

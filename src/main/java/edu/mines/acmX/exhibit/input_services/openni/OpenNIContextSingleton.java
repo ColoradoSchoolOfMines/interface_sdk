@@ -39,12 +39,7 @@ public class OpenNIContextSingleton {
     	if (xml_file == null) {
     		throw new OpenNIConfigurationException("No configuration file provided!");
     	}
-    	if (context == null) {    		
-    		try {
-				log.debug("Working directory: " + new File(".").getCanonicalPath());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+    	if (context == null) {
     		scriptNode = new OutArg<ScriptNode>();
     		context = Context.createFromXmlFile(xml_file, scriptNode);
     	}

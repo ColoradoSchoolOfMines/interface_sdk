@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
@@ -70,6 +71,8 @@ public class HardwareManagerTest {
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadDeviceFunctionalityRequestException {
 		
+		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
+		
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 		
@@ -92,6 +95,7 @@ public class HardwareManagerTest {
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadDeviceFunctionalityRequestException {
 		
+		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 		
@@ -114,6 +118,7 @@ public class HardwareManagerTest {
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadDeviceFunctionalityRequestException {
 		
+		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
 		HardwareManager.setManifestFilepath(BASE_FILE + "ModulePermissionsTest.xml");
 		
 		HardwareManager hm = HardwareManager.getInstance();
@@ -136,6 +141,8 @@ public class HardwareManagerTest {
 	public void testBadFunctionalityRequest()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
 					BadFunctionalityRequestException {
+		
+		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 		hm.getDevices("BAD_FUNCTIONALITY_REQUEST");
