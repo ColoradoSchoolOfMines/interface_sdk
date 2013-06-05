@@ -121,7 +121,7 @@ public class HardwareManager {
 	 * objects and rebuilds this cache based on which devices are now available.
 	 * @throws DeviceConnectionException
 	 */
-	public void resetAllDrivers() throws DeviceConnectionException {
+	public void resetAllDrivers() {
 		for (String driverName : deviceDriverCache.keySet()) {
 			DriverInterface driver = deviceDriverCache.get(driverName);
 			driver.destroy();
