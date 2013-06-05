@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest 
+        package=""
+        class="" >
+
+    <uses-sdk 
+            minSdkVersion=""
+            targetSdkVersion=""/>
+
+    <module 
+            icon="" 
+            title=""
+            author=""
+            version="">
+
+        <inputs>
+			<!-- remove input tag if no input types are needed -->
+            <input input-type="" />
+        </inputs>
+        <requires-module>
+			<!-- remove module tag if you don't depend on loading any other modules -->
+            <module package="" />
+        </requires-module>
+
+    </module>
+
+</manifest>
+<!-- vim:fenc=utf-8
+  -->
+
