@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
@@ -124,7 +125,7 @@ public class HardwareManagerTest {
 		HardwareManager hm = HardwareManager.getInstance();
 		
 		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
-		inputTypes.put("image2d", DependencyType.REQUIRED);
+		inputTypes.put("rgbimage", DependencyType.REQUIRED);
 		
 		hm.setRunningModulePermissions(inputTypes);
 	}
@@ -147,4 +148,36 @@ public class HardwareManagerTest {
 		HardwareManager hm = HardwareManager.getInstance();
 		hm.getDevices("BAD_FUNCTIONALITY_REQUEST");
 	}
+	
+	@Test(expected=InvalidConfigurationFileException.class)
+	public void testNoDriverConfigFile() 
+			throws HardwareManagerManifestException, 
+			InvalidConfigurationFileException {
+		
+		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
+		HardwareManager hm = HardwareManager.getInstance();
+		
+		Map<String, String> configStore = new HashMap<String, String>();
+		
+		hm.setConfigurationFileStore(configStore);
+		hm.buildRequiredDevices();
+	}
+	
+	@Test(expected=InvalidConfigurationFileException.class)
+	public void testValidDriverConfigStore() 			
+			throws HardwareManagerManifestException, 
+			InvalidConfigurationFileException {
+				
+		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
+		HardwareManager hm = HardwareManager.getInstance();
+		
+		Map<String, String> configStore = new HashMap<String, String>();
+		configStore.put("kinectopenni", "BAD_XML");
+		
+		hm.setConfigurationFileStore(configStore);
+		hm.buildRequiredDevices();
+		
+	}
+	
+	
 }

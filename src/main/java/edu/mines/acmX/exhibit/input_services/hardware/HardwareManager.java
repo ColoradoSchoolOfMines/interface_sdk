@@ -1,5 +1,7 @@
 package edu.mines.acmX.exhibit.input_services.hardware;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 
 /**
@@ -46,9 +49,10 @@ public class HardwareManager {
 	private static HardwareManager instance = null;
 	private static String manifest_path = "hardware_manager_manifest.xml";
 	
-	private Map<String, List<String>> devices;
-	
+	private Map<String, List<String>> devices; // available list of devices
 	private Map<String, DriverInterface> deviceDriverCache;
+	private Map<String, String> configFileStore;
+	
 	
 	/**
 	 * The constructor of the HardwareManager. This method loads the config
@@ -59,9 +63,8 @@ public class HardwareManager {
 	 * dependencies are satisfied.
 	 * 
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException
 	 * 
-	 * @see {@link #validifyMetaData()} {@link #buildAvailableDevices()}
+	 * @see {@link #validifyMetaData()} {@link #buildRequiredDevices()}
 	 * 
 	 */
 	private HardwareManager() 
@@ -70,6 +73,7 @@ public class HardwareManager {
 		loadConfigFile();
 		validifyMetaData();
 		deviceDriverCache = new HashMap<String, DriverInterface>();
+		configFileStore = new HashMap<String, String>();
 	}
 	
 	/**
@@ -96,8 +100,7 @@ public class HardwareManager {
 	 * 	{@link #HardwareManager()}
 	 */
 	public static void setManifestFilepath(String filepath)
-			throws 	HardwareManagerManifestException, 
-					DeviceConnectionException {
+			throws 	HardwareManagerManifestException {
 		manifest_path = filepath;
 		instance = new HardwareManager();
 	}
@@ -116,22 +119,50 @@ public class HardwareManager {
 		checkPermissions();
 	}
 	
+	public void setConfigurationFileStore(Map<String, String> config) {
+		// this.configFileStore = config;
+		// Go through, rebuild and convert each key in the `config` to be
+		// the canonical path to the driver
+		Map<String, String> supportedDevices = metaData.getDevices(); // driver->driver_path  
+		Set<String> deviceKeys = config.keySet();
+		
+		for (String configName : deviceKeys) {
+			if (supportedDevices.containsKey(configName)) {
+				this.configFileStore.put(
+						supportedDevices.get(configName),
+						config.get(configName));
+			}
+		}
+		
+	}
+	
+	public boolean hasConfigFile(String str) {
+		return this.configFileStore.containsKey(str);
+	}
+	
+	public String getConfigFile(String str) {
+		return this.configFileStore.get(str);
+	}
+	
 	/**
 	 * Calls destroy on all driver objects, then removes all cached driver
 	 * objects and rebuilds this cache based on which devices are now available.
-	 * @throws DeviceConnectionException
+	 * 
+	 * @throws InvalidConfigurationFileException Thrown if the driver requires
+	 * a configuration file that was not present on the store.
 	 */
-	public void resetAllDrivers() {
+	public void resetAllDrivers() throws InvalidConfigurationFileException {
 		for (String driverName : deviceDriverCache.keySet()) {
 			DriverInterface driver = deviceDriverCache.get(driverName);
 			driver.destroy();
 		}
 		deviceDriverCache.clear();
-		buildAvailableDevices();
+		buildRequiredDevices();
 	}
 	
 	/**
 	 * Loads the configuration file.
+	 * 
 	 * @throws HardwareManagerManifestException
 	 * 
 	 * @see
@@ -170,6 +201,8 @@ public class HardwareManager {
 			throw new HardwareManagerManifestException("Invalid interface/driver class");
 		} catch (ExceptionInInitializerError e) {
 			throw new HardwareManagerManifestException("Invalid interface/driver class");
+		} catch (Exception e) {
+			log.error("Getting an exception");
 		}
 		
 		
@@ -218,17 +251,82 @@ public class HardwareManager {
 	 * of drivers that are available and support that functionality. 
 	 * 
 	 * TODO: Loop through currentModuleInputTypes and build the cache off that
-	 * instead of looking at EVERY driver.
+	 * instead of looking at EVERY driver. 
 	 * 
-	 * @throws DeviceConnectionException If no devices are available.
+	 * Add the input-types map into checkPermissions
+	 * 
+	 * Document the fact that it ONLY BUILDS required functionalities. This is
+	 * because we have already ensured that all the required ones are available.
+	 * However, we want to provide the user the knowledge that one of their
+	 * optional functionalities has failed to initialize.
+	 * 
+	 * Therefore, this function only loads required, and a special method inside
+	 * the inflateDriver method will load the optional one at runtime.	 * 
+	 *  
+	 * @throws InvalidConfigurationFileException 
 	 */
-	public void buildAvailableDevices() {
+	public void buildRequiredDevices() throws InvalidConfigurationFileException {
 		
 		devices = new HashMap<String, List<String>>();
+		/*
+		Map<String, List<String>> deviceSupports = metaData.getDeviceSupports();
+		Map<String, String> driverPaths = metaData.getDevices();
+		Set<String> deviceKeys = deviceSupports.keySet();
+		
+		Look for all REQUIRED functionalities.
+		Find drivers that support that functionality.
+		Instantiate and store into cache.
+				 
+		
+		Set<String> moduleFuncs = currentModuleInputTypes.keySet();
+		List<String> requiredFuncs = new ArrayList<String>();
+		for (String moduleFunc : moduleFuncs) {
+			if (currentModuleInputTypes.get(moduleFunc) == DependencyType.REQUIRED) {
+				for (String device : deviceKeys) {
+					if (deviceSupports.get(device).contains(moduleFunc)) {
+						// This device supports it! Instantiate and store
+						// into the cache
+						
+						//addDeviceToCache(device)
+						String driverPath = driverPaths.get(device);
+						try {
+							Class<? extends DriverInterface> cl =
+									Class.forName(driverPath).asSubclass(DriverInterface.class);
+							Constructor ctor = cl.getConstructor();
+							DriverInterface iDriver = (DriverInterface) ctor.newInstance();
+						} catch (ClassNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchMethodException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InstantiationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvocationTargetException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		*/
+		
 		
 		Map<String, String> supportedDevices = metaData.getDevices();
 		Map<String, List<String>> deviceFuncs = metaData.getDeviceSupports();
 		Set<String> keys = supportedDevices.keySet();
+		
 		
 		for (String device : keys) {
 			// Grab all the devices from the meta-data
@@ -237,7 +335,8 @@ public class HardwareManager {
 				
 				Class<? extends DriverInterface> cl = 
 						Class.forName(driver).asSubclass(DriverInterface.class);
-				DriverInterface iDriver = cl.newInstance();
+				Constructor ctor = cl.getConstructor();
+				DriverInterface iDriver = (DriverInterface) ctor.newInstance();
 				// Check whether the device is available
 				if (iDriver.isAvailable()) {
 					// Cache the driver
@@ -267,8 +366,15 @@ public class HardwareManager {
 				log.error("Error instantiating driver while checking it's availibility");
 			} catch (IllegalAccessException e) {
 				log.error("Invalid access to the driver while checking it's availibility");
+			} catch (InvocationTargetException e) {
+				throw new InvalidConfigurationFileException(e.getMessage());
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
 			}
 		}
+		
 	}
 	
 	/**
