@@ -181,6 +181,19 @@ public class KinectOpenNIDriver
 		return ret;
 	}
 	
+	/**
+	 * Ends tracking on the hand tracker as well ensures that all generators
+	 * are stopped on the context singleton.
+	 */
+	public void destroy() {
+		try {
+			handsGen.StopTrackingAll();
+			context.stopGeneratingAll();
+		} catch (StatusException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// DepthDataInterface
 	public ShortBuffer getDepthImageData() {
 		DepthMetaData depthMD = depthGen.getMetaData();
