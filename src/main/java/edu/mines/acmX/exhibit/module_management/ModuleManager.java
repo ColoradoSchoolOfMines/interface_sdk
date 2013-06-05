@@ -77,22 +77,8 @@ public class ModuleManager {
 				printHelp(opts);
 			} else {
 
-				// If the openni configuration is found populate the path to
-				// this
-				// config file
-				if (cmd.hasOption("openni-config")) {
-					// TODO
-					ModuleManager.setOpenNiConfiguration(cmd
-							.getOptionValue("openni-config"));
-				}
-
 				if (cmd.hasOption("manifest")) {
 					ModuleManager.configure(cmd.getOptionValue("manifest"));
-				} else if (cmd.hasOption("default-module")
-						&& cmd.hasOption("modules-path")) {
-					ModuleManager.configure(
-							cmd.getOptionValue("default-module"),
-							cmd.getOptionValue("modules-path"));
 				} else {
 					logger.warn("Using deprecated default module path");
 					ModuleManager
@@ -106,6 +92,7 @@ public class ModuleManager {
 		} catch (ParseException e) {
 			printHelp(opts);
 			logger.error("Incorrect command line arguments");
+			e.printStackTrace();
 		} catch (ManifestLoadException e) {
 			logger.fatal("Could not load the module manager manifest");
 			e.printStackTrace();
@@ -137,9 +124,9 @@ public class ModuleManager {
 
 	private static Options generateCLOptions() {
 		Options options = new Options();
-		options = optionsUsingIndividualAgruments(options);
+		//options = optionsUsingIndividualAgruments(options);
 		options.addOption(optionsUsingManifest());
-		options.addOption(openNiArguments());
+		//options.addOption(openNiArguments());
 		options.addOption("h", "help", false, "Print these helpful hints");
 		return options;
 	}
@@ -554,55 +541,66 @@ public class ModuleManager {
 	 */
 	public void run() {
 		while (true) {
-			CountDownLatch waitForModule = new CountDownLatch(1);
-
-			if (loadDefault) {
-				logger.info("Loaded default module");
-				setCurrentAsDefault();
-			} else {
-				try {
-					setCurrentAsNextModule();
-					hardwareInstance
-							.setRunningModulePermissions(currentModuleMetaData
-									.getInputTypes());
-					logger.info("Loaded module "
-							+ nextModuleMetaData.getPackageName());
-				} catch (ModuleLoadException e) {
-					logger.error("Module ["
-							+ nextModuleMetaData.getPackageName()
-							+ "] could not be loaded");
-					logger.warn("Loading default module");
-					setCurrentAsDefault();
-				} catch (BadDeviceFunctionalityRequestException e) {
-					logger.error("Module ["
-							+ nextModuleMetaData.getPackageName()
-							+ "] depends on unknown functionality");
-					logger.warn("Loading default module");
-					setCurrentAsDefault();
-				} finally {
-					loadDefault = true;
-				}
-			}
-
-			// clears the hardware managers' cache of drivers and rebuilds it.
-			// this is because we don't want to persist device data and driver
-			// state between module lifecycles
-			hardwareInstance.resetAllDrivers();
-
-			currentModule.init(waitForModule);
-			currentModule.execute();
-
-			try {
-				waitForModule.await();
-			} catch (InterruptedException e) {
-				logger.warn("Module execution was interrupted");
-			}
-
-			// refresh modules
-			refreshModules();
-
+            preModuleRuntime();
+            runCurrentModule();
+            postModuleRuntime();
 		}
 	}
+
+    private void preModuleRuntime() {
+        if (loadDefault) {
+            logger.info("Loaded default module");
+            setCurrentAsDefault();
+        } else {
+            try {
+                setCurrentAsNextModule();
+                hardwareInstance
+                    .setRunningModulePermissions(currentModuleMetaData
+                            .getInputTypes());
+                logger.info("Loaded module "
+                        + nextModuleMetaData.getPackageName());
+            } catch (ModuleLoadException e) {
+                logger.error("Module ["
+                        + nextModuleMetaData.getPackageName()
+                        + "] could not be loaded");
+                logger.warn("Loading default module");
+                setCurrentAsDefault();
+            } catch (BadDeviceFunctionalityRequestException e) {
+                logger.error("Module ["
+                        + nextModuleMetaData.getPackageName()
+                        + "] depends on unknown functionality");
+                logger.warn("Loading default module");
+                setCurrentAsDefault();
+            } finally {
+                loadDefault = true;
+            }
+        }
+
+        // clears the hardware managers' cache of drivers and rebuilds it.
+        // this is because we don't want to persist device data and driver
+        // state between module lifecycles
+        hardwareInstance.resetAllDrivers();
+
+    }
+
+    private void runCurrentModule() {
+        CountDownLatch waitForModule = new CountDownLatch(1);
+
+        currentModule.init(waitForModule);
+        currentModule.execute();
+
+        try {
+            waitForModule.await();
+        } catch (InterruptedException e) {
+            logger.warn("Module execution was interrupted");
+        }
+
+    }
+
+    private void postModuleRuntime() {
+        // refresh modules
+        refreshModules();
+    }
 
 	public static void setPathToManifest(String path) {
 		ModuleManager.pathToModuleManagerManifest = path;
