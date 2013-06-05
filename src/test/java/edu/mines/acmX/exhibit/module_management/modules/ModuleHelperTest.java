@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
@@ -26,10 +28,12 @@ public class ModuleHelperTest {
 	 * 
 	 * @throws ModuleLoadException
 	 * @throws ManifestLoadException
+	 * @throws BadDeviceFunctionalityRequestException 
+	 * @throws HardwareManagerManifestException 
 	 */
 	@Test
 	public void testNextValidModule() throws ManifestLoadException,
-			ModuleLoadException {
+			ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.createEmptyInstance();
 		ModuleManager m = ModuleManager.getInstance();
 		ModuleMetaData before = new ModuleMetaData(null, null, null, null, null, null, null, null, null, null, true);
