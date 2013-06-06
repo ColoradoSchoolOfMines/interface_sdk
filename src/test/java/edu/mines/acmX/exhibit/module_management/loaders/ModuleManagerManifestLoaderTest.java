@@ -2,10 +2,11 @@ package edu.mines.acmX.exhibit.module_management.loaders;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
-import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
-import edu.mines.acmX.exhibit.module_management.loaders.ModuleManagerManifestLoader;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 
 /**
@@ -16,8 +17,15 @@ public class ModuleManagerManifestLoaderTest {
 
     @Test
     public void testLoadCorrectModuleManagerManifest() throws ManifestLoadException {
-        ModuleManagerMetaData data = new ModuleManagerMetaData("com.example.test", "/home/andrew/");
-		assertEquals(data, ModuleManagerManifestLoader.load("src/test/resources/module_manager/testModuleManagerManifest.xml"));
+    	Map<String,String> configs = new HashMap<String,String>();
+    	configs.put("kinectopenni", "src/test/resources/openni-config.xml");
+    	ModuleManagerMetaData data = new ModuleManagerMetaData(
+    			"com.austindiviness.cltest",
+    			"src/test/resources/modules",
+    			configs);
+    	ModuleManagerMetaData actual = ModuleManagerManifestLoader.load("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+    	System.out.println("Actual: " + actual);
+		assertEquals(data, actual);
     }
 
     /**

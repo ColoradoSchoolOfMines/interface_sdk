@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
-import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
@@ -58,8 +57,10 @@ public class ModuleManagerTest {
 				"i_love_horseys", "andrew demaria", "0.1", desiredInputs,
 				desiredModules, false);
 		moduleToLoadData.setJarFileName("HorseSimpleGood.jar");
+		// the third argument is null because we dont need to interact with the
+		// hw manager at this point
 		ModuleManagerMetaData metaNeeded = new ModuleManagerMetaData("",
-				"src/test/resources/modules/");
+				"src/test/resources/modules/", null);
 		ModuleManager m = ModuleManager.getInstance();
 		m.setMetaData(metaNeeded);
 		ModuleInterface module = m.loadModuleFromMetaData(moduleToLoadData);
@@ -168,8 +169,9 @@ public class ModuleManagerTest {
 				desiredModules, false);
 		moduleToLoadData.setJarFileName(jarName);
 		moduleMetas.put("com.andrew.random", moduleToLoadData);
+		// again we do not need the third argument because hw manager will not be needed
 		ModuleManagerMetaData data = new ModuleManagerMetaData(
-				"com.andrew.random", "src/test/resources/modules");
+				"com.andrew.random", "src/test/resources/modules", null);
 		ModuleManager manager = ModuleManager.getInstance();
 		manager.setModuleMetaDataMap(moduleMetas);
 		manager.setMetaData(data);
@@ -320,8 +322,9 @@ public class ModuleManagerTest {
 				new HashMap<String, DependencyType>(), false);
 		defaultModMeta.setJarFileName(jarPath);
 		modMetas.put("com.andrew.random", defaultModMeta);
+		// TODO
 		m.setMetaData(new ModuleManagerMetaData("com.andrew.random",
-				"src/test/resources/modules"));
+				"src/test/resources/modules", null));
 		m.setModuleMetaDataMap(modMetas);
 		Method setDefault = ModuleManager.class.getDeclaredMethod(
 				"setDefaultModule", String.class);
@@ -480,17 +483,119 @@ public class ModuleManagerTest {
 
 	}
 
+//	/**
+//	 * Test that module manager loads the default if the next module to run does
+//	 * not have its hardware requirements met
+//	 * @throws SecurityException 
+//	 * @throws NoSuchMethodException 
+//	 * @throws BadDeviceFunctionalityRequestException 
+//	 * @throws HardwareManagerManifestException 
+//	 * @throws ModuleLoadException 
+//	 * @throws ManifestLoadException 
+//	 * @throws InvocationTargetException 
+//	 * @throws IllegalArgumentException 
+//	 * @throws IllegalAccessException 
+//	 * @throws NoSuchFieldException 
+//	 */
+//	@Test
+//	public void testManagerRevertToDefaultOnModuleBadHardwareRequest() throws NoSuchMethodException, SecurityException, ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+//		ModuleManager.removeInstance();
+//		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
+//		ModuleManager m = ModuleManager.getInstance();
+//		
+//		//set the next module to load as the module with the bad hardware requests
+//		assertTrue(m.setNextModule("edu.mines.ademaria.badmodules.badrequired"));
+//		
+//		Method setupDefaultRuntime = ModuleManager.class.getDeclaredMethod("setupDefaultRuntime");
+//		setupDefaultRuntime.setAccessible(true);
+//		setupDefaultRuntime.invoke(m);
+//		
+//		// now check that the default module is the current module
+//		
+//		Field getCurrentModule = ModuleManager.class.getDeclaredField("currentModuleMetaData");
+//		getCurrentModule.setAccessible(true);
+//		ModuleMetaData current = (ModuleMetaData) getCurrentModule.get(m);
+//		//assertTrue(current.getPackageName(), "")
+//		
+//	}
+	
 	/**
-	 * Test that module manager loads the default if the next module to run does
-	 * not have its hardware requirements met
+	 * Tests that the setNextModule gives proper feedback when a module cannot be set
+	 * @throws ManifestLoadException
+	 * @throws ModuleLoadException
+	 * @throws HardwareManagerManifestException
+	 * @throws BadDeviceFunctionalityRequestException
 	 */
 	@Test
-	public void testManagerRevertToDefaultOnModuleBadHardwareRequest() {
-		fail( "Not Implemented Yet");
+	public void testCannotSetModuleWithoutNeededDriver() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		m.setCurrentModuleMetaData("com.austindiviness.cltest");
+		
+		assertFalse(m.setNextModule("edu.mines.ademaria.badmodules.badrequired"));
 	}
 	
 	/**
-	 * Test that module manager loads 
+	 * Tests that the setNextModule gives proper feedback when a module can be set
+	 * 
+	 * @throws ManifestLoadException
+	 * @throws ModuleLoadException
+	 * @throws HardwareManagerManifestException
+	 * @throws BadDeviceFunctionalityRequestException
 	 */
+	@Test
+	public void testCanSetModuleWhenDriverPresent() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		m.setCurrentModuleMetaData("com.austindiviness.cltest");
 
+		
+		assertTrue(m.setNextModule("edu.mines.ademaria.goodmodules.goodrequireddriver"));
+	}
+
+	/**
+	 * Test that module manager loads when hardware is there and setup correctly
+	 * @throws ManifestLoadException 
+	 * @throws BadDeviceFunctionalityRequestException 
+	 * @throws HardwareManagerManifestException 
+	 * @throws ModuleLoadException 
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 */
+	@Test
+	public void testRevertToDefaultOnBadDriverRequest() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		// pretend the next module was set (to skip that logic)
+		// default = false
+		Field loadDefault = ModuleManager.class.getDeclaredField("loadDefault");
+		loadDefault.setAccessible(true);
+		loadDefault.set(m, true);
+		// set the nextModuleMetaData
+		// TODO change this to instead use a generated ModuleMetaData so we can skip some of the logic for ModuleManager
+		ModuleMetaData badMetaData = m.getModuleMetaDataMap().get("edu.mines.ademaria.badmodules.badrequired");
+		Field nextModuleMeta = ModuleManager.class.getDeclaredField("nextModuleMetaData");
+		nextModuleMeta.setAccessible(true);
+		nextModuleMeta.set(m, badMetaData);
+		
+		// call the setup function
+		Method setupDefaultRuntime = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
+		setupDefaultRuntime.setAccessible(true);
+		setupDefaultRuntime.invoke(m);
+		
+		// check that the module was reverted to default
+		Field currentMeta = ModuleManager.class.getDeclaredField("currentModuleMetaData");
+		currentMeta.setAccessible(true);
+		ModuleMetaData actual = (ModuleMetaData) currentMeta.get(m);
+		assertEquals(actual.getPackageName(), "com.austindiviness.cltest");
+		
+	}
 }

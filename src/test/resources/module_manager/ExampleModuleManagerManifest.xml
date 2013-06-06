@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
   <module-manager
+      default-module="com.austindiviness.cltest"
       module-path="src/test/resources/modules" >
     <config-files>
       <config-file name="kinectopenni" path="src/test/resources/openni-config.xml" />
@@ -10,3 +11,4 @@
 </manifest>
 <!-- vim:fenc=utf-8
   -->
+

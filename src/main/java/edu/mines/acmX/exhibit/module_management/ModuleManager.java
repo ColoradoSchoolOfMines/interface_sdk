@@ -124,9 +124,9 @@ public class ModuleManager {
 
 	private static Options generateCLOptions() {
 		Options options = new Options();
-		//options = optionsUsingIndividualAgruments(options);
+		// options = optionsUsingIndividualAgruments(options);
 		options.addOption(optionsUsingManifest());
-		//options.addOption(openNiArguments());
+		// options.addOption(openNiArguments());
 		options.addOption("h", "help", false, "Print these helpful hints");
 		return options;
 	}
@@ -191,15 +191,15 @@ public class ModuleManager {
 	 * 
 	 * @throws ManifestLoadException
 	 */
-	private static void configure(String moduleManifestPath)
+	public static void configure(String moduleManifestPath)
 			throws ManifestLoadException {
 		metaData = loadModuleManagerConfig(moduleManifestPath);
 	}
 
-	private static void configure(String defaultModule, String pathToModules) {
-		logger.info("Using explicitly given configuration");
-		metaData = new ModuleManagerMetaData(defaultModule, pathToModules);
-	}
+//	private static void configure(String defaultModule, String pathToModules) {
+//		logger.info("Using explicitly given configuration");
+//		metaData = new ModuleManagerMetaData(defaultModule, pathToModules);
+//	}
 
 	private ModuleManager() throws ManifestLoadException, ModuleLoadException,
 			HardwareManagerManifestException,
@@ -328,7 +328,8 @@ public class ModuleManager {
 	}
 
 	/**
-	 * Loads the ModuleManager config file. TODO should really be private
+	 * Loads the ModuleManager config file. 
+     * TODO should really be private
 	 * 
 	 * @param path
 	 *            Path to the ModuleManager xml config file
@@ -405,6 +406,7 @@ public class ModuleManager {
 	 * don't have their required input services.
 	 */
 	private void checkModuleInputServices() {
+        // TODO checkPermisions(..)
 		// TODO!!!
 	}
 
@@ -413,6 +415,7 @@ public class ModuleManager {
 	 * required modules and input services.
 	 */
 	public void checkDependencies() {
+        // TODO remove check module Input Services..
 		checkModuleInputServices();
 		checkModuleDependencies();
 	}
@@ -538,69 +541,86 @@ public class ModuleManager {
 	 * function.. If this ever becomes not the case we may need multiple
 	 * countDown latches and ensure that this is syncronized along with any
 	 * other public functions.
+     * TODO document ordering on calling hw functions
+     *      document manifest stuff
+     *      changes to the metaData
+     *      general integration aspect
+     *
 	 */
 	public void run() {
 		while (true) {
-            preModuleRuntime();
+			setupPreRuntime();
             runCurrentModule();
             postModuleRuntime();
 		}
 	}
+	
+	private void setupPreRuntime() {
+		if (loadDefault = true ) {
+			preDefaultRuntime();
+		} else {
+			try {
+				preModuleRuntime();
+			} catch (ModuleLoadException e) {
+				logger.error("Module [" + nextModuleMetaData.getPackageName()
+						+ "] could not be loaded");
+				logger.warn("Loading default module");
+				preDefaultRuntime();
+			} catch (BadDeviceFunctionalityRequestException e) {
+				logger.error("Module [" + nextModuleMetaData.getPackageName()
+						+ "] depends on unknown functionality");
+				logger.warn("Loading default module");
+				preDefaultRuntime();
+			}
+		}
 
-    private void preModuleRuntime() {
-        if (loadDefault) {
-            logger.info("Loaded default module");
-            setCurrentAsDefault();
-        } else {
-            try {
-                setCurrentAsNextModule();
-                hardwareInstance
-                    .setRunningModulePermissions(currentModuleMetaData
-                            .getInputTypes());
-                logger.info("Loaded module "
-                        + nextModuleMetaData.getPackageName());
-            } catch (ModuleLoadException e) {
-                logger.error("Module ["
-                        + nextModuleMetaData.getPackageName()
-                        + "] could not be loaded");
-                logger.warn("Loading default module");
-                setCurrentAsDefault();
-            } catch (BadDeviceFunctionalityRequestException e) {
-                logger.error("Module ["
-                        + nextModuleMetaData.getPackageName()
-                        + "] depends on unknown functionality");
-                logger.warn("Loading default module");
-                setCurrentAsDefault();
-            } finally {
-                loadDefault = true;
-            }
-        }
-
-        // clears the hardware managers' cache of drivers and rebuilds it.
-        // this is because we don't want to persist device data and driver
-        // state between module lifecycles
+        // if anything is thrown here it is not specific to a module.
+		commonPreRuntime();
+	}
+	
+	private void commonPreRuntime() {
+        loadDefault = true;
         hardwareInstance.resetAllDrivers();
+	}
 
-    }
+	private void preDefaultRuntime() {
+		setCurrentAsDefault();
+		try {
+			hardwareInstance.setRunningModulePermissions(defaultModuleMetaData
+					.getInputTypes());
+		} catch (BadDeviceFunctionalityRequestException e) {
+			// This should never happen because the default module has already
+			// been checked with the hardware manager during the instantiation of
+			// the ModuleManager
+			logger.fatal("The default module does not have its required devices");
+		}
+	}
 
-    private void runCurrentModule() {
-        CountDownLatch waitForModule = new CountDownLatch(1);
+	private void preModuleRuntime() throws BadDeviceFunctionalityRequestException, ModuleLoadException {
+		setCurrentAsNextModule();
+		hardwareInstance.setRunningModulePermissions(currentModuleMetaData
+				.getInputTypes());
+		logger.info("Loaded module " + nextModuleMetaData.getPackageName());
+	}
 
-        currentModule.init(waitForModule);
-        currentModule.execute();
+	private void runCurrentModule() {
+		CountDownLatch waitForModule = new CountDownLatch(1);
 
-        try {
-            waitForModule.await();
-        } catch (InterruptedException e) {
-            logger.warn("Module execution was interrupted");
-        }
+		currentModule.init(waitForModule);
+		currentModule.execute();
 
-    }
+		try {
+			waitForModule.await();
+		} catch (InterruptedException e) {
+			logger.warn("Module execution was interrupted");
+		}
 
-    private void postModuleRuntime() {
-        // refresh modules
-        refreshModules();
-    }
+	}
+
+	private void postModuleRuntime() {
+		// refresh modules
+		refreshModules();
+	}
 
 	public static void setPathToManifest(String path) {
 		ModuleManager.pathToModuleManagerManifest = path;
@@ -643,6 +663,8 @@ public class ModuleManager {
 
 	/**
 	 * Sets next module to be loaded, after the current module.
+     *
+     * TODO check the module can run with the hardware manager.
 	 * 
 	 * @param name
 	 *            Package name of module to be loaded next.
@@ -671,6 +693,8 @@ public class ModuleManager {
 				throw new ModuleLoadException(
 						"Metadata for the requested module is not available");
 			}
+			// TODO
+            //hardwareInstance.checkPermissions( nextModuleMetaData.getInputTypes() );
 			loadDefault = false;
 			return true;
 		} catch (ModuleLoadException e) {
