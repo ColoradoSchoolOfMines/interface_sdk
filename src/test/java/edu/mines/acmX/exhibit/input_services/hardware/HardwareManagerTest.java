@@ -180,14 +180,17 @@ public class HardwareManagerTest {
 				
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
+
+		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
+		mmd.put("depth", DependencyType.REQUIRED);
+		hm.setRunningModulePermissions(mmd);
+		
+		hm.resetAllDrivers();
 		
 		Map<String, String> configStore = new HashMap<String, String>();
 		configStore.put("kinectopenni", "BAD_XML");
 		hm.setConfigurationFileStore(configStore);
 		
-		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
-		mmd.put("depth", DependencyType.REQUIRED);
-		hm.setRunningModulePermissions(mmd);
 		
 		hm.resetAllDrivers();		
 	}
@@ -200,14 +203,17 @@ public class HardwareManagerTest {
 		
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
+
+		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
+		hm.setRunningModulePermissions(mmd);
+		hm.resetAllDrivers();
 		
+		mmd.put("depth", DependencyType.REQUIRED);
+		hm.setRunningModulePermissions(mmd);
+
 		Map<String, String> configStore = new HashMap<String, String>();
 		configStore.put("kinectopenni", "openni_config.xml");
 		
-		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
-		mmd.put("depth", DependencyType.REQUIRED);
-		
-		hm.setRunningModulePermissions(mmd);
 		hm.setConfigurationFileStore(configStore);
 		hm.resetAllDrivers();
 		
