@@ -454,6 +454,10 @@ public class HardwareManager {
 	}
 
 	/**
+	 * Returns a list of driver paths that support a given functionality. In
+	 * the event that the functionality was considered optional, attempt to
+	 * build the driver and store it into the cache and list of available
+	 * functionalities.
 	 * 
 	 * @param functionality
 	 * @return list of driver paths that support the given functionality
@@ -461,6 +465,9 @@ public class HardwareManager {
 	 *             no devices support that functionality
 	 * @throws InvalidConfigurationFileException In the event this functionality
 	 * 				was considered optional and failed to load correctly.
+	 * 
+	 * @see {@link HardwareManager#findDeviceDriversSupporting(String)}
+	 * 		{@link HardwareManager#buildDriverList(List)}
 	 */
 	public List<String> getDevices(String functionality)
 			throws BadFunctionalityRequestException, InvalidConfigurationFileException {
@@ -470,12 +477,20 @@ public class HardwareManager {
 			throw new BadFunctionalityRequestException(
 					"Bad functionality requested");
 		}
-		// Check if this functionality was considered 'OPTIONAL'
-		if (currentModuleInputTypes.get(functionality) == DependencyType.OPTIONAL) {
-			// Returns device names
-			List<String> supportingDevices = findDeviceDriversSupporting(functionality);
-
-			buildDriverList(supportingDevices);
+		if (!devices.containsKey(functionality)) {
+			// Check if this functionality was considered 'OPTIONAL'
+			if (currentModuleInputTypes.get(functionality) == DependencyType.OPTIONAL) {
+				// Returns device names
+				List<String> supportingDevices = findDeviceDriversSupporting(functionality);
+				buildDriverList(supportingDevices);
+				
+			} else {
+				// Ideally this exception should never be thrown. The only time
+				// we enter this block is if dependency was required AND not in
+				// our cache.
+				throw new BadFunctionalityRequestException(
+						"Bad functionality requested");
+			}
 		}
 		// Return our list 
 		return devices.get(functionality);
