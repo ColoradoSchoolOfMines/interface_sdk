@@ -69,9 +69,12 @@ public class KinectOpenNIDriver implements DriverInterface,
 			OpenNIConfigurationException, GeneralException {
 		
 		try {
+			log.debug("Constructor");
 			HardwareManager hm = HardwareManager.getInstance();
 			String canName = KinectOpenNIDriver.class.getCanonicalName();
+			
 			if (!hm.hasConfigFile(canName)) {
+				log.debug("Missing config file");
 				throw new InvalidConfigurationFileException("Missing " +
 															canName +
 															" config file");

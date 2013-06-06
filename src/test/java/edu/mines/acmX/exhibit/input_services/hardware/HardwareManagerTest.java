@@ -3,6 +3,8 @@ package edu.mines.acmX.exhibit.input_services.hardware;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
@@ -22,7 +24,7 @@ import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
  */
 
 public class HardwareManagerTest {
-	
+	public static final Logger log = LogManager.getLogger(HardwareManagerTest.class);
 	public static final String BASE_FILE = "input_services/";
 	
 	/**
@@ -128,6 +130,7 @@ public class HardwareManagerTest {
 		inputTypes.put("rgbimage", DependencyType.REQUIRED);
 		
 		hm.setRunningModulePermissions(inputTypes);
+		hm.checkPermissions(inputTypes);
 	}
 	
 	/**
@@ -152,21 +155,25 @@ public class HardwareManagerTest {
 	@Test(expected=InvalidConfigurationFileException.class)
 	public void testNoDriverConfigFile() 
 			throws HardwareManagerManifestException, 
-			InvalidConfigurationFileException {
+			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
 		
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 		
 		Map<String, String> configStore = new HashMap<String, String>();
-		
+		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
+		mmd.put("depth", DependencyType.REQUIRED);
+		hm.setRunningModulePermissions(mmd);
 		hm.setConfigurationFileStore(configStore);
 		hm.buildRequiredDevices();
+		
 	}
 	
 	@Test(expected=InvalidConfigurationFileException.class)
 	public void testValidDriverConfigStore() 			
 			throws HardwareManagerManifestException, 
-			InvalidConfigurationFileException {
+			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
+		log.info("testValidDriverConfigFile");
 				
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
@@ -174,8 +181,16 @@ public class HardwareManagerTest {
 		Map<String, String> configStore = new HashMap<String, String>();
 		configStore.put("kinectopenni", "BAD_XML");
 		
+		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
+		mmd.put("depth", DependencyType.REQUIRED);
+		
+		hm.setRunningModulePermissions(mmd);
 		hm.setConfigurationFileStore(configStore);
-		hm.buildRequiredDevices();
+		hm.resetAllDrivers();		
+	}
+	
+	@Test
+	public void testValidDriverCache() {
 		
 	}
 	
