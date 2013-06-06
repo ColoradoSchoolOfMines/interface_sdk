@@ -688,10 +688,12 @@ public class ModuleManager {
 		// TODO check that this method is syncronized!!!
 		// BE CAREFUL!!!
 
+        logger.debug("Attempting to set next module to: " + name );
 		// check that currentModule can set this package in question
 		if (!currentModuleMetaData.getOptionalAll()
 				&& !currentModuleMetaData.getModuleDependencies().containsKey(
 						name)) {
+            logger.debug("The next module could not be set because the current module is not allowed to run the requested module");
 			return false;
 		}
 		try {
@@ -700,13 +702,16 @@ public class ModuleManager {
 				throw new ModuleLoadException(
 						"Metadata for the requested module is not available");
 			}
+            logger.debug("The requested input types are: " + nextModuleMetaData.getInputTypes());
             hardwareInstance.checkPermissions( nextModuleMetaData.getInputTypes() );
 			loadDefault = false;
 			return true;
-		} catch (ModuleLoadException e) {
+        } catch (ModuleLoadException e) {
+            logger.debug("The next module could not be loaded because there is no module meta data available.");
 			loadDefault = true; // dont necessarily need since it wasnt changed.
 			return false;
 		} catch (BadDeviceFunctionalityRequestException e) {
+            logger.debug("The hardware manager does not have functionality for the requested module");
 			// Hardware functionality was not known
 			loadDefault = true;  // dont necessarily need since it wanst changed
 			return false;
