@@ -1,5 +1,7 @@
 package edu.mines.acmX.exhibit.input_services.hardware;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,145 +15,191 @@ import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 
 /**
  * The HardwareManager acts as a layer of communication for retrieving drivers.
- * Information is loaded via a config file which can be modified.
- * The manager will choose the most appropriate driver given a functionality
- * and a specific module's set of permissions.
- * The manager is a singleton to reduce conflicts between driver requests.
- * The manager also checks whether a module's required functionalities are
- * available.
+ * Information is loaded via a config file which can be modified. The manager
+ * will choose the most appropriate driver given a functionality and a specific
+ * module's set of permissions. The manager is a singleton to reduce conflicts
+ * between driver requests. The manager also checks whether a module's required
+ * functionalities are available.
+ * 
+ * TODO Things that change on the module side:
+ * 	Better exception handling.
  * 
  * @author Aakash Shah
  * @author Ryan Stauffer
  * 
- * @see
- * 	{@link HardwareManagerMetaData}
- * 	{@link HardwareManagerManifestLoader}
+ *         -mod mgr passes the module dependencies list to us so it can check
+ *         required dependencies -integrate the run/exit of the module into here
+ * 
+ * @see {@link HardwareManagerMetaData} {@link HardwareManagerManifestLoader}
  * 
  */
 
 public class HardwareManager {
-	
-	private static final Logger log = LogManager.getLogger(HardwareManager.class);
-	
+
+	private static final Logger log = LogManager
+			.getLogger(HardwareManager.class);
+
 	private HardwareManagerMetaData metaData;
 	private Map<String, DependencyType> currentModuleInputTypes;
-	
+
 	private static HardwareManager instance = null;
 	private static String manifest_path = "hardware_manager_manifest.xml";
-	
-	private Map<String, List<String>> devices;
-	
+
+	private Map<String, List<String>> devices; // available list of devices
 	private Map<String, DriverInterface> deviceDriverCache;
-	
+	private Map<String, String> configFileStore;
+
 	/**
 	 * The constructor of the HardwareManager. This method loads the config
-	 * file, and ensures that the file is valid.
-	 * <br/>
-	 * This will also check to see which devices are available, so that when a
-	 * module is loaded in, we are able to verify that the module's
-	 * dependencies are satisfied.
+	 * file, and ensures that the file is valid. <br/>
 	 * 
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException
 	 * 
-	 * @see {@link #validifyMetaData()} {@link #checkAvailableDevices()}
+	 * @see {@link #validifyMetaData()} {@link #buildRequiredDevices()}
 	 * 
 	 */
-	private HardwareManager() 
-			throws 	HardwareManagerManifestException,
-					DeviceConnectionException {
-		
+	private HardwareManager() throws HardwareManagerManifestException {
+
 		loadConfigFile();
 		validifyMetaData();
+		currentModuleInputTypes = new HashMap<String, DependencyType>();
+		devices = new HashMap<String, List<String>>();
 		deviceDriverCache = new HashMap<String, DriverInterface>();
-		checkAvailableDevices();
+		configFileStore = new HashMap<String, String>();
 	}
-	
+
 	/**
 	 * Get's an instance of the HardwareManager
+	 * 
 	 * @return A HardwareManager instance
 	 * @throws HardwareManagerManifestException
-	 */	
+	 */
 	public static HardwareManager getInstance()
-			throws 	HardwareManagerManifestException,
-					DeviceConnectionException {
+			throws HardwareManagerManifestException {
 		if (instance == null) {
-			instance = new HardwareManager();				
+			instance = new HardwareManager();
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Sets the location to load the manifest config file from. Upon doing this,
 	 * a new instance of HardwareManager will be initialized.
 	 * 
-	 * @param  filepath
+	 * @param filepath
 	 * @throws HardwareManagerManifestException
 	 * 
-	 * @see
-	 * 	{@link #HardwareManager()}
+	 * @see {@link #HardwareManager()}
 	 */
 	public static void setManifestFilepath(String filepath)
-			throws 	HardwareManagerManifestException, 
-					DeviceConnectionException {
+			throws HardwareManagerManifestException {
 		manifest_path = filepath;
 		instance = new HardwareManager();
 	}
 
 	/**
-	 * Sets the currently running module and verifies the functionalities
-	 * of that module.
+	 * Sets the currently running module. Validation checks will not occur here
+	 * as to whether the module can run.
 	 * 
-	 * @param mmd The map of functionalities and their level of dependence 
-	 * @throws BadDeviceFunctionalityRequestException
+	 * @param mmd
+	 *            The map of functionalities and their level of dependence
 	 */
-	public void setRunningModulePermissions(Map<String, DependencyType> mmd)
-		throws BadDeviceFunctionalityRequestException {
-		
+	public void setRunningModulePermissions(Map<String, DependencyType> mmd) {
 		currentModuleInputTypes = mmd;
-		checkPermissions();
-		
 	}
-	
+
+	/**
+	 * Gets the configuration store so that drivers may load config files if
+	 * needed. From the passed configuration store, we alter the stored map to
+	 * be not "driver name -> config path" but rather
+	 * "canonical driver path -> config path"
+	 * 
+	 * @param config
+	 *            A map of devices->their config files provided from the module
+	 *            manager manifest.
+	 */
+	public void setConfigurationFileStore(Map<String, String> config) {
+		// supportedDevices = driver->driver_path
+		Map<String, String> supportedDevices = metaData.getDevices();
+		Set<String> deviceKeys = config.keySet();
+
+		for (String configName : deviceKeys) {
+			if (supportedDevices.containsKey(configName)) {
+				this.configFileStore.put(supportedDevices.get(configName),
+						config.get(configName));
+			}
+		}
+
+	}
+
+	/**
+	 * Allows a driver to figure out whether a config file was provided for the
+	 * given canonical driver path.
+	 * 
+	 * @param driverPath
+	 *            Canonical path to the driver
+	 */
+	public boolean hasConfigFile(String driverPath) {
+		return this.configFileStore.containsKey(driverPath);
+	}
+
+	/**
+	 * 
+	 * @param driverPath
+	 *            Canonical path to the driver
+	 * @return location to the config file indicated in the module manager
+	 *         manifest.
+	 */
+	public String getConfigFile(String driverPath) {
+		return this.configFileStore.get(driverPath);
+	}
+
 	/**
 	 * Calls destroy on all driver objects, then removes all cached driver
-	 * objects and rebuilds this cache based on which devices are now available.
-	 * @throws DeviceConnectionException
+	 * objects and rebuilds this cache based on which devices are stored from
+	 * the next running module's input types.
+	 * 
+	 * @throws InvalidConfigurationFileException
+	 *             Thrown if the driver requires a configuration file that was
+	 *             not present on the store.
 	 */
-	public void resetAllDrivers() throws DeviceConnectionException {
+	public void resetAllDrivers() throws InvalidConfigurationFileException {
 		for (String driverName : deviceDriverCache.keySet()) {
 			DriverInterface driver = deviceDriverCache.get(driverName);
 			driver.destroy();
 		}
+		devices.clear();
 		deviceDriverCache.clear();
-		checkAvailableDevices();
+		buildRequiredDevices();
 	}
-	
+
 	/**
 	 * Loads the configuration file.
+	 * 
 	 * @throws HardwareManagerManifestException
 	 * 
-	 * @see
-	 * 	{@link HardwareManagerManifestLoader}
+	 * @see {@link HardwareManagerManifestLoader}
 	 */
 	private void loadConfigFile() throws HardwareManagerManifestException {
-		metaData = HardwareManagerManifestLoader.load(manifest_path);	
+		metaData = HardwareManagerManifestLoader.load(manifest_path);
 	}
-	
+
 	/**
 	 * Responsible for verifying the HardwareManagerMetaData after having been
 	 * loaded from the manifest file. This will ensure that the driver and
-	 * interface classes exist as specified from within the meta-data. Also 
+	 * interface classes exist as specified from within the meta-data. Also
 	 * checks to see whether there is a disjoint between the functionalities
 	 * each device supports and interfaces mapped to it.
 	 * 
-	 * @throws HardwareManagerManifestException If the meta-data is incorrect.
+	 * @throws HardwareManagerManifestException
+	 *             If the meta-data is incorrect.
 	 * 
-	 * @see {@link HardwareManagerMetaData}  
+	 * @see {@link HardwareManagerMetaData}
 	 */
 	private void validifyMetaData() throws HardwareManagerManifestException {
 		// verify classes existing
@@ -159,146 +207,240 @@ public class HardwareManager {
 		Collection<String> drivers = metaData.getDevices().values();
 		try {
 			for (String i : interfaces) {
-				Class<? extends DeviceDataInterface> cl = 
-						Class.forName(i).asSubclass(DeviceDataInterface.class);
+				Class<? extends DeviceDataInterface> cl = Class.forName(i)
+						.asSubclass(DeviceDataInterface.class);
 			}
-			
+
 			for (String i : drivers) {
-				Class<? extends DriverInterface> cl = 
-						Class.forName(i).asSubclass(DriverInterface.class);
+				Class<? extends DriverInterface> cl = Class.forName(i)
+						.asSubclass(DriverInterface.class);
 			}
 		} catch (ClassNotFoundException e) {
-			throw new HardwareManagerManifestException("Invalid interface/driver class");
+			throw new HardwareManagerManifestException(
+					"Invalid interface/driver class");
 		} catch (ExceptionInInitializerError e) {
-			throw new HardwareManagerManifestException("Invalid interface/driver class");
+			throw new HardwareManagerManifestException(
+					"Invalid interface/driver class");
+		} catch (Exception e) {
+			log.error("Getting an exception");
 		}
-		
-		
+
 		// check support list for being disjoint
 		// Builds a list of all the functionalities requested by all drivers
 		Set<String> supports = new HashSet<String>();
-		for (List<String> deviceSupports : metaData.getDeviceSupports().values()) {
+		for (List<String> deviceSupports : metaData.getDeviceSupports()
+				.values()) {
 			for (String s : deviceSupports) {
 				supports.add(s);
 			}
 		}
-		
+
 		// Checks to see whether the built list is a subset of all provided
 		// functionalities. Note the exception is thrown when a functionality
 		// may not exist in the <functionalities> tag
 		Set<String> available = metaData.getFunctionalities().keySet();
 		if (!available.containsAll(supports)) {
-			throw new HardwareManagerManifestException("Unknown functionality supported by device");
+			throw new HardwareManagerManifestException(
+					"Unknown functionality supported by device");
 		}
 	}
-	
+
 	/**
 	 * Checks to see whether the functionalities that are required by the
 	 * currently running module are supported through the HardwareManager
 	 * manifest.
 	 * 
-	 * @throws BadDeviceFunctionalityRequestException on failure
+	 * @param inputTypes
+	 * 
+	 * @throws BadDeviceFunctionalityRequestException
+	 *             on failure
 	 */
-	public void checkPermissions() 
+	public void checkPermissions(Map<String, DependencyType> inputTypes)
 			throws BadDeviceFunctionalityRequestException {
-		Set<String> functionalities = currentModuleInputTypes.keySet();
+		Set<String> functionalities = inputTypes.keySet();
 		for (String functionality : functionalities) {
-			DependencyType dt = currentModuleInputTypes.get(functionality);
+			DependencyType dt = inputTypes.get(functionality);
 			// Ignore optional ones
 			if (dt == DependencyType.REQUIRED) {
 				// Make sure we support this functionality
 				if (!metaData.getFunctionalities().containsKey(functionality)) {
-					throw new BadDeviceFunctionalityRequestException(functionality + " not supported.");
+					throw new BadDeviceFunctionalityRequestException(
+							functionality + " not supported.");
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * Goes through all functionalities in the manifest and constructs a list
-	 * of drivers that are available and support that functionality. 
+	 * Goes through all the required functionalities in the module's input
+	 * types and ensures that it is available. This only builds functionalities
+	 * marked as REQUIRED in the module's manifest file. This is so that the
+	 * user may be aware when a module's required functionalities have failed
+	 * to load.
 	 * 
-	 * @throws DeviceConnectionException If no devices are available.
+	 * Optional functionalities that require extra drivers to load are done at
+	 * runtime.
+	 * 
+	 * Ignore the following: Loop through currentModuleInputTypes and build
+	 * the cache off that instead of looking at EVERY driver.
+	 * 
+	 * Add the input-types map into checkPermissions
+	 * 
+	 * Document the fact that it ONLY BUILDS required functionalities. This is
+	 * because we have already ensured that all the required ones are available.
+	 * However, we want to provide the user the knowledge that one of their
+	 * optional functionalities has failed to initialize.
+	 * 
+	 * Therefore, this function only loads required, and a special method inside
+	 * the inflateDriver method will load the optional one at runtime. *
+	 * 
+	 * @throws InvalidConfigurationFileException
 	 */
-	public void checkAvailableDevices() 
-		throws DeviceConnectionException {
-		
-		devices = new HashMap<String, List<String>>();
-		
-		Map<String, String> supportedDevices = metaData.getDevices();
-		Map<String, List<String>> deviceFuncs = metaData.getDeviceSupports();
-		Set<String> keys = supportedDevices.keySet();
-		
-		for (String device : keys) {
-			// Grab all the devices from the meta-data
-			String driver = supportedDevices.get(device);
+	public void buildRequiredDevices() throws InvalidConfigurationFileException {
+
+		devices = new HashMap<String, List<String>>(); // functionality -> list
+														// of driver paths
+
+		Set<String> moduleFunctionalities = currentModuleInputTypes.keySet();
+		for (String moduleFunc : moduleFunctionalities) {
+			if (currentModuleInputTypes.get(moduleFunc) == DependencyType.REQUIRED) {
+				// Returns device names
+				List<String> supportingDevices = findDeviceDriversSupporting(moduleFunc);
+
+				buildDriverList(supportingDevices);
+			}
+		}
+	}
+	/**
+	 * @param func The functionality requested
+	 * @return list of strings of driver names supporting the given 
+	 *	functionality
+	 */
+	// returns a list of driver paths that support this functionality
+	public List<String> findDeviceDriversSupporting(String func) {
+		List<String> ret = new ArrayList<String>();
+
+		// Driver Name -> List of functionalities
+		Map<String, List<String>> deviceSupports = metaData.getDeviceSupports();
+
+		Set<String> driverNames = deviceSupports.keySet();
+		for (String device : driverNames) {
+			if (deviceSupports.get(device).contains(func)) {
+				ret.add(device);
+			}
+		}
+
+		return ret;
+	}
+
+	/**
+	 * Given a functionality and a list of supporting driver names, detect
+	 * which drivers are available and loads them into the driver cache if not
+	 * already present.
+	 * <br/>
+	 * Furthermore, we rely on the assumption that if a device is available
+	 * then all the functionalities it supports is also available. Therefore,
+	 * we also make a call to add onto our internal map of functionalities to
+	 * available driver paths. 
+	 * 
+	 * @param driverNames list of driver names to check availability for
+	 * @throws InvalidConfigurationFileException
+	 */
+	// instantiates and checks the availability from the provided list.
+	public void buildDriverList(List<String> driverNames)
+			throws InvalidConfigurationFileException {
+
+		// Driver Name -> Driver paths
+		Map<String, String> driverPaths = metaData.getDevices();
+
+		for (String name : driverNames) {
+			String path = driverPaths.get(name);
+			// Check if cache already contains this driver
+			if (deviceDriverCache.containsKey(path)) {
+				continue;
+			}
 			try {
-				Class<? extends DriverInterface> cl = 
-						Class.forName(driver).asSubclass(DriverInterface.class);
-				DriverInterface iDriver = cl.newInstance();
-				
-				// Check whether the device is available
+				Class<? extends DriverInterface> cl = Class.forName(path)
+						.asSubclass(DriverInterface.class);
+				Constructor<? extends DriverInterface> ctor = cl
+						.getConstructor();
+				DriverInterface iDriver = ctor.newInstance(); // Check whether
+																// the device is
+																// available
 				if (iDriver.isAvailable()) {
 					// Cache the driver
-					deviceDriverCache.put(driver, iDriver);
-					
-					// Go through each functionality for this driver
-					// Add it to our 'devices' storage unit
-					// This is because we assume if a device is available,
-					// then all the functionalities it supports are also
-					// available.
-					
-					List<String> funcs = deviceFuncs.get(device);
-					for (String func : funcs) {
-						if (devices.containsKey(func)) {
-							devices.get(func).add(driver);
-						} else {
-							List<String> availFuncs = new ArrayList<String>();
-							availFuncs.add(driver);
-							devices.put(func, availFuncs);
-						}
-					}
-					
+					deviceDriverCache.put(path, iDriver);
+					addDeviceFunctionalities(name);
 				}
 			} catch (ClassNotFoundException e) {
-				log.error("Class not found while checking device availibilities.");
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
 			} catch (InstantiationException e) {
-				log.error("Error instantiating driver while checking it's availibility");
+				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				log.error("Invalid access to the driver while checking it's availibility");
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				throw new InvalidConfigurationFileException(e.getMessage());
 			}
 		}
-		
-		// If no devices were found to be available, throw error
-		if (devices.isEmpty()) {
-			throw new DeviceConnectionException("No connected devices found");
+	}
+
+	/**
+	 * Given a driver, we add all the functionalities it supports to our
+	 * internal list of available functionalities.
+	 * @param driverName driver that is available
+	 */
+	public void addDeviceFunctionalities(String driverName) {
+		Map<String, List<String>> deviceSupports = metaData.getDeviceSupports();
+		List<String> functionalities = deviceSupports.get(driverName);
+		for (String s : functionalities) {
+			if (devices.containsKey(s)) {
+				devices.get(s).add(metaData.getDevices().get(driverName));
+			} else {
+				List<String> drivers = new ArrayList<String>();
+				drivers.add(metaData.getDevices().get(driverName));
+				devices.put(s, drivers);
+			}
 		}
 	}
-	
+
 	/**
 	 * Constructs a driver object for a given functionality and driver path.
 	 * 
 	 * @param driverPath
 	 * @param functionality
 	 * @return An instance of a driver capable of supporting that functionality
-	 * @throws BadFunctionalityRequestException no devices support that
-	 * functionality
+	 * @throws BadFunctionalityRequestException
+	 *             	no devices support that functionality
+	 * @throws DeviceConnectionException thrown if the driver is not 
+	 * 				connected/in the cache
 	 */
-	public DeviceDataInterface inflateDriver(String driverPath, String functionality)
-			throws BadFunctionalityRequestException {
+	public DeviceDataInterface inflateDriver(String driverPath,
+			String functionality) throws BadFunctionalityRequestException,
+			DeviceConnectionException {
 		String functionalityPath = getFunctionalityPath(functionality);
-		
+
 		if ("".equals(functionalityPath)) {
-			throw new BadFunctionalityRequestException(functionality + " is unknown");
+			throw new BadFunctionalityRequestException(functionality
+					+ " is unknown");
 		}
-		
+
 		DeviceDataInterface iDriver = null;
+		if (!deviceDriverCache.containsKey(driverPath)) {
+			throw new DeviceConnectionException("Requested driver "
+					+ driverPath + " is not available");
+		}
 		iDriver = (DeviceDataInterface) deviceDriverCache.get(driverPath);
 		return iDriver;
 	}
-	
+
 	/**
-	 * Constructs return value from manifest.
+	 * Returns the function class path for a given functionality.
 	 * 
 	 * @param functionality
 	 * @return Interface path for the given functionality
@@ -310,35 +452,71 @@ public class HardwareManager {
 		}
 		return "";
 	}
-	
+
 	/**
+	 * Returns a list of driver paths that support a given functionality. In
+	 * the event that the functionality was considered optional, attempt to
+	 * build the driver and store it into the cache and list of available
+	 * functionalities.
 	 * 
 	 * @param functionality
 	 * @return list of driver paths that support the given functionality
-	 * @throws BadFunctionalityRequestException no devices support that
-	 * functionality
+	 * @throws BadFunctionalityRequestException
+	 *             no devices support that functionality
+	 * @throws InvalidConfigurationFileException In the event this functionality
+	 * 				was considered optional and failed to load correctly.
+	 * 
+	 * @see {@link HardwareManager#findDeviceDriversSupporting(String)}
+	 * 		{@link HardwareManager#buildDriverList(List)}
 	 */
 	public List<String> getDevices(String functionality)
-			throws BadFunctionalityRequestException {
+			throws BadFunctionalityRequestException, InvalidConfigurationFileException {
+		// Check if the functionality was listed in our HardwareManager
+		// manifest.
 		if (!metaData.getFunctionalities().containsKey(functionality)) {
-			throw new BadFunctionalityRequestException("Bad functionality requested");
+			throw new BadFunctionalityRequestException(
+					"Bad functionality requested");
 		}
-		
+		if (!devices.containsKey(functionality)) {
+			// Check if this functionality was considered 'OPTIONAL'
+			if (currentModuleInputTypes.get(functionality) == DependencyType.OPTIONAL) {
+				// Returns device names
+				List<String> supportingDevices = findDeviceDriversSupporting(functionality);
+				buildDriverList(supportingDevices);
+				
+			} else {
+				// Ideally this exception should never be thrown. The only time
+				// we enter this block is if dependency was required AND not in
+				// our cache.
+				throw new BadFunctionalityRequestException(
+						"Bad functionality requested");
+			}
+		}
+		// Return our list 
 		return devices.get(functionality);
 	}
-	
+
 	/**
 	 * Allows the user to get an instance of the first available driver
 	 * supporting the specified functionality.
+	 * 
 	 * @param functionality
 	 * @return An instance of a driver capable of supporting that functionality
-	 * @throws BadFunctionalityRequestException no devices support that
-	 * functionality
+	 * @throws BadFunctionalityRequestException
+	 *             no devices support that functionality
+	 * @throws DeviceConnectionException
+	 * @throws InvalidConfigurationFileException 
 	 */
 	public DeviceDataInterface getInitialDriver(String functionality)
-			throws BadFunctionalityRequestException {
+			throws BadFunctionalityRequestException, DeviceConnectionException,
+			InvalidConfigurationFileException {
+		
 		List<String> drivers = getDevices(functionality);
 		return inflateDriver(drivers.get(0), functionality);
+	}
+	
+	public int getNumberofDriversInCache() {
+		return deviceDriverCache.size();
 	}
 
 }
