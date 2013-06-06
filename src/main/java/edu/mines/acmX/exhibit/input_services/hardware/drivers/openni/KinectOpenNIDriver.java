@@ -66,7 +66,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 
 	public KinectOpenNIDriver()
 			throws InvalidConfigurationFileException, 
-			OpenNIConfigurationException, GeneralException {
+			OpenNIConfigurationException, GeneralException{
 		
 		try {
 			HardwareManager hm = HardwareManager.getInstance();

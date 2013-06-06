@@ -183,12 +183,12 @@ public class HardwareManagerTest {
 		
 		Map<String, String> configStore = new HashMap<String, String>();
 		configStore.put("kinectopenni", "BAD_XML");
+		hm.setConfigurationFileStore(configStore);
 		
 		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
 		mmd.put("depth", DependencyType.REQUIRED);
-		
 		hm.setRunningModulePermissions(mmd);
-		hm.setConfigurationFileStore(configStore);
+		
 		hm.resetAllDrivers();		
 	}
 	
