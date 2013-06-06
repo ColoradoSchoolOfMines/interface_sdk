@@ -44,16 +44,23 @@ public class HardwareManagerManifestLoaderTest {
 		Map<String, List<String>> deviceSupports = new HashMap<String, List<String>>();
 		
 		functionalities.put("depth", "edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface");
+		functionalities.put("rgbimage","edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface");
+		functionalities.put("handtracking", "edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface");
 		expected.setFunctionalities(functionalities);
 		
 		devices.put("kinectopenni", "edu.mines.acmX.exhibit.input_services.hardware.drivers.openni.KinectOpenNIDriver");
 		expected.setDevices(devices);
 		
 		List<String> supports = new ArrayList<String>();
+		supports.add("rgbimage");
 		supports.add("depth");
+		supports.add("handtracking");
 		deviceSupports.put("kinectopenni", supports);
 		expected.setDeviceSupports(deviceSupports);
-				
+
+		assertTrue(hmd.getDevices().equals(devices));
+		assertTrue(hmd.getDeviceSupports().equals(deviceSupports));
+		assertTrue(hmd.getFunctionalities().equals(functionalities));
 		assertTrue(hmd.equals(expected));
 		
 	}
