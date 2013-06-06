@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.print.DocFlavor.URL;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -548,7 +550,8 @@ public class ModuleManagerTest {
 	@Test
 	public void testCanSetModuleWhenDriverPresent() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.removeInstance();
-		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		java.net.URL path = ModuleManager.class.getClassLoader().getResource("module_manager/ExampleModuleManagerManifest.xml");
+		ModuleManager.configure(path.getPath());
 		ModuleManager m = ModuleManager.getInstance();
 		m.setCurrentModuleMetaData("com.austindiviness.cltest");
 

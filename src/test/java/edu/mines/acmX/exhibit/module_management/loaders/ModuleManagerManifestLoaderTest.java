@@ -18,7 +18,7 @@ public class ModuleManagerManifestLoaderTest {
     @Test
     public void testLoadCorrectModuleManagerManifest() throws ManifestLoadException {
     	Map<String,String> configs = new HashMap<String,String>();
-    	configs.put("kinectopenni", "src/test/resources/openni-config.xml");
+    	configs.put("kinectopenni", "src/test/resources/openni_config.xml");
     	ModuleManagerMetaData data = new ModuleManagerMetaData(
     			"com.austindiviness.cltest",
     			"src/test/resources/modules",
