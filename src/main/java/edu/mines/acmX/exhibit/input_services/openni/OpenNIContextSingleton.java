@@ -32,7 +32,6 @@ public class OpenNIContextSingleton {
 
     public static void setConfigurationFile(String str) {
     	xml_file = str;
-    	log.debug("Setting configuration for openni to : " + xml_file);
     }
     
     public static Context getContext()
@@ -40,12 +39,6 @@ public class OpenNIContextSingleton {
     	if (xml_file == null) {
     		throw new OpenNIConfigurationException("No configuration file provided!");
     	}
-    	try {
-			log.debug("Working directory: " + new File(".").getCanonicalPath());
-			log.debug("File exists: " + new File(xml_file).exists());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
     	
     	if (context == null) {
     		scriptNode = new OutArg<ScriptNode>();
