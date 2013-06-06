@@ -26,6 +26,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequ
 import edu.mines.acmX.exhibit.input_services.hardware.DeviceConnectionException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoader;
@@ -104,6 +105,9 @@ public class ModuleManager {
 			e.printStackTrace();
 		} catch (BadDeviceFunctionalityRequestException e) {
 			logger.fatal("Default module depends on unknown device functionalities");
+			e.printStackTrace();
+		} catch (InvalidConfigurationFileException e) {
+			logger.fatal(e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -545,9 +549,10 @@ public class ModuleManager {
      *      document manifest stuff
      *      changes to the metaData
      *      general integration aspect
+	 * @throws InvalidConfigurationFileException 
      *
 	 */
-	public void run() {
+	public void run() throws InvalidConfigurationFileException {
 		while (true) {
 			setupPreRuntime();
             runCurrentModule();
@@ -555,7 +560,7 @@ public class ModuleManager {
 		}
 	}
 	
-	private void setupPreRuntime() {
+	private void setupPreRuntime() throws InvalidConfigurationFileException {
 		if (loadDefault = true ) {
 			preDefaultRuntime();
 		} else {
@@ -578,7 +583,7 @@ public class ModuleManager {
 		commonPreRuntime();
 	}
 	
-	private void commonPreRuntime() {
+	private void commonPreRuntime() throws InvalidConfigurationFileException {
         loadDefault = true;
         hardwareInstance.resetAllDrivers();
 	}
@@ -693,12 +698,15 @@ public class ModuleManager {
 				throw new ModuleLoadException(
 						"Metadata for the requested module is not available");
 			}
-			// TODO
-            //hardwareInstance.checkPermissions( nextModuleMetaData.getInputTypes() );
+            hardwareInstance.checkPermissions( nextModuleMetaData.getInputTypes() );
 			loadDefault = false;
 			return true;
 		} catch (ModuleLoadException e) {
 			loadDefault = true; // dont necessarily need since it wasnt changed.
+			return false;
+		} catch (BadDeviceFunctionalityRequestException e) {
+			// Hardware functionality was not known
+			loadDefault = true;  // dont necessarily need since it wanst changed
 			return false;
 		}
 	}
