@@ -1,7 +1,6 @@
 package edu.mines.acmX.exhibit.module_management.loaders;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,10 +79,9 @@ public class ModuleLoaderTest {
                 desiredInputs,
                 desiredModules,
                 false);
-        ModuleInterface m =
-            ModuleLoader.loadModule("src/test/resources/modules/HorseBadClassNotImplementedCorrectly.jar",
-                    moduleToLoadData,
-                    this.getClass().getClassLoader()); 
+        ModuleLoader.loadModule("src/test/resources/modules/HorseBadClassNotImplementedCorrectly.jar",
+                moduleToLoadData,
+                this.getClass().getClassLoader()); 
     }
 
     @Test(expected=ModuleLoadException.class)
@@ -102,31 +100,11 @@ public class ModuleLoaderTest {
                 desiredInputs,
                 desiredModules,
                 false);
-        ModuleInterface m =
-            ModuleLoader.loadModule("src/test/resources/modules/SnakeAteTheHorseSoThisIsBad.jar",
-                    moduleToLoadData,
-                    this.getClass().getClassLoader()); 
+        ModuleLoader.loadModule("src/test/resources/modules/SnakeAteTheHorseSoThisIsBad.jar",
+                moduleToLoadData,
+                this.getClass().getClassLoader()); 
     }
 
-    /**
-     * This test should ensure that a Module is loaded in the same context as
-     * the ModuleManager so that the Singleton only has one instance.
-     */
-    @Test
-    public void testLoadModuleKeepsSingleton() {
-        // TODO
-        fail( "Test not complete" );
-    }
-
-    /**
-     * This test ensures that all the correct and needed functions are available
-     * on the instance loaded.
-     */
-    @Test
-    public void testEnsureThatAllInterfacesExistOnLoadedInstance() {
-        // TODO
-        fail( "Test not complete" );
-    }
 }
 
 
