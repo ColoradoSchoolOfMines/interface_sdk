@@ -143,11 +143,12 @@ public class HardwareManagerTest {
 	 * @throws HardwareManagerManifestException
 	 * @throws DeviceConnectionException
 	 * @throws BadFunctionalityRequestException
+	 * @throws InvalidConfigurationFileException 
 	 */
 	@Test(expected=BadFunctionalityRequestException.class)
 	public void testBadFunctionalityRequest()
 			throws 	HardwareManagerManifestException, DeviceConnectionException,
-					BadFunctionalityRequestException {
+					BadFunctionalityRequestException, InvalidConfigurationFileException {
 		
 		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
@@ -217,8 +218,36 @@ public class HardwareManagerTest {
 		hm.setConfigurationFileStore(configStore);
 		hm.resetAllDrivers();
 		
+		assertTrue(hm.getNumberofDriversInCache() == 1);
+	}
+	
+	@Test
+	public void testOptionalFunctionalityGetsLoadedAtRuntime()
+			throws HardwareManagerManifestException,
+			InvalidConfigurationFileException,
+			BadFunctionalityRequestException {
+		
+		log.info("testOptionalFunctionalityGetsLoadedAtRuntime");
+		
+		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
+		HardwareManager hm = HardwareManager.getInstance();
+
+		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
+		hm.setRunningModulePermissions(mmd);
+		hm.resetAllDrivers();
+		
+		mmd.put("depth", DependencyType.OPTIONAL);
+		hm.setRunningModulePermissions(mmd);
+
+		Map<String, String> configStore = new HashMap<String, String>();
+		configStore.put("kinectopenni", "openni_config.xml");
+		
+		hm.setConfigurationFileStore(configStore);
+		hm.resetAllDrivers();
+		
+		assertTrue(hm.getNumberofDriversInCache() == 0);
 		List<String> devices = hm.getDevices("depth");
-		assertTrue(devices.size() == 1);
+		assertTrue(hm.getNumberofDriversInCache() == 1);
 	}
 	
 	
