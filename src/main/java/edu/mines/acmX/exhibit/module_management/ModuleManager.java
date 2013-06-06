@@ -179,7 +179,6 @@ public class ModuleManager {
 	/*
 	 * private ModuleInterface nextModule;
 	 */
-	private ModuleInterface defaultModule;
 	private ModuleMetaData nextModuleMetaData;
 	private ModuleMetaData currentModuleMetaData;
 	private ModuleMetaData defaultModuleMetaData;
@@ -541,10 +540,11 @@ public class ModuleManager {
 	 * 
 	 * @throws InvalidConfigurationFileException
 	 * @throws BadDeviceFunctionalityRequestException
+	 * @throws ModuleLoadException 
 	 * 
 	 */
 	public void run() throws InvalidConfigurationFileException,
-			BadDeviceFunctionalityRequestException {
+			BadDeviceFunctionalityRequestException, ModuleLoadException {
 		while (true) {
 			setupPreRuntime();
 			runCurrentModule();
@@ -553,7 +553,7 @@ public class ModuleManager {
 	}
 
 	private void setupPreRuntime() throws InvalidConfigurationFileException,
-			BadDeviceFunctionalityRequestException {
+			BadDeviceFunctionalityRequestException, ModuleLoadException {
 		System.out.println("What is load default?" + loadDefault);
 		if (loadDefault) {
 			preDefaultRuntime();
@@ -591,7 +591,7 @@ public class ModuleManager {
 	}
 
 	private void preDefaultRuntime()
-			throws BadDeviceFunctionalityRequestException, InvalidConfigurationFileException {
+			throws BadDeviceFunctionalityRequestException, InvalidConfigurationFileException, ModuleLoadException {
 		setCurrentAsDefault();
 		try {
 			hardwareInstance.checkPermissions(defaultModuleMetaData
@@ -664,18 +664,18 @@ public class ModuleManager {
 	 */
 	private void setDefaultModule(String name) throws ModuleLoadException {
 		defaultModuleMetaData = moduleConfigs.get(name);
-		defaultModule = loadModuleFromMetaData(defaultModuleMetaData);
 	}
 
 	/**
 	 * Sets the current module as the default module including the required
 	 * metaData.
+	 * @throws ModuleLoadException 
 	 */
-	private void setCurrentAsDefault() {
+	private void setCurrentAsDefault() throws ModuleLoadException {
 		// TODO check that defaultModule still exists?
 		// actually we may not care.
-		currentModule = defaultModule;
 		currentModuleMetaData = defaultModuleMetaData;
+		currentModule = loadModuleFromMetaData(defaultModuleMetaData);
 	}
 
 	/**

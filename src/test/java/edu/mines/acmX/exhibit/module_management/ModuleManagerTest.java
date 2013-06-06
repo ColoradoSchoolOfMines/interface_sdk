@@ -690,9 +690,10 @@ public class ModuleManagerTest {
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
 		builder.addInputType("some_func", DependencyType.REQUIRED);
 		builder.setPackageName("com.austindiviness.cltest");
-		builder.setClassName("Launcher");
+		builder.setClassName("Launch");
 		
 		ModuleMetaData mmd = builder.build();
+		mmd.setJarFileName("cltest.jar");
 		m.setDefaultModuleMetaData(mmd);
 		
 		try {
@@ -721,9 +722,10 @@ public class ModuleManagerTest {
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
 		builder.addInputType("rgbimage", DependencyType.REQUIRED);
 		builder.setPackageName("com.austindiviness.cltest");
-		builder.setClassName("Launcher");
+		builder.setClassName("Launch");
 		
 		ModuleMetaData mmd = builder.build();
+		mmd.setJarFileName("cltest.jar");
 		m.setDefaultModuleMetaData(mmd);
 		
 		Method preDefaultRT = ModuleManager.class.getDeclaredMethod("preDefaultRuntime");
@@ -799,6 +801,7 @@ public class ModuleManagerTest {
 		builder.setClassName("Hello");
 		
 		ModuleMetaData mmd = builder.build();
+		mmd.setJarFileName("HelloWorld.jar");
 		m.setDefaultModuleMetaData(mmd);
 		
 		Map<String, String> configStore = new HashMap<String, String>();
@@ -850,6 +853,39 @@ public class ModuleManagerTest {
 		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
 		System.out.println("Current module is: " + currMMD.getPackageName());
 		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
+	}
+	
+	@Test(expected=ModuleLoadException.class)
+	public void testThatAModuleLoadExceptionOccursFromABadDefaultModuleDuringPreRuntime() throws ManifestLoadException, HardwareManagerManifestException, ModuleLoadException, BadDeviceFunctionalityRequestException, IllegalAccessException, IllegalArgumentException, NoSuchMethodException, SecurityException, InvocationTargetException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		HardwareManager.setManifestFilepath("hardware_manager_manifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
+		// Valid module so it passes loadModule
+		builder.setPackageName("edu.mines.andrew.games");
+		builder.setClassName("Hello");
+		ModuleMetaData mmd = builder.build();
+		mmd.setJarFileName("BADJARNAME.jar");
+		
+		// Emulate changing the next module to run
+		m.setDefaultModuleMetaData(mmd);
+		
+		m.setDefault(true);
+		
+		try {
+			Method setupPreRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
+			setupPreRT.setAccessible(true);
+			setupPreRT.invoke(m);
+		} catch (InvocationTargetException e) {
+			if (e.getCause() instanceof ModuleLoadException) {
+				throw (ModuleLoadException) e.getCause();
+			} else {
+				throw e;
+			}
+		}
+		
 	}
 	
 }
