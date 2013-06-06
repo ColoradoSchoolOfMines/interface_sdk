@@ -227,9 +227,7 @@ public class ModuleManager {
 		} catch (HardwareManagerManifestException e) {
 			throw e;
 		}
-
-		hardwareInstance.setRunningModulePermissions(defaultModuleMetaData
-				.getInputTypes());
+		hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
 		loadDefault = true;
 	}
 
@@ -561,11 +559,14 @@ public class ModuleManager {
 	}
 	
 	private void setupPreRuntime() throws InvalidConfigurationFileException {
-		if (loadDefault = true ) {
+		System.out.println("What is load default?" + loadDefault);
+		if (loadDefault) {
 			preDefaultRuntime();
 		} else {
 			try {
+				System.out.println("HIIII");
 				preModuleRuntime();
+				logger.debug("Module was set correctly!");
 			} catch (ModuleLoadException e) {
 				logger.error("Module [" + nextModuleMetaData.getPackageName()
 						+ "] could not be loaded");
@@ -591,6 +592,7 @@ public class ModuleManager {
 	private void preDefaultRuntime() {
 		setCurrentAsDefault();
 		try {
+			hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
 			hardwareInstance.setRunningModulePermissions(defaultModuleMetaData
 					.getInputTypes());
 		} catch (BadDeviceFunctionalityRequestException e) {
@@ -603,6 +605,7 @@ public class ModuleManager {
 
 	private void preModuleRuntime() throws BadDeviceFunctionalityRequestException, ModuleLoadException {
 		setCurrentAsNextModule();
+		hardwareInstance.checkPermissions(currentModuleMetaData.getInputTypes());
 		hardwareInstance.setRunningModulePermissions(currentModuleMetaData
 				.getInputTypes());
 		logger.info("Loaded module " + nextModuleMetaData.getPackageName());
@@ -788,6 +791,15 @@ public class ModuleManager {
 	private ModuleManager(
 			String notUsedExceptToDifferentiateBetweenTheActualCTor) {
 
+	}
+	
+	public void createHardwareInstance() {
+		try {
+			this.hardwareInstance = HardwareManager.getInstance();
+		} catch (HardwareManagerManifestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String getNextModuleName() {

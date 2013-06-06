@@ -1,7 +1,7 @@
 package edu.mines.acmX.exhibit.module_management;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
@@ -355,6 +356,8 @@ public class ModuleManagerTest {
 		modConfigs.put(a.getPackageName(), a);
 		modConfigs.put(b.getPackageName(), b);
 
+		m.createHardwareInstance();
+		
 		m.setModuleMetaDataMap(modConfigs);
 		m.setCurrentModuleMetaData(a.getPackageName());
 		m.setCurrentModule(aModule);
@@ -382,7 +385,7 @@ public class ModuleManagerTest {
 		m.setCurrentModule(aModule);
 		assertTrue(m.setNextModule("com.test.B") == false);
 	}
-
+	
 	// passes because optional module is preset
 	@Test
 	public void testSetNextModuleOptionalWorks() throws ManifestLoadException,
@@ -578,7 +581,7 @@ public class ModuleManagerTest {
 		// default = false
 		Field loadDefault = ModuleManager.class.getDeclaredField("loadDefault");
 		loadDefault.setAccessible(true);
-		loadDefault.set(m, true);
+		loadDefault.set(m, false);
 		// set the nextModuleMetaData
 		// TODO change this to instead use a generated ModuleMetaData so we can skip some of the logic for ModuleManager
 		ModuleMetaData badMetaData = m.getModuleMetaDataMap().get("edu.mines.ademaria.badmodules.badrequired");
@@ -621,7 +624,7 @@ public class ModuleManagerTest {
 		// default = false
 		Field loadDefault = ModuleManager.class.getDeclaredField("loadDefault");
 		loadDefault.setAccessible(true);
-		loadDefault.set(m, true);
+		loadDefault.set(m, false);
 		// set the nextModuleMetaData
 		// TODO change this to instead use a generated ModuleMetaData so we can skip some of the logic for ModuleManager
 		ModuleMetaData badMetaData = m.getModuleMetaDataMap().get("edu.mines.ademaria.goodmodules.goodrequireddriver");
@@ -638,7 +641,7 @@ public class ModuleManagerTest {
 		Field currentMeta = ModuleManager.class.getDeclaredField("currentModuleMetaData");
 		currentMeta.setAccessible(true);
 		ModuleMetaData actual = (ModuleMetaData) currentMeta.get(m);
-		assertEquals(actual.getPackageName(), "edu.mines.ademaria.goodmodules.goodrequireddriver");
+		assertEquals("edu.mines.ademaria.goodmodules.goodrequireddriver", actual.getPackageName());
 		
 	}
 }
