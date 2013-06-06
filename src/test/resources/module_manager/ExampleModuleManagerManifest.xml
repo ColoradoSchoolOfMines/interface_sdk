@@ -4,11 +4,10 @@
       default-module="com.austindiviness.cltest"
       module-path="src/test/resources/modules" >
     <config-files>
-      <config-file name="kinectopenni" path="src/test/resources/openni-config.xml" />
+      <config-file name="kinectopenni" path="src/test/resources/openni_config.xml" />
     </config-files>
   </module-manager>
 
 </manifest>
 <!-- vim:fenc=utf-8
   -->
-
