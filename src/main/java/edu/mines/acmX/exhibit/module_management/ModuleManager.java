@@ -39,10 +39,9 @@ import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
- * TODO cleanup TODO should module manager manifest be located outside of jar
- * files? This class is the main entry point for the exhibit using the interface
- * sdk library. This controls the lifecycle of modules and determines which
- * modules can run by ensuring that they have all of their required
+ * TODO cleanup This class is the main entry point for the exhibit using the
+ * interface sdk library. This controls the lifecycle of modules and determines
+ * which modules can run by ensuring that they have all of their required
  * dependencies. Also cycles through the next module to be run.
  * 
  * Singleton
@@ -135,29 +134,35 @@ public class ModuleManager {
 		return options;
 	}
 
-	private static Option openNiArguments() {
-		return OptionBuilder
-				.withLongOpt("openni-config")
-				.withDescription(
-						"If using openNI, this argument must be populated with a path "
-								+ "to a openNI xml configuration file.")
-				.hasArg().withArgName("PATH").create();
-
-	}
-
-	private static Options optionsUsingIndividualAgruments(Options opts) {
-		opts.addOption(OptionBuilder
-				.withLongOpt("default-module")
-				.withDescription(
-						"Use this module as the default module to load")
-				.hasArg().withArgName("MODULE_PACKAGE").create());
-
-		opts.addOption(OptionBuilder.withLongOpt("modules-path")
-				.withDescription("Use this path to load modules from").hasArg()
-				.withArgName("PATH").create());
-		return opts;
-	}
-
+    // TODO remove
+/*
+ *    private static Option openNiArguments() {
+ *        return OptionBuilder
+ *                .withLongOpt("openni-config")
+ *                .withDescription(
+ *                        "If using openNI, this argument must be populated with a path "
+ *                                + "to a openNI xml configuration file.")
+ *                .hasArg().withArgName("PATH").create();
+ *
+ *    }
+ *
+ */
+    // TODO remove
+/*
+ *    private static Options optionsUsingIndividualAgruments(Options opts) {
+ *        opts.addOption(OptionBuilder
+ *                .withLongOpt("default-module")
+ *                .withDescription(
+ *                        "Use this module as the default module to load")
+ *                .hasArg().withArgName("MODULE_PACKAGE").create());
+ *
+ *        opts.addOption(OptionBuilder.withLongOpt("modules-path")
+ *                .withDescription("Use this path to load modules from").hasArg()
+ *                .withArgName("PATH").create());
+ *        return opts;
+ *    }
+ *
+ */
 	private static Option optionsUsingManifest() {
 		return OptionBuilder.withLongOpt("manifest")
 				.withDescription("Use a custom module manager manifest file")
@@ -175,8 +180,6 @@ public class ModuleManager {
 
 	// config variables
 	private static ModuleManagerMetaData metaData;
-	private static String pathToModuleManagerManifest;
-	private static String pathToOpenNIConfig;
 
 	// core manager data variables
 	private ModuleInterface currentModule;
@@ -191,7 +194,7 @@ public class ModuleManager {
 	private Map<String, ModuleMetaData> moduleConfigs;
 
 	/**
-	 * TODO
+	 * TODO document
 	 * 
 	 * @throws ManifestLoadException
 	 */
@@ -307,7 +310,7 @@ public class ModuleManager {
 	 *         the meta data gathered from that module's manifest file
 	 */
 	public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
-		// TODO caching
+		// TODO caching 
 		Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
 		logger.info("Loading jars in [" + path + "]");
 		File jarDir = new File(path);
@@ -405,21 +408,15 @@ public class ModuleManager {
 	}
 
 	/**
-	 * Iterates through the loaded ModuleMetaData objects, removing those that
-	 * don't have their required input services.
-	 */
-	private void checkModuleInputServices() {
-        // TODO checkPermisions(..)
-		// TODO!!!
-	}
-
-	/**
 	 * Ensures that all modules have all dependencies available, including
-	 * required modules and input services.
+	 * required modules and input services. This is a shell function because at
+     * one time we were thinking of checking the module's required input types
+     * at this point.  The reason this is deferred until later (either when the
+     * module is set to be the next module and/or when the module is loaded is
+     * because the hardware may be plugged in or unplugged inbetween module meta
+     * data loading and when a module is actually loaded.
 	 */
 	public void checkDependencies() {
-        // TODO remove check module Input Services..
-		checkModuleInputServices();
 		checkModuleDependencies();
 	}
 
@@ -631,9 +628,12 @@ public class ModuleManager {
 		refreshModules();
 	}
 
-	public static void setPathToManifest(String path) {
-		ModuleManager.pathToModuleManagerManifest = path;
-	}
+    // TODO remove
+    /*
+	 *public static void setPathToManifest(String path) {
+	 *    ModuleManager.pathToModuleManagerManifest = path;
+	 *}
+     */
 
 	/**
 	 * Sets the default module for ModuleManager. Throws an exception if the
@@ -681,10 +681,8 @@ public class ModuleManager {
 	 * @return true if module is set, false otherwise.
 	 */
 	public boolean setNextModule(String name) {
-		// may just be a call to query?
 		// make a test to check that xml is checked as well even if the module
 		// exists
-		// TODO check configuration for name
 		// grab the associated ModuleMetaData
 		// instantiate the next module using loadModuleFromMetaData
 		// TODO check that this method is syncronized!!!
@@ -723,12 +721,10 @@ public class ModuleManager {
 					+ data.getJarFileName(), data, this.getClass()
 					.getClassLoader(), jarResourcePath);
 		} catch (MalformedURLException e) {
-			// TODO Logging
-			e.printStackTrace();
+            logger.warn("Could not load the  given resource do to a malormed path");
 			return null;
 		} catch (ModuleLoadException e) {
-			// TODO Logging
-			e.printStackTrace();
+            logger.warn("Could not load the given resource because the Modules jar could not be loaded");
 			return null;
 		}
 	}
@@ -738,11 +734,17 @@ public class ModuleManager {
 				currentModuleMetaData.getPackageName());
 	}
 
-	private static void setOpenNiConfiguration(String path) {
-		pathToOpenNIConfig = path;
-	}
+    /*
+     * TODO remove
+	 *private static void setOpenNiConfiguration(String path) {
+	 *    pathToOpenNIConfig = path;
+	 *}
+     */
 
-	// TODO should be private, made public for tests
+    ////////////////////////////////////////////////////
+	// TODO the remaing methods are for testing only! //
+    ////////////////////////////////////////////////////
+    
 	public void setCurrentModuleMetaData(String name) {
 		currentModuleMetaData = moduleConfigs.get(name);
 	}
@@ -761,7 +763,7 @@ public class ModuleManager {
 	}
 
 	public static void removeInstance() {
-		pathToModuleManagerManifest = null;
+        metaData = null;
 		instance = null;
 	}
 
@@ -794,9 +796,9 @@ public class ModuleManager {
 
 	}
 	
-	public void createHardwareInstance() {
+	public static void createHardwareInstance() {
 		try {
-			this.hardwareInstance = HardwareManager.getInstance();
+			hardwareInstance = HardwareManager.getInstance();
 		} catch (HardwareManagerManifestException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

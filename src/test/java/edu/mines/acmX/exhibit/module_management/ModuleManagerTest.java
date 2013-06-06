@@ -448,8 +448,7 @@ public class ModuleManagerTest {
 			BadDeviceFunctionalityRequestException {
 		// remove the instance so we can actually call the constructor
 		ModuleManager.removeInstance();
-		String xmlPath = "src/test/resources/module_manager/CLoaderModuleManagerManifest.xml";
-		ModuleManager.setPathToManifest(xmlPath);
+        ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 
 		InputStream test = m.loadResourceFromModule(
@@ -473,8 +472,7 @@ public class ModuleManagerTest {
 			HardwareManagerManifestException,
 			BadDeviceFunctionalityRequestException {
 		ModuleManager.removeInstance();
-		String xmlPath = "src/test/resources/module_manager/CLoaderModuleManagerManifest.xml";
-		ModuleManager.setPathToManifest(xmlPath);
+		ModuleManager.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		ModuleMetaData current = m.getModuleMetaDataMap().get(
 				"com.andrew.random");
