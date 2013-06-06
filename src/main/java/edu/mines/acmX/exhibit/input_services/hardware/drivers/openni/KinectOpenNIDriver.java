@@ -1,6 +1,8 @@
 package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni;
 
 import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
@@ -66,7 +68,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 
 	public KinectOpenNIDriver()
 			throws InvalidConfigurationFileException, 
-			OpenNIConfigurationException, GeneralException {
+			OpenNIConfigurationException, GeneralException, IOException {
 		
 		try {
 			log.debug("Constructor");
@@ -80,7 +82,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 															" config file");
 			}
 			OpenNIContextSingleton.setConfigurationFile(hm.getConfigFile(canName));
-			log.debug("driver config file: " + hm.getConfigFile(canName));
+			log.debug(new File(".").getCanonicalPath());
 			context = OpenNIContextSingleton.getContext();
 		} catch (HardwareManagerManifestException e) {
 			// We should never be here, and it should be caught by the

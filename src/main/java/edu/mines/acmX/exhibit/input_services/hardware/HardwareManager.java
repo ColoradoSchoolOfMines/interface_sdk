@@ -110,8 +110,7 @@ public class HardwareManager {
 	 *            The map of functionalities and their level of dependence
 	 * @throws BadDeviceFunctionalityRequestException
 	 */
-	public void setRunningModulePermissions(Map<String, DependencyType> mmd)
-			throws BadDeviceFunctionalityRequestException {
+	public void setRunningModulePermissions(Map<String, DependencyType> mmd) {
 		currentModuleInputTypes = mmd;
 	}
 
