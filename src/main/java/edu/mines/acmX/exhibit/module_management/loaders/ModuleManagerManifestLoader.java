@@ -10,8 +10,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaDataBuilder;
 
 /**
  * This class loads a single manifest for a ModuleManager.
@@ -45,17 +48,17 @@ public class ModuleManagerManifestLoader {
      * @param   is  InputStream for a manifest for a module manager.
      */
     public static ModuleManagerMetaData load(InputStream is) throws ManifestLoadException {
-        ModuleManagerMetaData data;
+        ModuleManagerMetaDataBuilder builder = new ModuleManagerMetaDataBuilder();
         try {    
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             Document manifestDocument = docBuilder.parse(is);
             manifestDocument.getDocumentElement().normalize();
-            data = parseManifest(manifestDocument);
+            parseManifest(manifestDocument, builder);
         } catch (Exception e) {
             throw new ManifestLoadException("Could not load manifest" + "\n" + e.toString());
         }
-        return data;
+        return builder.build();
     }
 
     
@@ -65,19 +68,36 @@ public class ModuleManagerManifestLoader {
      *
      * @param   manifestDocument    Document created from the ModuleManager
      *                              manifest file.
+     * @param builder 
      *
      * @return                      ModuleManagerMetaData object for the Module Manager.
      */
-    private static ModuleManagerMetaData parseManifest(Document manifestDocument) throws ManifestLoadException {
+    private static void parseManifest(Document manifestDocument, ModuleManagerMetaDataBuilder builder) throws ManifestLoadException {
         Element element = (Element) manifestDocument.getElementsByTagName("manifest").item(0);
         element = (Element) element.getElementsByTagName("module-manager").item(0);
         if (!element.hasAttribute("default-module") || !element.hasAttribute("module-path")) {
             throw new ManifestLoadException("Could not load manifest: missing attributes");
         }
-        String defaultModule = element.getAttribute("default-module");
-        String modulePath = element.getAttribute("module-path");
-        return new ModuleManagerMetaData(defaultModule, modulePath);
+        builder.setDefaultModuleName(element.getAttribute("default-module"));
+        builder.setPathToModules(element.getAttribute("module-path"));
+        parseConfigFiles(element.getElementsByTagName("config-files"), builder);
     }
+
+	private static void parseConfigFiles(NodeList nodeList, ModuleManagerMetaDataBuilder builder) {
+		Element configsTag = (Element) nodeList.item(0);
+		NodeList configs = configsTag.getElementsByTagName("config-file");
+		for( int i = 0; i < configs.getLength(); ++i ) {
+			parseSingleConfig(configs.item(i), builder);
+		}
+		
+	}
+
+	private static void parseSingleConfig(Node item, ModuleManagerMetaDataBuilder builder) {
+		Element config = (Element) item;
+		builder.addConfigFile(
+				config.getAttribute("name"),
+				config.getAttribute("path"));
+	}
 
 }
 
