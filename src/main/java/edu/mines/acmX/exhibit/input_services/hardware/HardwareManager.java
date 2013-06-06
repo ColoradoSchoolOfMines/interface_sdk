@@ -336,7 +336,6 @@ public class HardwareManager {
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				log.error("Got an exception from the constructor");
 				throw new InvalidConfigurationFileException(e.getMessage());
 			}
 		}

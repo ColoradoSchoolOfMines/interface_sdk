@@ -69,25 +69,21 @@ public class KinectOpenNIDriver implements DriverInterface,
 			OpenNIConfigurationException, GeneralException {
 		
 		try {
-			log.debug("Constructor");
 			HardwareManager hm = HardwareManager.getInstance();
 			String canName = KinectOpenNIDriver.class.getCanonicalName();
 			
 			if (!hm.hasConfigFile(canName)) {
-				log.debug("Missing config file");
 				throw new InvalidConfigurationFileException("Missing " +
 															canName +
 															" config file");
 			}
 			OpenNIContextSingleton.setConfigurationFile(hm.getConfigFile(canName));
-			log.debug("driver config file: " + hm.getConfigFile(canName));
 			context = OpenNIContextSingleton.getContext();
 		} catch (HardwareManagerManifestException e) {
 			// We should never be here, and it should be caught by the
 			// ModuleManager
 			log.error("HardwareManager Manifest Exception");
 		}
-
 		gestureGen = GestureGenerator.create(context);
 		gestureGen.addGesture("Wave");
 		gestureGen.getGestureRecognizedEvent().addObserver(
@@ -114,6 +110,8 @@ public class KinectOpenNIDriver implements DriverInterface,
 
 		EventManager.getInstance().fireEvent(EventType.VIEWPORT_DIMENSION,
 				new Dimension(depthWidth, depthHeight));
+			
+		
 	}
 
 	/**

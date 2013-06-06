@@ -1,6 +1,9 @@
 package edu.mines.acmX.exhibit.input_services.hardware;
 
+import static org.junit.Assert.*;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -173,7 +176,7 @@ public class HardwareManagerTest {
 	public void testValidDriverConfigStore() 			
 			throws HardwareManagerManifestException, 
 			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
-		log.info("testValidDriverConfigFile");
+		log.info("testValidDriverConfigStore");
 				
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
@@ -190,8 +193,26 @@ public class HardwareManagerTest {
 	}
 	
 	@Test
-	public void testValidDriverCache() {
+	public void testValidDriverCache()
+			throws HardwareManagerManifestException, BadDeviceFunctionalityRequestException,
+			InvalidConfigurationFileException, BadFunctionalityRequestException {
+		log.info("testValidDriverConfigFile");
 		
+		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
+		HardwareManager hm = HardwareManager.getInstance();
+		
+		Map<String, String> configStore = new HashMap<String, String>();
+		configStore.put("kinectopenni", "openni_config.xml");
+		
+		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
+		mmd.put("depth", DependencyType.REQUIRED);
+		
+		hm.setRunningModulePermissions(mmd);
+		hm.setConfigurationFileStore(configStore);
+		hm.resetAllDrivers();
+		
+		List<String> devices = hm.getDevices("depth");
+		assertTrue(devices.size() == 1);
 	}
 	
 	
