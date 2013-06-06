@@ -24,6 +24,7 @@ import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaDataBuilder;
 import edu.mines.acmX.exhibit.module_management.modules.CommandlineModule;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
@@ -651,4 +652,137 @@ public class ModuleManagerTest {
 		assertEquals("edu.mines.ademaria.goodmodules.goodrequireddriver", actual.getPackageName());
 		
 	}
+	
+	@Test
+	public void testDefaultIsLoadedAfterModuleMgrConstructor()
+			throws ManifestLoadException, ModuleLoadException,
+			HardwareManagerManifestException,
+			BadDeviceFunctionalityRequestException {
+		
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		ModuleMetaData defaultModuleMetaData = m.getDefaultModuleMetaData();
+		assertTrue(defaultModuleMetaData.getPackageName().equals("com.austindiviness.cltest"));
+	}
+	
+	/**
+	 * Here we check to ensure the default module, during the main run loop,
+	 * will throw an exception should it's input types be invalid.
+	 * 
+	 * Since we use inflection to call the private method, we have to cast the
+	 * exception so that we don't expect an invocation exception.
+	 */
+	@Test(expected=BadDeviceFunctionalityRequestException.class)
+	public void testDefaultCheckPermissionsFailForRuntime()
+			throws ManifestLoadException, ModuleLoadException,
+			HardwareManagerManifestException,
+			BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
+		
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
+		
+		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
+		builder.addInputType("some_func", DependencyType.REQUIRED);
+		builder.setPackageName("com.austindiviness.cltest");
+		builder.setClassName("Launcher");
+		
+		ModuleMetaData mmd = builder.build();
+		m.setDefaultModuleMetaData(mmd);
+		
+		try {
+			Method preDefaultRT = ModuleManager.class.getDeclaredMethod("preDefaultRuntime");
+			preDefaultRT.setAccessible(true);
+			preDefaultRT.invoke(m);
+		} catch (InvocationTargetException e) {
+			if (e.getCause() instanceof BadDeviceFunctionalityRequestException) {
+				throw (BadDeviceFunctionalityRequestException) e.getCause();
+			} else {
+				throw e;
+			}
+		}
+	}
+	
+	@Test
+	public void testDefaultCheckPermissionsPassForRuntime()
+			throws ManifestLoadException, ModuleLoadException,
+			HardwareManagerManifestException,
+			BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
+		
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
+		
+		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
+		builder.addInputType("rgbimage", DependencyType.REQUIRED);
+		builder.setPackageName("com.austindiviness.cltest");
+		builder.setClassName("Launcher");
+		
+		ModuleMetaData mmd = builder.build();
+		m.setDefaultModuleMetaData(mmd);
+		
+		Method preDefaultRT = ModuleManager.class.getDeclaredMethod("preDefaultRuntime");
+		preDefaultRT.setAccessible(true);
+		preDefaultRT.invoke(m);
+	}
+	
+	@Test
+	public void testFailingFuncCurrentModuleCheckPermissionsRevertsToDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		m.setDefaultToFalse();
+		
+		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
+		builder.addInputType("some_func", DependencyType.REQUIRED);
+		builder.setPackageName("BAD_PACKAGE_NAME");
+		builder.setClassName("BAD_CLASS_NAME");
+		
+		ModuleMetaData mmd = builder.build();
+		mmd.setJarFileName("HelloWorld.jar");
+		
+		m.setNextModuleMetaData(mmd);
+		
+		Method setupPreRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
+		setupPreRT.setAccessible(true);
+		setupPreRT.invoke(m);
+		
+		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
+		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
+	}
+	
+	@Test
+	public void testFailingLoadCurrentModuleCheckPermissionsThrowsRevertsToDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		m.setDefaultToFalse();
+		
+		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
+		builder.addInputType("some_func", DependencyType.REQUIRED);
+		builder.setPackageName("edu.mines.andrew.games");
+		builder.setClassName("Hello");
+		
+		
+		ModuleMetaData mmd = builder.build();
+		mmd.setJarFileName("HelloWorld.jar");
+		
+		m.setNextModuleMetaData(mmd);
+		
+		Method setupPreRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
+		setupPreRT.setAccessible(true);
+		setupPreRT.invoke(m);
+		
+		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
+		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
+	}
+	
 }

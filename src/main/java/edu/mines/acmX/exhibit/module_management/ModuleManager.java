@@ -546,9 +546,11 @@ public class ModuleManager {
      *      changes to the metaData
      *      general integration aspect
      * @throws InvalidConfigurationFileException 
+     * @throws BadDeviceFunctionalityRequestException 
      *
      */
-    public void run() throws InvalidConfigurationFileException {
+    public void run() throws InvalidConfigurationFileException,
+    		BadDeviceFunctionalityRequestException {
         while (true) {
             setupPreRuntime();
             runCurrentModule();
@@ -556,7 +558,8 @@ public class ModuleManager {
         }
     }
     
-    private void setupPreRuntime() throws InvalidConfigurationFileException {
+    private void setupPreRuntime() throws InvalidConfigurationFileException,
+    		BadDeviceFunctionalityRequestException {
         System.out.println("What is load default?" + loadDefault);
         if (loadDefault) {
             preDefaultRuntime();
@@ -587,7 +590,7 @@ public class ModuleManager {
         hardwareInstance.resetAllDrivers();
     }
 
-    private void preDefaultRuntime() {
+    private void preDefaultRuntime() throws BadDeviceFunctionalityRequestException {
         setCurrentAsDefault();
         try {
             hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
@@ -598,6 +601,7 @@ public class ModuleManager {
             // been checked with the hardware manager during the instantiation of
             // the ModuleManager
             logger.fatal("The default module does not have its required devices");
+            throw e;
         }
     }
 
@@ -812,5 +816,25 @@ public class ModuleManager {
 
     public String getNextModuleName() {
         return this.nextModuleMetaData.getPackageName();
+    }
+    
+    public void setNextModuleMetaData(ModuleMetaData mmd) {
+    	this.nextModuleMetaData = mmd;
+    }
+    
+    public ModuleMetaData getDefaultModuleMetaData() {
+    	return defaultModuleMetaData;
+    }
+    
+    public void setDefaultModuleMetaData(ModuleMetaData val) {
+    	defaultModuleMetaData = val;
+    }
+    
+    public void setDefaultToFalse() {
+    	this.loadDefault = false;
+    }
+    
+    public ModuleMetaData getCurrentModuleMetaData() {
+    	return currentModuleMetaData;
     }
 }
