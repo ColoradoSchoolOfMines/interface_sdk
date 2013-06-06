@@ -550,7 +550,7 @@ public class ModuleManagerTest {
 	@Test
 	public void testCanSetModuleWhenDriverPresent() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.removeInstance();
-		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
+		ModuleManager.configure("module_manager/BadHardwareRequestModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		m.setCurrentModuleMetaData("com.austindiviness.cltest");
 

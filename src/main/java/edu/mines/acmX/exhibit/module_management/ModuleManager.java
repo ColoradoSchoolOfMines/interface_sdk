@@ -224,6 +224,7 @@ public class ModuleManager {
 
 		try {
 			hardwareInstance = HardwareManager.getInstance();
+			hardwareInstance.setConfigurationFileStore(metaData.getConfigFiles());
 		} catch (HardwareManagerManifestException e) {
 			throw e;
 		}
