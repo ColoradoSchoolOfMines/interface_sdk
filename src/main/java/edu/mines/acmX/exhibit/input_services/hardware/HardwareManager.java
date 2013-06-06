@@ -124,6 +124,7 @@ public class HardwareManager {
 	 *            manager manifest.
 	 */
 	public void setConfigurationFileStore(Map<String, String> config) {
+		this.configFileStore.clear();
 		// supportedDevices = driver->driver_path
 		Map<String, String> supportedDevices = metaData.getDevices();
 		Set<String> deviceKeys = config.keySet();

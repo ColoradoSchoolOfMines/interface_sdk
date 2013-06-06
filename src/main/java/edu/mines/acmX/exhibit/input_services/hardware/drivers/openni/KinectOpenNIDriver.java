@@ -70,6 +70,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 		try {
 			HardwareManager hm = HardwareManager.getInstance();
 			String canName = KinectOpenNIDriver.class.getCanonicalName();
+			log.debug("HM has config file " + hm.hasConfigFile(canName));
 			if (!hm.hasConfigFile(canName)) {
 				throw new InvalidConfigurationFileException("Missing " +
 															canName +
@@ -77,6 +78,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 			}
 			OpenNIContextSingleton.setConfigurationFile(hm.getConfigFile(canName));
 			context = OpenNIContextSingleton.getContext();
+			log.debug("Openni loaded its context successfully");
 		} catch (HardwareManagerManifestException e) {
 			// We should never be here, and it should be caught by the
 			// ModuleManager

@@ -19,6 +19,7 @@ import org.junit.Test;
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
@@ -717,8 +718,6 @@ public class ModuleManagerTest {
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		
-		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
-		
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
 		builder.addInputType("rgbimage", DependencyType.REQUIRED);
 		builder.setPackageName("com.austindiviness.cltest");
@@ -738,7 +737,7 @@ public class ModuleManagerTest {
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		
-		m.setDefaultToFalse();
+		m.setDefault(false);
 		
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
 		builder.addInputType("some_func", DependencyType.REQUIRED);
@@ -764,7 +763,7 @@ public class ModuleManagerTest {
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		
-		m.setDefaultToFalse();
+		m.setDefault(false);
 		
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
 		builder.addInputType("some_func", DependencyType.REQUIRED);
@@ -782,6 +781,74 @@ public class ModuleManagerTest {
 		setupPreRT.invoke(m);
 		
 		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
+		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
+	}
+	
+	@Test(expected=InvalidConfigurationFileException.class)
+	public void testResetDriversFailsForDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidConfigurationFileException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		HardwareManager.setManifestFilepath("hardware_manager_manifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		m.setDefault(true);
+		
+		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
+		builder.addInputType("rgbimage", DependencyType.REQUIRED);
+		builder.setPackageName("edu.mines.andrew.games");
+		builder.setClassName("Hello");
+		
+		ModuleMetaData mmd = builder.build();
+		m.setDefaultModuleMetaData(mmd);
+		
+		Map<String, String> configStore = new HashMap<String, String>();
+		
+		HardwareManager.getInstance().setConfigurationFileStore(configStore);
+		try {
+			Method setupPreRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
+			setupPreRT.setAccessible(true);
+			setupPreRT.invoke(m);
+		} catch (InvocationTargetException e) {
+			if (e.getCause() instanceof InvalidConfigurationFileException) {
+				throw (InvalidConfigurationFileException) e.getCause();
+			} else {
+				throw e;
+			}
+		}
+	}
+	
+	@Test
+	public void testResetDriversRevertsToDefaultDuringSetupPreRuntime() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		HardwareManager.setManifestFilepath("hardware_manager_manifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		
+		m.setDefault(false);
+		
+		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
+		// Valid functionalities so it passes checkPermissions
+		builder.addInputType("rgbimage", DependencyType.REQUIRED);
+		// Valid module so it passes loadModule
+		builder.setPackageName("edu.mines.andrew.games");
+		builder.setClassName("Hello");
+		ModuleMetaData mmd = builder.build();
+		mmd.setJarFileName("HelloWorld.jar");
+		
+		// Emulate changing the next module to run
+		m.setNextModuleMetaData(mmd);
+		
+		// Have a failing config store for the kinect driver
+		Map<String, String> configStore = new HashMap<String, String>();
+		HardwareManager.getInstance().setConfigurationFileStore(configStore);
+		
+		
+		Method setupPreRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
+		setupPreRT.setAccessible(true);
+		setupPreRT.invoke(m);
+		
+		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
+		System.out.println("Current module is: " + currMMD.getPackageName());
 		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
 	}
 	
