@@ -620,6 +620,11 @@ public class ModuleManagerTest {
 		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		
+		// The next three lines are to give the hardware manager support
+		Map<String, String> configStore = new HashMap<String, String>();
+		configStore.put("kinectopenni", "openni_config.xml");
+		HardwareManager.getInstance().setConfigurationFileStore(configStore);
+		
 		// pretend the next module was set (to skip that logic)
 		// default = false
 		Field loadDefault = ModuleManager.class.getDeclaredField("loadDefault");
