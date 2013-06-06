@@ -13,6 +13,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestExc
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleHelper;
 
@@ -36,15 +37,18 @@ public class ModuleHelperTest {
 			ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.createEmptyInstance();
 		ModuleManager m = ModuleManager.getInstance();
+		m.createHardwareInstance();
 		ModuleMetaData before = new ModuleMetaData(null, null, null, null, null, null, null, null, null, null, true);
 		m.setCurrentModuleMetaData(before);
 		Map<String, ModuleMetaData> meta = new HashMap<String, ModuleMetaData>();
 		String nextToLoad = "should.change.to.this";
 		ModuleMetaData garblygook = new ModuleMetaData(nextToLoad, nextToLoad,
 				nextToLoad, nextToLoad, nextToLoad, nextToLoad, nextToLoad,
-				nextToLoad, null, null, false);
+				nextToLoad, new HashMap<String, DependencyType>(), new HashMap<String, DependencyType>(), false);
 		meta.put(nextToLoad, garblygook);
 		m.setModuleMetaDataMap(meta);
+
+
 		ModuleHelper mod = new ModuleHelper();
 		assertTrue(mod.setNextModuleToLoad(nextToLoad));
 		assertEquals(nextToLoad, m.getNextModuleName());
