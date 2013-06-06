@@ -80,9 +80,10 @@ public class ModuleManager {
 				if (cmd.hasOption("manifest")) {
 					ModuleManager.configure(cmd.getOptionValue("manifest"));
 				} else {
-					logger.warn("Using deprecated default module path");
-					ModuleManager
-							.configure("src/test/resources/module_manager/CLoaderModuleManagerManifest.xml");
+					System.out
+							.println("A Module Manager Manifest is required to run the module manager"
+									+ "Please specify with the --manifest switch");
+					System.exit(1);
 				}
 				ModuleManager m;
 				m = ModuleManager.getInstance();
@@ -134,35 +135,27 @@ public class ModuleManager {
 		return options;
 	}
 
-    // TODO remove
-/*
- *    private static Option openNiArguments() {
- *        return OptionBuilder
- *                .withLongOpt("openni-config")
- *                .withDescription(
- *                        "If using openNI, this argument must be populated with a path "
- *                                + "to a openNI xml configuration file.")
- *                .hasArg().withArgName("PATH").create();
- *
- *    }
- *
- */
-    // TODO remove
-/*
- *    private static Options optionsUsingIndividualAgruments(Options opts) {
- *        opts.addOption(OptionBuilder
- *                .withLongOpt("default-module")
- *                .withDescription(
- *                        "Use this module as the default module to load")
- *                .hasArg().withArgName("MODULE_PACKAGE").create());
- *
- *        opts.addOption(OptionBuilder.withLongOpt("modules-path")
- *                .withDescription("Use this path to load modules from").hasArg()
- *                .withArgName("PATH").create());
- *        return opts;
- *    }
- *
- */
+	// TODO remove
+	/*
+	 * private static Option openNiArguments() { return OptionBuilder
+	 * .withLongOpt("openni-config") .withDescription(
+	 * "If using openNI, this argument must be populated with a path " +
+	 * "to a openNI xml configuration file.")
+	 * .hasArg().withArgName("PATH").create();
+	 * 
+	 * }
+	 */
+	// TODO remove
+	/*
+	 * private static Options optionsUsingIndividualAgruments(Options opts) {
+	 * opts.addOption(OptionBuilder .withLongOpt("default-module")
+	 * .withDescription( "Use this module as the default module to load")
+	 * .hasArg().withArgName("MODULE_PACKAGE").create());
+	 * 
+	 * opts.addOption(OptionBuilder.withLongOpt("modules-path")
+	 * .withDescription("Use this path to load modules from").hasArg()
+	 * .withArgName("PATH").create()); return opts; }
+	 */
 	private static Option optionsUsingManifest() {
 		return OptionBuilder.withLongOpt("manifest")
 				.withDescription("Use a custom module manager manifest file")
@@ -186,7 +179,6 @@ public class ModuleManager {
 	/*
 	 * private ModuleInterface nextModule;
 	 */
-	private ModuleInterface defaultModule;
 	private ModuleMetaData nextModuleMetaData;
 	private ModuleMetaData currentModuleMetaData;
 	private ModuleMetaData defaultModuleMetaData;
@@ -203,10 +195,11 @@ public class ModuleManager {
 		metaData = loadModuleManagerConfig(moduleManifestPath);
 	}
 
-//	private static void configure(String defaultModule, String pathToModules) {
-//		logger.info("Using explicitly given configuration");
-//		metaData = new ModuleManagerMetaData(defaultModule, pathToModules);
-//	}
+	// private static void configure(String defaultModule, String pathToModules)
+	// {
+	// logger.info("Using explicitly given configuration");
+	// metaData = new ModuleManagerMetaData(defaultModule, pathToModules);
+	// }
 
 	private ModuleManager() throws ManifestLoadException, ModuleLoadException,
 			HardwareManagerManifestException,
@@ -227,11 +220,13 @@ public class ModuleManager {
 
 		try {
 			hardwareInstance = HardwareManager.getInstance();
-			hardwareInstance.setConfigurationFileStore(metaData.getConfigFiles());
+			hardwareInstance.setConfigurationFileStore(metaData
+					.getConfigFiles());
 		} catch (HardwareManagerManifestException e) {
 			throw e;
 		}
-		hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
+		hardwareInstance
+				.checkPermissions(defaultModuleMetaData.getInputTypes());
 		loadDefault = true;
 	}
 
@@ -310,7 +305,7 @@ public class ModuleManager {
 	 *         the meta data gathered from that module's manifest file
 	 */
 	public Map<String, ModuleMetaData> loadAllModuleConfigs(String path) {
-		// TODO caching 
+		// TODO caching
 		Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
 		logger.info("Loading jars in [" + path + "]");
 		File jarDir = new File(path);
@@ -334,8 +329,7 @@ public class ModuleManager {
 	}
 
 	/**
-	 * Loads the ModuleManager config file. 
-     * TODO should really be private
+	 * Loads the ModuleManager config file. TODO should really be private
 	 * 
 	 * @param path
 	 *            Path to the ModuleManager xml config file
@@ -410,11 +404,11 @@ public class ModuleManager {
 	/**
 	 * Ensures that all modules have all dependencies available, including
 	 * required modules and input services. This is a shell function because at
-     * one time we were thinking of checking the module's required input types
-     * at this point.  The reason this is deferred until later (either when the
-     * module is set to be the next module and/or when the module is loaded is
-     * because the hardware may be plugged in or unplugged inbetween module meta
-     * data loading and when a module is actually loaded.
+	 * one time we were thinking of checking the module's required input types
+	 * at this point. The reason this is deferred until later (either when the
+	 * module is set to be the next module and/or when the module is loaded is
+	 * because the hardware may be plugged in or unplugged inbetween module meta
+	 * data loading and when a module is actually loaded.
 	 */
 	public void checkDependencies() {
 		checkModuleDependencies();
@@ -540,26 +534,30 @@ public class ModuleManager {
 	 * hence only one module will be activly calling the module managers run
 	 * function.. If this ever becomes not the case we may need multiple
 	 * countDown latches and ensure that this is syncronized along with any
-	 * other public functions.
-     * TODO document ordering on calling hw functions
-     *      document manifest stuff
-     *      changes to the metaData
-     *      general integration aspect
-	 * @throws InvalidConfigurationFileException 
-     *
+	 * other public functions. TODO document ordering on calling hw functions
+	 * document manifest stuff changes to the metaData general integration
+	 * aspect
+	 * 
+	 * @throws InvalidConfigurationFileException
+	 * @throws BadDeviceFunctionalityRequestException
+	 * @throws ModuleLoadException 
+	 * 
 	 */
-	public void run() throws InvalidConfigurationFileException {
+	public void run() throws InvalidConfigurationFileException,
+			BadDeviceFunctionalityRequestException, ModuleLoadException {
 		while (true) {
 			setupPreRuntime();
-            runCurrentModule();
-            postModuleRuntime();
+			runCurrentModule();
+			postModuleRuntime();
 		}
 	}
-	
-	private void setupPreRuntime() throws InvalidConfigurationFileException {
+
+	private void setupPreRuntime() throws InvalidConfigurationFileException,
+			BadDeviceFunctionalityRequestException, ModuleLoadException {
 		System.out.println("What is load default?" + loadDefault);
 		if (loadDefault) {
 			preDefaultRuntime();
+
 		} else {
 			try {
 				System.out.println("HIIII");
@@ -575,37 +573,58 @@ public class ModuleManager {
 						+ "] depends on unknown functionality");
 				logger.warn("Loading default module");
 				preDefaultRuntime();
+			} catch (InvalidConfigurationFileException e) {
+				logger.error("Module [" + nextModuleMetaData.getPackageName()
+						+ "] depends on unavailable functionality");
+				logger.warn("Loading default module");
+				preDefaultRuntime();
 			}
 		}
 
-        // if anything is thrown here it is not specific to a module.
+		// if anything is thrown here it is not specific to a module.
 		commonPreRuntime();
 	}
-	
-	private void commonPreRuntime() throws InvalidConfigurationFileException {
-        loadDefault = true;
-        hardwareInstance.resetAllDrivers();
+
+	private void commonPreRuntime() {
+		loadDefault = true;
+
 	}
 
-	private void preDefaultRuntime() {
+	private void preDefaultRuntime()
+			throws BadDeviceFunctionalityRequestException, InvalidConfigurationFileException, ModuleLoadException {
 		setCurrentAsDefault();
 		try {
-			hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
+			hardwareInstance.checkPermissions(defaultModuleMetaData
+					.getInputTypes());
 			hardwareInstance.setRunningModulePermissions(defaultModuleMetaData
 					.getInputTypes());
+			hardwareInstance.resetAllDrivers();
+
 		} catch (BadDeviceFunctionalityRequestException e) {
 			// This should never happen because the default module has already
-			// been checked with the hardware manager during the instantiation of
+			// been checked with the hardware manager during the instantiation
+			// of
 			// the ModuleManager
-			logger.fatal("The default module does not have its required devices");
+			logger.fatal("The default module does not have its required functionalies");
+			throw e;
+		} catch (InvalidConfigurationFileException e) {
+			// This should only happen if the state of the connected devices
+			// changes such that the default module no longer has its required
+			// input types
+			logger.fatal("The default module could not load one of its required devices");
+			throw e;
 		}
 	}
 
-	private void preModuleRuntime() throws BadDeviceFunctionalityRequestException, ModuleLoadException {
+	private void preModuleRuntime()
+			throws BadDeviceFunctionalityRequestException, ModuleLoadException, InvalidConfigurationFileException {
 		setCurrentAsNextModule();
-		hardwareInstance.checkPermissions(currentModuleMetaData.getInputTypes());
+		hardwareInstance
+				.checkPermissions(currentModuleMetaData.getInputTypes());
 		hardwareInstance.setRunningModulePermissions(currentModuleMetaData
 				.getInputTypes());
+		logger.debug("Sending this stuff to hw instance: " + currentModuleMetaData.getInputTypes());
+		hardwareInstance.resetAllDrivers();
 		logger.info("Loaded module " + nextModuleMetaData.getPackageName());
 	}
 
@@ -628,12 +647,11 @@ public class ModuleManager {
 		refreshModules();
 	}
 
-    // TODO remove
-    /*
-	 *public static void setPathToManifest(String path) {
-	 *    ModuleManager.pathToModuleManagerManifest = path;
-	 *}
-     */
+	// TODO remove
+	/*
+	 * public static void setPathToManifest(String path) {
+	 * ModuleManager.pathToModuleManagerManifest = path;}
+	 */
 
 	/**
 	 * Sets the default module for ModuleManager. Throws an exception if the
@@ -646,18 +664,18 @@ public class ModuleManager {
 	 */
 	private void setDefaultModule(String name) throws ModuleLoadException {
 		defaultModuleMetaData = moduleConfigs.get(name);
-		defaultModule = loadModuleFromMetaData(defaultModuleMetaData);
 	}
 
 	/**
 	 * Sets the current module as the default module including the required
 	 * metaData.
+	 * @throws ModuleLoadException 
 	 */
-	private void setCurrentAsDefault() {
+	private void setCurrentAsDefault() throws ModuleLoadException {
 		// TODO check that defaultModule still exists?
 		// actually we may not care.
-		currentModule = defaultModule;
 		currentModuleMetaData = defaultModuleMetaData;
+		currentModule = loadModuleFromMetaData(defaultModuleMetaData);
 	}
 
 	/**
@@ -672,8 +690,8 @@ public class ModuleManager {
 
 	/**
 	 * Sets next module to be loaded, after the current module.
-     *
-     * TODO check the module can run with the hardware manager.
+	 * 
+	 * TODO check the module can run with the hardware manager.
 	 * 
 	 * @param name
 	 *            Package name of module to be loaded next.
@@ -688,12 +706,12 @@ public class ModuleManager {
 		// TODO check that this method is syncronized!!!
 		// BE CAREFUL!!!
 
-        logger.debug("Attempting to set next module to: " + name );
+		logger.debug("Attempting to set next module to: " + name);
 		// check that currentModule can set this package in question
 		if (!currentModuleMetaData.getOptionalAll()
 				&& !currentModuleMetaData.getModuleDependencies().containsKey(
 						name)) {
-            logger.debug("The next module could not be set because the current module is not allowed to run the requested module");
+			logger.debug("The next module could not be set because the current module is not allowed to run the requested module");
 			return false;
 		}
 		try {
@@ -702,18 +720,20 @@ public class ModuleManager {
 				throw new ModuleLoadException(
 						"Metadata for the requested module is not available");
 			}
-            logger.debug("The requested input types are: " + nextModuleMetaData.getInputTypes());
-            hardwareInstance.checkPermissions( nextModuleMetaData.getInputTypes() );
+			logger.debug("The requested input types are: "
+					+ nextModuleMetaData.getInputTypes());
+			hardwareInstance.checkPermissions(nextModuleMetaData
+					.getInputTypes());
 			loadDefault = false;
 			return true;
-        } catch (ModuleLoadException e) {
-            logger.debug("The next module could not be loaded because there is no module meta data available.");
+		} catch (ModuleLoadException e) {
+			logger.debug("The next module could not be loaded because there is no module meta data available.");
 			loadDefault = true; // dont necessarily need since it wasnt changed.
 			return false;
 		} catch (BadDeviceFunctionalityRequestException e) {
-            logger.debug("The hardware manager does not have functionality for the requested module");
+			logger.debug("The hardware manager does not have functionality for the requested module");
 			// Hardware functionality was not known
-			loadDefault = true;  // dont necessarily need since it wanst changed
+			loadDefault = true; // dont necessarily need since it wanst changed
 			return false;
 		}
 	}
@@ -726,10 +746,10 @@ public class ModuleManager {
 					+ data.getJarFileName(), data, this.getClass()
 					.getClassLoader(), jarResourcePath);
 		} catch (MalformedURLException e) {
-            logger.warn("Could not load the  given resource do to a malormed path");
+			logger.warn("Could not load the  given resource do to a malormed path");
 			return null;
 		} catch (ModuleLoadException e) {
-            logger.warn("Could not load the given resource because the Modules jar could not be loaded");
+			logger.warn("Could not load the given resource because the Modules jar could not be loaded");
 			return null;
 		}
 	}
@@ -739,17 +759,15 @@ public class ModuleManager {
 				currentModuleMetaData.getPackageName());
 	}
 
-    /*
-     * TODO remove
-	 *private static void setOpenNiConfiguration(String path) {
-	 *    pathToOpenNIConfig = path;
-	 *}
-     */
+	/*
+	 * TODO removeprivate static void setOpenNiConfiguration(String path) {
+	 * pathToOpenNIConfig = path;}
+	 */
 
-    ////////////////////////////////////////////////////
+	// //////////////////////////////////////////////////
 	// TODO the remaing methods are for testing only! //
-    ////////////////////////////////////////////////////
-    
+	// //////////////////////////////////////////////////
+
 	public void setCurrentModuleMetaData(String name) {
 		currentModuleMetaData = moduleConfigs.get(name);
 	}
@@ -768,7 +786,7 @@ public class ModuleManager {
 	}
 
 	public static void removeInstance() {
-        metaData = null;
+		metaData = null;
 		instance = null;
 	}
 
@@ -800,7 +818,7 @@ public class ModuleManager {
 			String notUsedExceptToDifferentiateBetweenTheActualCTor) {
 
 	}
-	
+
 	public static void createHardwareInstance() {
 		try {
 			hardwareInstance = HardwareManager.getInstance();
@@ -812,5 +830,25 @@ public class ModuleManager {
 
 	public String getNextModuleName() {
 		return this.nextModuleMetaData.getPackageName();
+	}
+
+	public void setNextModuleMetaData(ModuleMetaData mmd) {
+		this.nextModuleMetaData = mmd;
+	}
+
+	public ModuleMetaData getDefaultModuleMetaData() {
+		return defaultModuleMetaData;
+	}
+
+	public void setDefaultModuleMetaData(ModuleMetaData val) {
+		defaultModuleMetaData = val;
+	}
+
+	public void setDefault(boolean val) {
+		this.loadDefault = val;
+	}
+
+	public ModuleMetaData getCurrentModuleMetaData() {
+		return currentModuleMetaData;
 	}
 }

@@ -40,7 +40,7 @@ public class ModuleLoader {
 		try {
 			log.debug("Trying to set class loader for jar file: " + jarPath);
 			URLClassLoader loader = getClassLoader(jarPath, classLoader);
-
+			log.debug("The above line was not thrown");
 			// We now will load the class by searching the jar for the package
 			// and
 			// class as dictated in the module manifest file.
@@ -57,6 +57,7 @@ public class ModuleLoader {
 			throw new ModuleLoadException(msg);
 		} catch (ClassNotFoundException e) {
 			String msg = "Class not found\n" + e.toString();
+			log.debug("WE ARE HERE");
 			log.error(msg);
 			throw new ModuleLoadException(msg);
 		} catch (InstantiationException e) {
