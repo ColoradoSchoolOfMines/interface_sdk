@@ -540,7 +540,7 @@ public class ModuleManager {
 	 * 
 	 * @throws InvalidConfigurationFileException
 	 * @throws BadDeviceFunctionalityRequestException
-	 * @throws ModuleLoadException 
+	 * @throws ModuleLoadException
 	 * 
 	 */
 	public void run() throws InvalidConfigurationFileException,
@@ -588,13 +588,13 @@ public class ModuleManager {
 	}
 
 	private void preModuleRuntime(ModuleMetaData mmd)
-			throws BadDeviceFunctionalityRequestException, ModuleLoadException, InvalidConfigurationFileException {
+			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
+			InvalidConfigurationFileException {
 		setCurrentModule(mmd);
-		hardwareInstance
-				.checkPermissions(mmd.getInputTypes());
-		hardwareInstance.setRunningModulePermissions(mmd
-				.getInputTypes());
-		logger.debug("Sending this stuff to hw instance: " + mmd.getInputTypes());
+		hardwareInstance.checkPermissions(mmd.getInputTypes());
+		hardwareInstance.setRunningModulePermissions(mmd.getInputTypes());
+		logger.debug("Sending this stuff to hw instance: "
+				+ mmd.getInputTypes());
 		hardwareInstance.resetAllDrivers();
 		logger.info("Loaded module " + mmd.getPackageName());
 	}
@@ -642,7 +642,8 @@ public class ModuleManager {
 	 * 
 	 * @throws ModuleLoadException
 	 */
-	private void setCurrentModule(ModuleMetaData mmd) throws ModuleLoadException {
+	private void setCurrentModule(ModuleMetaData mmd)
+			throws ModuleLoadException {
 		currentModuleMetaData = mmd;
 		currentModule = loadModuleFromMetaData(mmd);
 	}
@@ -718,6 +719,32 @@ public class ModuleManager {
 				currentModuleMetaData.getPackageName());
 	}
 
+	/**
+	 * This function should be used by a module to get the information about its
+	 * meta data or other modules meta datas as long as they have the permission
+	 * to launch that module
+	 * 
+	 * @param packageName
+	 * @return
+	 */
+	public ModuleMetaData getModuleMetaData(String packageName) {
+		ModuleMetaData toReturn = moduleConfigs.get(packageName);
+		if (currentModuleMetaData.getOptionalAll()
+				|| currentModuleMetaData.getModuleDependencies().containsKey(
+						packageName)) {
+			return toReturn;
+		}
+		return null;
+
+	}
+
+	public String[] getAllAvailableModules() {
+		if (currentModuleMetaData.getOptionalAll()) {
+			return moduleConfigs.keySet().toArray(new String[0]);
+		}
+		return null;
+	}
+
 	/*
 	 * TODO removeprivate static void setOpenNiConfiguration(String path) {
 	 * pathToOpenNIConfig = path;}
@@ -729,10 +756,6 @@ public class ModuleManager {
 
 	public void setCurrentModuleMetaData(String name) {
 		currentModuleMetaData = moduleConfigs.get(name);
-	}
-
-	public String[] getAllAvailableModules() {
-		return moduleConfigs.keySet().toArray(new String[0]);
 	}
 
 	// USED ONLY FOR TESTING BELOW THIS COMMENT
