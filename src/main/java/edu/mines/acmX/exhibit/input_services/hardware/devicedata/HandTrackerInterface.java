@@ -20,6 +20,9 @@ public interface HandTrackerInterface extends DeviceDataInterface {
 	 */
 	public void updateDriver();
 	
+	public int getHandTrackingWidth();
+	public int getHandTrackingHeight();
+	
 	public void registerHandCreated(InputReceiver r);
 
 	public void registerHandUpdated(InputReceiver r);
