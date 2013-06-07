@@ -418,12 +418,12 @@ public class HardwareManager {
 	 * @return An instance of a driver capable of supporting that functionality
 	 * @throws BadFunctionalityRequestException
 	 *             	no devices support that functionality
-	 * @throws DeviceConnectionException thrown if the driver is not 
+	 * @throws UnknownDriverRequest thrown if the driver is not 
 	 * 				connected/in the cache
 	 */
 	public DeviceDataInterface inflateDriver(String driverPath,
 			String functionality) throws BadFunctionalityRequestException,
-			DeviceConnectionException {
+			UnknownDriverRequest {
 		String functionalityPath = getFunctionalityPath(functionality);
 
 		if ("".equals(functionalityPath)) {
@@ -433,7 +433,7 @@ public class HardwareManager {
 
 		DeviceDataInterface iDriver = null;
 		if (!deviceDriverCache.containsKey(driverPath)) {
-			throw new DeviceConnectionException("Requested driver "
+			throw new UnknownDriverRequest("Requested driver "
 					+ driverPath + " is not available");
 		}
 		iDriver = (DeviceDataInterface) deviceDriverCache.get(driverPath);
@@ -505,11 +505,11 @@ public class HardwareManager {
 	 * @return An instance of a driver capable of supporting that functionality
 	 * @throws BadFunctionalityRequestException
 	 *             no devices support that functionality
-	 * @throws DeviceConnectionException
+	 * @throws UnknownDriverRequest
 	 * @throws InvalidConfigurationFileException 
 	 */
 	public DeviceDataInterface getInitialDriver(String functionality)
-			throws BadFunctionalityRequestException, DeviceConnectionException,
+			throws BadFunctionalityRequestException, UnknownDriverRequest,
 			InvalidConfigurationFileException {
 		
 		List<String> drivers = getDevices(functionality);

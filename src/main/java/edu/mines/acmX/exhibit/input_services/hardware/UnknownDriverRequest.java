@@ -9,8 +9,8 @@ package edu.mines.acmX.exhibit.input_services.hardware;
  *
  */
 
-public class DeviceConnectionException extends Exception {
-	public DeviceConnectionException(String message) {
+public class UnknownDriverRequest extends Exception {
+	public UnknownDriverRequest(String message) {
 		super(message);
 	}
 }
