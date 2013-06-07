@@ -29,10 +29,9 @@ public class HandReceiver implements InputReceiver {
 	public void viewportDimensionChange(Dimension dim) {}
 	
 	/**
-	 * This should not be overridden, and provides the implementation details
-	 * to abstract the received data.
+	 * Provides the implementation details to abstract the received data.
 	 */
-	public void receiveInput(EventType type, Object data) {
+	public final void receiveInput(EventType type, Object data) {
 		switch (type) {
 			case HAND_CREATED:
 				handCreated((HandPosition) data);

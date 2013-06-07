@@ -101,35 +101,4 @@ public class EventManager {
 			}
 		}
 	}
-	
-	
-	/**
-	 * @deprecated The thread is unnecessary if the storage unit for our events
-	 * is Concurrently designed.
-	 */
-	class EventThread extends Thread {
-		public static final long EVENT_SLEEP = 2000;
-		
-		public void run() {
-			while (true) {
-				if (!events.isEmpty()) {
-					Event e = events.poll();
-					if (eventReceivers.containsKey(e.getName())) {
-						// Check if anyone is even listening for this event
-						
-						List<InputReceiver> receivers = eventReceivers.get(e.getName());
-						for (InputReceiver r : receivers) {
-							r.receiveInput(e.getName(), e.getData());
-						}
-					}
-				} else {
-					try {
-						Thread.sleep(EVENT_SLEEP);
-					} catch (InterruptedException e) {
-						log.error("Thread interrupted exception for event manager");
-					}
-				}
-			}
-		}
-	}
 }

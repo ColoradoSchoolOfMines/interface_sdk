@@ -59,8 +59,7 @@ public class HardwareManagerManifestLoader {
 			manifest.getDocumentElement().normalize();
 			return parseManifest(manifest);
 		} catch (Exception e) {
-			throw new HardwareManagerManifestException("Could not load manifest\n"
-					+ e.toString());
+			throw new HardwareManagerManifestException("Could not load manifest\n" + e.toString());
 		}
 	}
 	
@@ -75,8 +74,7 @@ public class HardwareManagerManifestLoader {
 			throws HardwareManagerManifestException {
 		
 		HardwareManagerMetaData hmmd = new HardwareManagerMetaData();
-		Element element = (Element) manifest.getElementsByTagName("manifest")
-											.item(0);
+		Element element = (Element) manifest.getElementsByTagName("manifest").item(0);
 		
 		NodeList funcTagList = element.getElementsByTagName("functionalities");
 		if (funcTagList.getLength() <= 0) {
@@ -102,8 +100,7 @@ public class HardwareManagerManifestLoader {
 	 * @param hdsmd the meta data object to store information into
 	 * @throws HardwareManagerManifestException
 	 */
-	private static void parseFunctionalities(NodeList funcTagList,
-											HardwareManagerMetaData hdsmd)
+	private static void parseFunctionalities(NodeList funcTagList, HardwareManagerMetaData hdsmd)
 			throws HardwareManagerManifestException {
 		
 		Map<String, String> supportList = new HashMap<String, String>();

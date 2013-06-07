@@ -1,6 +1,7 @@
 package edu.mines.acmX.exhibit.input_services.hardware;
 
 /**
+ * TODO Change javadoc
  * Exception to handle when no devices are connected.
  * 
  * @author Aakash Shah
