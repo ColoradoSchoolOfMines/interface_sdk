@@ -5,6 +5,7 @@ import java.util.concurrent.CountDownLatch;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 /**
  * Non graphical versions of Module should extend from this.
@@ -75,6 +76,14 @@ public abstract class CommandlineModule implements ModuleInterface {
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
 		return module.loadResourceFromModule(jarResourcePath);
+	}
+	
+	public ModuleMetaData getModuleMetaData(String packageName) {
+		return module.getModuleMetaData(packageName);
+	}
+	
+	public String[] getAllAvailableModules() {
+		return module.getAllAvailableModules();
 	}
     
     /**

@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -88,7 +89,15 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
 		return module.loadResourceFromModule(jarResourcePath);
 	}
-    
+	
+	public ModuleMetaData getModuleMetaData(String packageName) {
+		return module.getModuleMetaData(packageName);
+	}
+	
+	public String[] getAllAvailableModules() {
+		return module.getAllAvailableModules();
+	}
+	
     /**
      * This function does the dirty work for creating a new Processing window.
      * This will call Processing's init() function which does further Processing

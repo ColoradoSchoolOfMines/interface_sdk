@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 /**
  * Abstract module for AWT projects. Used to create modules that want to
@@ -51,6 +52,14 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath);
+	}
+	
+	public ModuleMetaData getModuleMetaData(String packageName) {
+		return moduleHelper.getModuleMetaData(packageName);
+	}
+	
+	public String[] getAllAvailableModules() {
+		return moduleHelper.getAllAvailableModules();
 	}
 
 	/**

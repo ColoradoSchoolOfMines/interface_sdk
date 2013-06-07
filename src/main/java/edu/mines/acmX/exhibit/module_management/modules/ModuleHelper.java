@@ -11,6 +11,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestExc
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 /**
  * This class is meant to be used as a delegated class instance inside other
@@ -47,6 +48,23 @@ public class ModuleHelper implements ModuleInterface {
 	 * will be unable to continue.
 	 */
 	private CountDownLatch countDownWhenDone;
+	
+	private ModuleManager moduleManager;
+	
+	public ModuleHelper() {
+		try {
+			this.moduleManager = ModuleManager.getInstance();
+			// TODO throw all these execptions.
+		} catch (ManifestLoadException e) {
+			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+		} catch (ModuleLoadException e) {
+			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+		} catch (HardwareManagerManifestException e) {
+			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+		} catch (BadDeviceFunctionalityRequestException e) {
+			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+		}
+	}
 
 	// just a slim layer for interfacing with a modulemanager and will return a
 	// boolean on whether the requested module can be run.
@@ -59,72 +77,52 @@ public class ModuleHelper implements ModuleInterface {
 	 * @return true if successful, false otherwise
 	 */
 	public final boolean setNextModuleToLoad(String moduleName) {
-		ModuleManager m;
-		try {
-			m = ModuleManager.getInstance();
-			return m.setNextModule(moduleName);
-		} catch (ManifestLoadException e) {
-			// This should never happen because ModuleManager is already past
-			// the point
-			// of throwing errors when a default module cannot be loaded
-			log.error("ManifestLoadException thrown to ModuleHelper");
-		} catch (ModuleLoadException e) {
-			// This should never happen because ModuleManager is already past
-			// the point
-			// of throwing errors when a default module cannot be loaded
-			log.error("ModuleLoadException thrown to ModuleHelper");
-		} catch (HardwareManagerManifestException e) {
-			log.error("HardwareManagerManifestException thrown to ModuleHelper");
-			e.printStackTrace();
-		} catch (BadDeviceFunctionalityRequestException e) {
-			// This should never happen because module manager already went
-			// through this logic for the default module when the module manager
-			// was first initiated. As such this exception is being thrown from
-			// getting an instance of module manager and the assumption is that
-			// the module manager was initiated previously. This also applies
-			// for the above HardwareManagerManifestException
-			log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
-			e.printStackTrace();
-		}
-		return false;
+
+		return moduleManager.setNextModule(moduleName);
+//		} catch (ManifestLoadException e) {
+//			// This should never happen because ModuleManager is already past
+//			// the point
+//			// of throwing errors when a default module cannot be loaded
+//			log.error("ManifestLoadException thrown to ModuleHelper");
+//		} catch (ModuleLoadException e) {
+//			// This should never happen because ModuleManager is already past
+//			// the point
+//			// of throwing errors when a default module cannot be loaded
+//			log.error("ModuleLoadException thrown to ModuleHelper");
+//		} catch (HardwareManagerManifestException e) {
+//			log.error("HardwareManagerManifestException thrown to ModuleHelper");
+//			e.printStackTrace();
+//		} catch (BadDeviceFunctionalityRequestException e) {
+//			// This should never happen because module manager already went
+//			// through this logic for the default module when the module manager
+//			// was first initiated. As such this exception is being thrown from
+//			// getting an instance of module manager and the assumption is that
+//			// the module manager was initiated previously. This also applies
+//			// for the above HardwareManagerManifestException
+//			log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
+//			e.printStackTrace();
+//		}
 	}
 
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) throws ManifestLoadException,
 			ModuleLoadException {
-		ModuleManager m;
-		try {
-			m = ModuleManager.getInstance();
-			return m.loadResourceFromModule(jarResourcePath, packageName);
-		} catch (HardwareManagerManifestException e) {
-			// This should never happen. See ModuleHelper#setNextModuleToRun
-			log.error("HardwareManagerManifestException thrown to ModuleHelper");
-			e.printStackTrace();
-		} catch (BadDeviceFunctionalityRequestException e) {
-			// This should never happen. See ModuleHelper#setNextModuleToRun
-			log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
-			e.printStackTrace();
-		}
-		return null;
+
+		return moduleManager.loadResourceFromModule(jarResourcePath, packageName);
+
 	}
 
 	public InputStream loadResourceFromModule(String jarResourcePath)
 			throws ManifestLoadException, ModuleLoadException {
-		try {
-			ModuleManager m = ModuleManager.getInstance();
-			return m.loadResourceFromModule(jarResourcePath);
-		} catch (HardwareManagerManifestException e) {
-			// This should never happen. See ModuleHelper#setNextModuleToRun
-			log.error("HardwareManagerManifestException thrown to ModuleHelper");
-			e.printStackTrace();
-		} catch (BadDeviceFunctionalityRequestException e) {
-			// This should never happen. See ModuleHelper#setNextModuleToRun
-			log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
-			e.printStackTrace();
-		}
-		log.debug("Returning null from ModuleHelper#loadResourceFromModule");
-		return null;
-
+		return moduleManager.loadResourceFromModule(jarResourcePath);
+	}
+	
+	public ModuleMetaData getModuleMetaData(String packageName) {
+		return moduleManager.getModuleMetaData(packageName);
+	}
+	
+	public String[] getAllAvailableModules() {
+		return moduleManager.getAllAvailableModules();
 	}
 
 	/**
