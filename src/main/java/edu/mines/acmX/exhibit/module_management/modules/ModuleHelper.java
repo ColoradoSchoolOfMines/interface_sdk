@@ -122,6 +122,7 @@ public class ModuleHelper implements ModuleInterface {
 			log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
 			e.printStackTrace();
 		}
+		log.debug("Returning null from ModuleHelper#loadResourceFromModule");
 		return null;
 
 	}

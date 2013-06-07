@@ -93,7 +93,6 @@ public class ModuleLoader {
 		// Generate a url list of places to look for the jar.  currently we 
 		// just have one location
 		URL[] urlList = { new File(jarPath).toURI().toURL() };
-		log.debug("module Url looks like: " + urlList[0].toString());
 		// Get the class loader that we currently have and transform it into a 
 		// class loader for urls
 		URLClassLoader loader = new URLClassLoader( urlList, classLoader);
