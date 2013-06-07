@@ -272,6 +272,10 @@ public class ModuleMetaData {
     public void setJarFileName(String name) {
         this.jarFileName = name;
     }
+    
+    public void setOptionalAll(boolean val) {
+    	this.optionalAll = val;
+    }
 }
 
 

@@ -892,4 +892,106 @@ public class ModuleManagerTest {
 		
 	}
 	
+	@Test
+	public void testThatAModuleCanGetItsOwnMetaData() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
+		ModuleManager.removeInstance();
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
+		HardwareManager.setManifestFilepath("hardware_manager_manifest.xml");
+		ModuleManager m = ModuleManager.getInstance();
+		m.setCurrentModuleMetaData("com.austindiviness.cltest");
+		
+		ModuleMetaData mmd = m.getModuleMetaData("com.austindiviness.cltest");
+		assertTrue(mmd != null);
+	}
+	
+	@Test
+	public void testThatAModuleCanGetAnotherModuleMetaDataWhenItRequires() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
+		ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+		ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
+
+		Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
+		alist.put("com.test.B", DependencyType.REQUIRED);
+		a.setModuleDependencies(alist);
+
+		// also need to set mm meta data.
+
+		ModuleManager m = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
+		modConfigs.put(a.getPackageName(), a);
+		modConfigs.put(b.getPackageName(), b);
+
+		m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
+		
+		ModuleMetaData mmd = m.getModuleMetaData(b.getPackageName());
+		assertTrue(mmd != null);
+	}
+	
+	@Test
+	public void testThatAModuleCannotGetAnotherModuleMetaDataThatItDoesNotRequire() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
+		ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+		ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
+
+		Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
+		a.setModuleDependencies(alist);
+
+		// also need to set mm meta data.
+
+		ModuleManager m = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
+		modConfigs.put(a.getPackageName(), a);
+		modConfigs.put(b.getPackageName(), b);
+
+		m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
+		
+		ModuleMetaData mmd = m.getModuleMetaData(b.getPackageName());
+		assertTrue(mmd == null);
+	}
+	
+	@Test
+	public void testThatAModuleCanGetAnotherModuleMetaDataWhenItOptional() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
+		ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+		ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
+
+		Map<String, DependencyType> alist = new HashMap<String, DependencyType>();
+		alist.put("com.test.B", DependencyType.OPTIONAL);
+		a.setModuleDependencies(alist);
+
+		// also need to set mm meta data.
+
+		ModuleManager m = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
+		modConfigs.put(a.getPackageName(), a);
+		modConfigs.put(b.getPackageName(), b);
+
+		m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
+		
+		ModuleMetaData mmd = m.getModuleMetaData(b.getPackageName());
+		assertTrue(mmd != null);
+	}
+	
+	@Test
+	public void testThatAModuleCanGetAnotherModuleMetaDataWhenOptionalAll() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
+		ModuleMetaData a = createEmptyModuleMetaData("com.test.A", "A");
+		ModuleMetaData b = createEmptyModuleMetaData("com.test.B", "B");
+
+		a.setOptionalAll(true);
+		
+
+		// also need to set mm meta data.
+
+		ModuleManager m = ModuleManager.getInstance();
+		Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
+		modConfigs.put(a.getPackageName(), a);
+		modConfigs.put(b.getPackageName(), b);
+
+		m.setModuleMetaDataMap(modConfigs);
+		m.setCurrentModuleMetaData(a.getPackageName());
+		
+		ModuleMetaData mmd = m.getModuleMetaData(b.getPackageName());
+		assertTrue(mmd != null);
+	}
+	
 }
