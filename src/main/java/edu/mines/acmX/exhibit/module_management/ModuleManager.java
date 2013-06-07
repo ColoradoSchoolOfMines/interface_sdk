@@ -556,76 +556,47 @@ public class ModuleManager {
 			BadDeviceFunctionalityRequestException, ModuleLoadException {
 		System.out.println("What is load default?" + loadDefault);
 		if (loadDefault) {
-			preDefaultRuntime();
-
+			preModuleRuntime(defaultModuleMetaData);
 		} else {
 			try {
 				System.out.println("HIIII");
-				preModuleRuntime();
+				preModuleRuntime(nextModuleMetaData);
 				logger.debug("Module was set correctly!");
 			} catch (ModuleLoadException e) {
 				logger.error("Module [" + nextModuleMetaData.getPackageName()
 						+ "] could not be loaded");
 				logger.warn("Loading default module");
-				preDefaultRuntime();
+				preModuleRuntime(defaultModuleMetaData);
 			} catch (BadDeviceFunctionalityRequestException e) {
 				logger.error("Module [" + nextModuleMetaData.getPackageName()
 						+ "] depends on unknown functionality");
 				logger.warn("Loading default module");
-				preDefaultRuntime();
+				preModuleRuntime(defaultModuleMetaData);
 			} catch (InvalidConfigurationFileException e) {
 				logger.error("Module [" + nextModuleMetaData.getPackageName()
 						+ "] depends on unavailable functionality");
 				logger.warn("Loading default module");
-				preDefaultRuntime();
+				preModuleRuntime(defaultModuleMetaData);
 			}
 		}
 
-		// if anything is thrown here it is not specific to a module.
 		commonPreRuntime();
 	}
 
 	private void commonPreRuntime() {
 		loadDefault = true;
-
 	}
 
-	private void preDefaultRuntime()
-			throws BadDeviceFunctionalityRequestException, InvalidConfigurationFileException, ModuleLoadException {
-		setCurrentAsDefault();
-		try {
-			hardwareInstance.checkPermissions(defaultModuleMetaData
-					.getInputTypes());
-			hardwareInstance.setRunningModulePermissions(defaultModuleMetaData
-					.getInputTypes());
-			hardwareInstance.resetAllDrivers();
-
-		} catch (BadDeviceFunctionalityRequestException e) {
-			// This should never happen because the default module has already
-			// been checked with the hardware manager during the instantiation
-			// of
-			// the ModuleManager
-			logger.fatal("The default module does not have its required functionalies");
-			throw e;
-		} catch (InvalidConfigurationFileException e) {
-			// This should only happen if the state of the connected devices
-			// changes such that the default module no longer has its required
-			// input types
-			logger.fatal("The default module could not load one of its required devices");
-			throw e;
-		}
-	}
-
-	private void preModuleRuntime()
+	private void preModuleRuntime(ModuleMetaData mmd)
 			throws BadDeviceFunctionalityRequestException, ModuleLoadException, InvalidConfigurationFileException {
-		setCurrentAsNextModule();
+		setCurrentModule(mmd);
 		hardwareInstance
-				.checkPermissions(currentModuleMetaData.getInputTypes());
-		hardwareInstance.setRunningModulePermissions(currentModuleMetaData
+				.checkPermissions(mmd.getInputTypes());
+		hardwareInstance.setRunningModulePermissions(mmd
 				.getInputTypes());
-		logger.debug("Sending this stuff to hw instance: " + currentModuleMetaData.getInputTypes());
+		logger.debug("Sending this stuff to hw instance: " + mmd.getInputTypes());
 		hardwareInstance.resetAllDrivers();
-		logger.info("Loaded module " + nextModuleMetaData.getPackageName());
+		logger.info("Loaded module " + mmd.getPackageName());
 	}
 
 	private void runCurrentModule() {
@@ -667,25 +638,13 @@ public class ModuleManager {
 	}
 
 	/**
-	 * Sets the current module as the default module including the required
-	 * metaData.
-	 * @throws ModuleLoadException 
-	 */
-	private void setCurrentAsDefault() throws ModuleLoadException {
-		// TODO check that defaultModule still exists?
-		// actually we may not care.
-		currentModuleMetaData = defaultModuleMetaData;
-		currentModule = loadModuleFromMetaData(defaultModuleMetaData);
-	}
-
-	/**
 	 * This will attempt to set the current module as the nextModule
 	 * 
 	 * @throws ModuleLoadException
 	 */
-	private void setCurrentAsNextModule() throws ModuleLoadException {
-		currentModuleMetaData = nextModuleMetaData;
-		currentModule = loadModuleFromMetaData(nextModuleMetaData);
+	private void setCurrentModule(ModuleMetaData mmd) throws ModuleLoadException {
+		currentModuleMetaData = mmd;
+		currentModule = loadModuleFromMetaData(mmd);
 	}
 
 	/**

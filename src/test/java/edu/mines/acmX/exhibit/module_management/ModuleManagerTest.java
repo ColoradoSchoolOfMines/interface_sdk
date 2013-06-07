@@ -685,6 +685,8 @@ public class ModuleManagerTest {
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		
+		m.setDefault(true);
+		
 		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
 		
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
@@ -697,7 +699,7 @@ public class ModuleManagerTest {
 		m.setDefaultModuleMetaData(mmd);
 		
 		try {
-			Method preDefaultRT = ModuleManager.class.getDeclaredMethod("preDefaultRuntime");
+			Method preDefaultRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
 			preDefaultRT.setAccessible(true);
 			preDefaultRT.invoke(m);
 		} catch (InvocationTargetException e) {
@@ -719,6 +721,8 @@ public class ModuleManagerTest {
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		
+		m.setDefault(true);
+		
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
 		builder.addInputType("rgbimage", DependencyType.REQUIRED);
 		builder.setPackageName("com.austindiviness.cltest");
@@ -728,7 +732,7 @@ public class ModuleManagerTest {
 		mmd.setJarFileName("cltest.jar");
 		m.setDefaultModuleMetaData(mmd);
 		
-		Method preDefaultRT = ModuleManager.class.getDeclaredMethod("preDefaultRuntime");
+		Method preDefaultRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
 		preDefaultRT.setAccessible(true);
 		preDefaultRT.invoke(m);
 	}
