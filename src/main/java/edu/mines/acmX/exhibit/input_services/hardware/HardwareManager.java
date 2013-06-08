@@ -20,20 +20,17 @@ import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 
 /**
  * The HardwareManager acts as a layer of communication for retrieving drivers.
- * Information is loaded via a config file which can be modified. The manager
+ * Information is loaded via a manifest file which can be modified. The manager
  * will choose the most appropriate driver given a functionality and a specific
  * module's set of permissions. The manager is a singleton to reduce conflicts
  * between driver requests. The manager also checks whether a module's required
  * functionalities are available.
  * 
- * TODO Things that change on the module side:
- * 	Better exception handling.
+ * TODO Change so that if the requested driver is unavailable for a function.
+ * then it will attempt to load the next one.
  * 
  * @author Aakash Shah
  * @author Ryan Stauffer
- * 
- *         -mod mgr passes the module dependencies list to us so it can check
- *         required dependencies -integrate the run/exit of the module into here
  * 
  * @see {@link HardwareManagerMetaData} {@link HardwareManagerManifestLoader}
  * 
