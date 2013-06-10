@@ -219,6 +219,7 @@ public class ModuleManager {
 		}
 
 		try {
+			HardwareManager.setManifestFilepath(HardwareManager.DEFAULT_MANIFEST_PATH);
 			hardwareInstance = HardwareManager.getInstance();
 			hardwareInstance.setConfigurationFileStore(metaData
 					.getConfigFiles());
