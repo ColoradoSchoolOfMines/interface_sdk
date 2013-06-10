@@ -54,13 +54,13 @@ public class EventManager {
 	 * Adds the event to the event queue and ensures the event will be received
 	 * by all registered listeners in the order this event arrived in. 
 	 * 
-	 * @param eventName the type of event to fire the event under
+	 * @param type the type of event to fire the event under
 	 * @param data arbitrary data to package along with the event
 	 * 
 	 * @see {@link #sendEvent} {@link EventType}
 	 */
-	public void fireEvent(EventType eventName, Object data) {
-		Event ev = new Event(eventName, data);
+	public void fireEvent(EventType type, Object data) {
+		Event ev = new Event(type, data);
 		events.add(ev);
 		sendEvent();		
 	}
@@ -68,19 +68,29 @@ public class EventManager {
 	/**
 	 * Registers a receiver to be associated with a type of event.
 	 * 
-	 * @param eventName the type of event
+	 * @param type the type of event
 	 * @param receiver the receiver
 	 * 
 	 * @see {@link EventType}
 	 */
-	public void registerReceiver(EventType eventName, InputReceiver receiver) {
+	public void registerReceiver(EventType type, InputReceiver receiver) {
 		// Decide whether to make a new list/append to one already in the map.
-		if (eventReceivers.containsKey(eventName)) {
-			eventReceivers.get(eventName).add(receiver);
+		if (eventReceivers.containsKey(type)) {
+			eventReceivers.get(type).add(receiver);
 		} else {
 			List<InputReceiver> listOfReceivers = new ArrayList<InputReceiver>();
 			listOfReceivers.add(receiver);
-			eventReceivers.put(eventName, listOfReceivers);
+			eventReceivers.put(type, listOfReceivers);
+		}
+	}
+	
+	/**
+	 * Removes all registered receivers for a given event type.
+	 * @param type type of event.
+	 */
+	public void removeReceivers(EventType type) {
+		if (eventReceivers.containsKey(type)) {
+			eventReceivers.remove(type);
 		}
 	}
 	
