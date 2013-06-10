@@ -41,11 +41,13 @@ public class HardwareManager {
 	private static final Logger log = LogManager
 			.getLogger(HardwareManager.class);
 
+	public static final String DEFAULT_MANIFEST_PATH = "hardware_manager_manifest.xml";
+
 	private HardwareManagerMetaData metaData;
 	private Map<String, DependencyType> currentModuleInputTypes;
 
 	private static HardwareManager instance = null;
-	private static String manifest_path = "hardware_manager_manifest.xml";
+	private static String manifest_path = DEFAULT_MANIFEST_PATH;
 
 	private Map<String, List<String>> devices; // available list of devices
 	private Map<String, DriverInterface> deviceDriverCache;
