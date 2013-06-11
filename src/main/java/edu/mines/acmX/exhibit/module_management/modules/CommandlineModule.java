@@ -70,8 +70,8 @@ public abstract class CommandlineModule implements ModuleInterface {
     	module.finishExecution();
     }
     
-    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
-    	return module.loadResourceFromModule(jarResourcePath, packageName);
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+    	return module.loadResourceFromModule(jarResourcePath, m);
 	}
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
