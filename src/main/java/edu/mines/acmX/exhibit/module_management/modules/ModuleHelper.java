@@ -105,10 +105,10 @@ public class ModuleHelper implements ModuleInterface {
 	}
 
 	public InputStream loadResourceFromModule(String jarResourcePath,
-			String packageName) throws ManifestLoadException,
+			ModuleMetaData m) throws ManifestLoadException,
 			ModuleLoadException {
 
-		return moduleManager.loadResourceFromModule(jarResourcePath, packageName);
+		return moduleManager.loadResourceFromModule(jarResourcePath, m.getPackageName());
 
 	}
 

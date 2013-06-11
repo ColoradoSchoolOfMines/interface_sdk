@@ -42,6 +42,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     
     private Frame frame;
     
+    public static String IMAGES_LOCATION = "images/";
+    
     public ProcessingModule() {
         super();
         module = new ModuleHelper();
@@ -82,8 +84,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	module.finishExecution();
     }
     
-    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
-    	return module.loadResourceFromModule(jarResourcePath, packageName);
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+    	return module.loadResourceFromModule(jarResourcePath, m);
 	}
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
@@ -139,7 +141,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	// loadImage function
 	@Override
 	public PImage loadImage(String name) {
-		name = "images/" + name;
+		name = IMAGES_LOCATION + name;
 		try {
 			InputStream stream = module.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
 			//InputStream stream = module.loadResourceFromModule(name);
@@ -151,12 +153,15 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		}
 	}
 	
-	@Override 
-	public PImage loadImage(String name, String packageName) {
-		name = "images/" + name;
+	public PImage loadImage(String name, ModuleMetaData m) {
+		//use original function if from an outside resource
+        if (name.startsWith("http://") || name.startsWith("https://")) {
+                return super.loadImage(name);
+        }
+        name = IMAGES_LOCATION + name;
+
 		try {
-			InputStream stream = module.loadResourceFromModule(name, packageName);
-			//InputStream stream = module.loadResourceFromModule(name);
+			InputStream stream = module.loadResourceFromModule(name, m);
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
 		} catch (Exception e) {

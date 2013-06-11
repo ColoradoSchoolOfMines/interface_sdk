@@ -46,8 +46,8 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 		moduleHelper.init(waitForModule);
 	}
 	
-    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
-    	return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+    	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
