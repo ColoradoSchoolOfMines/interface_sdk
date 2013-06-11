@@ -151,9 +151,6 @@ public class ModuleHelper implements ModuleInterface {
 	}
 
 	// TODO
-	// layer to query modulemanager
-
-	// TODO
-	// be able to ask about its own or other module metadatas
+	// Communicate with ModuleManager to get: Config store
 
 }

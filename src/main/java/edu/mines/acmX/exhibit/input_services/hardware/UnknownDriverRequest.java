@@ -1,8 +1,9 @@
 package edu.mines.acmX.exhibit.input_services.hardware;
 
 /**
- * TODO Change javadoc
- * Exception to handle when no devices are connected.
+ * Occurs when the device is not within the HardwareManager's driver cache.
+ * Ideally this should never get called, though this prevents invalid access to
+ * unknown driver.
  * 
  * @author Aakash Shah
  * @author Ryan Stauffer
