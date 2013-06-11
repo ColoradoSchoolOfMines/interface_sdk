@@ -14,6 +14,7 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -141,6 +142,10 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	// loadImage function
 	@Override
 	public PImage loadImage(String name) {
+		//use original function if from an outside resource
+        if (name.startsWith("http://") || name.startsWith("https://")) {
+                return super.loadImage(name);
+        }
 		name = IMAGES_LOCATION + name;
 		try {
 			InputStream stream = module.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
@@ -154,20 +159,33 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	}
 	
 	public PImage loadImage(String name, ModuleMetaData m) {
-		//use original function if from an outside resource
-        if (name.startsWith("http://") || name.startsWith("https://")) {
-                return super.loadImage(name);
-        }
-        name = IMAGES_LOCATION + name;
 
+		name = IMAGES_LOCATION + name;
+
+		InputStream stream;
 		try {
-			InputStream stream = module.loadResourceFromModule(name, m);
+			stream = module.loadResourceFromModule(name, m);
+			if (stream == null ) {
+				log.debug("Could not load the image for the given resource");
+				return null;
+			}
+
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
-		} catch (Exception e) {
+
+		} catch (ManifestLoadException e) {
 			log.error("Exception was hit: " + e.getClass().toString());
-			return null;
+			e.printStackTrace();
+		} catch (ModuleLoadException e) {
+			log.error("Exception was hit: " + e.getClass().toString());
+			e.printStackTrace();
+		} catch (IOException e) {
+			log.error("Exception was hit: " + e.getClass().toString());
+			e.printStackTrace();
 		}
+		
+		return null;
+
 	}
 
     private static PImage buffImagetoPImage(BufferedImage bimg) {

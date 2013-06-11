@@ -83,7 +83,8 @@ public class ModuleLoader {
 	public static InputStream loadResource(String jarPath, ModuleMetaData
 			data, ClassLoader classLoader, String resourcePath) throws
 		ModuleLoadException, MalformedURLException { 
-
+		    
+		    log.debug("Opoening path: " + resourcePath + " from this jar: " + jarPath);
 			URLClassLoader loader = getClassLoader( jarPath, classLoader );
 			return loader.getResourceAsStream( resourcePath );
 	}

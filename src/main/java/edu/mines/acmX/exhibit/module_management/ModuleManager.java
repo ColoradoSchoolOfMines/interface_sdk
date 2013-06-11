@@ -679,6 +679,7 @@ public class ModuleManager {
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) {
 		ModuleMetaData data = moduleConfigs.get(packageName);
+		logger.debug("We will now load from the ModuleLoader" );
 		try {
 			return ModuleLoader.loadResource(metaData.getPathToModules() + "/"
 					+ data.getJarFileName(), data, this.getClass()
