@@ -16,11 +16,6 @@ import edu.mines.acmX.exhibit.input_services.hardware.OpenNIConfigurationExcepti
  * A singleton for the OpenNI Context that manages communication between
  * the openni library and the kinect device.
  * 
- * TODO If we want to allow each module to load it's own openni config file,
- * then we need to copy the file out of the module's config file to a location
- * that is accessible by a string name. This is because we can't grab a String
- * location from a jar file (which the modules will appear as).
- * 
  * @author Aakash Shah
  * @author Ryan Stauffer
  */
@@ -48,6 +43,6 @@ public class OpenNIContextSingleton {
     }
     
     public static void destroy() {
-    	// TODO: Call release/dispose/stopGeneratingAll() ??
+    	context = null;
     }
 }

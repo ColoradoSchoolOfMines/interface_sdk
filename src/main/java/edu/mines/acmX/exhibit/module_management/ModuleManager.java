@@ -44,6 +44,9 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
  * which modules can run by ensuring that they have all of their required
  * dependencies. Also cycles through the next module to be run.
  * 
+ * TODO Add code to check when the directory that the modules is said to be in
+ * from the manifest is invalid or cannot be opened.
+ * 
  * Singleton
  * 
  * @author Andrew DeMaria
