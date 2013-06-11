@@ -65,14 +65,6 @@ public class ModuleManager {
 		try {
 			cmd = cl.parse(opts, args);
 
-			if (cmd.getArgs().length != 0) {
-				logger.warn("Left over args: " + cmd.getArgs().toString());
-			}
-
-			String[] debugArgs = { "openni-config", "manifest", "modules-path",
-					"default-module", "help" };
-			debugArgs(cmd, debugArgs);
-
 			if (cmd.hasOption("help")) {
 				printHelp(opts);
 			} else {
@@ -81,8 +73,8 @@ public class ModuleManager {
 					ModuleManager.configure(cmd.getOptionValue("manifest"));
 				} else {
 					System.out
-							.println("A Module Manager Manifest is required to run the module manager"
-									+ "Please specify with the --manifest switch");
+							.println("A Module Manager Manifest is required to run the module manager" + 
+                                    "Please specify with the --manifest switch");
 					System.exit(1);
 				}
 				ModuleManager m;
@@ -115,15 +107,21 @@ public class ModuleManager {
 
 	private static void printHelp(Options opts) {
 		HelpFormatter formatter = new HelpFormatter();
-		// TODO header and footer
-		formatter.printHelp("java -jar [JARNAME]", "header", opts, "footer",
+        formatter.setDescPadding(0);
+        String header =
+            "\n" + 
+            "Welcome to the Interface SDK!\n" +
+            "The Interface SDK provides an intelligent environment in which to run modules. " + 
+            "To build a module visit the github wiki at " + 
+            "https://github.com/ColoradoSchoolOfMines/interface_sdk/wiki " +
+            "\n" + 
+            "Also please find the source code at " + 
+            "https://github.com/ColoradoSchoolOfMines/interface_sdk " + 
+            "where you can find more detail on the open source project.";
+        String footer = 
+            "\n";
+		formatter.printHelp("java -jar [JARNAME]", header, opts, footer,
 				true);
-	}
-
-	private static void debugArgs(CommandLine cmd, String[] args) {
-		for (String arg : args) {
-			logger.debug(arg + " was: " + cmd.getOptionValue(arg));
-		}
 	}
 
 	private static Options generateCLOptions() {
@@ -131,34 +129,18 @@ public class ModuleManager {
 		// options = optionsUsingIndividualAgruments(options);
 		options.addOption(optionsUsingManifest());
 		// options.addOption(openNiArguments());
-		options.addOption("h", "help", false, "Print these helpful hints");
+		options.addOption("h", "help", false, "\nPrint these helpful hints");
 		return options;
 	}
 
-	// TODO remove
-	/*
-	 * private static Option openNiArguments() { return OptionBuilder
-	 * .withLongOpt("openni-config") .withDescription(
-	 * "If using openNI, this argument must be populated with a path " +
-	 * "to a openNI xml configuration file.")
-	 * .hasArg().withArgName("PATH").create();
-	 * 
-	 * }
-	 */
-	// TODO remove
-	/*
-	 * private static Options optionsUsingIndividualAgruments(Options opts) {
-	 * opts.addOption(OptionBuilder .withLongOpt("default-module")
-	 * .withDescription( "Use this module as the default module to load")
-	 * .hasArg().withArgName("MODULE_PACKAGE").create());
-	 * 
-	 * opts.addOption(OptionBuilder.withLongOpt("modules-path")
-	 * .withDescription("Use this path to load modules from").hasArg()
-	 * .withArgName("PATH").create()); return opts; }
-	 */
 	private static Option optionsUsingManifest() {
 		return OptionBuilder.withLongOpt("manifest")
-				.withDescription("Use a custom module manager manifest file")
+				.withDescription(
+                        "\nUse a custom module manager manifest file. " + 
+                        "The manifest must specify the default module to load, " +
+                        "the location of the modules folder and any configuration files " +
+                        "that are needed for the drivers you would like to use."
+                        )
 				.hasArg().withArgName("PATH").create();
 	}
 
@@ -619,11 +601,6 @@ public class ModuleManager {
 		refreshModules();
 	}
 
-	// TODO remove
-	/*
-	 * public static void setPathToManifest(String path) {
-	 * ModuleManager.pathToModuleManagerManifest = path;}
-	 */
 
 	/**
 	 * Sets the default module for ModuleManager. Throws an exception if the
@@ -746,11 +723,6 @@ public class ModuleManager {
 		return null;
 	}
 
-	/*
-	 * TODO removeprivate static void setOpenNiConfiguration(String path) {
-	 * pathToOpenNIConfig = path;}
-	 */
-
 	// //////////////////////////////////////////////////
 	// TODO the remaing methods are for testing only! //
 	// //////////////////////////////////////////////////
@@ -806,7 +778,6 @@ public class ModuleManager {
 		try {
 			hardwareInstance = HardwareManager.getInstance();
 		} catch (HardwareManagerManifestException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
