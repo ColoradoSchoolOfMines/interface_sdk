@@ -42,10 +42,12 @@ public class HandTrackingUtilities {
 	 * @return The scaled hand position (int)
 	 */
 	public static int getScaledHandX(float handX, int depthWidth, int frameWidth, float marginFraction) {
-		//if no scaling is desired, any value less than 2 will do a flat ratio of screen sizes
-		if (marginFraction < 2) return (int) (handX * (float) frameWidth/depthWidth);
+		//if no scaling is desired, 0 or any negative number will calculate a flat ratio of screen sizes
+		if (marginFraction <= 0) return (int) (handX * (float) frameWidth/depthWidth);
+		// if the margin is greater than 1/2 (would give negative remaining size), return flat ratio
+		if (marginFraction > 0.5) return (int) (handX * (float) frameWidth/depthWidth);
 		//get margin size (fraction of total screen size)
-		float marginX = depthWidth/marginFraction;
+		float marginX = depthWidth * marginFraction;
 		//find remainder of depth image to zoom into
 		float scaledDepthWidth = depthWidth - 2 * marginX;
 		//translate coordinate to new zoomed frame, and then perform screen size ratio
@@ -68,10 +70,12 @@ public class HandTrackingUtilities {
 	 * @return The scaled hand position (int)
 	 */
 	public static int getScaledHandY(float handY, int depthHeight, int frameHeight, float marginFraction) {
-		//if no scaling is desired, any value less than 2 will do a flat ratio of screen sizes
-		if (marginFraction < 2) return (int) (handY * (float) frameHeight/depthHeight);
+		//if no scaling is desired, 0 or any negative number will calculate a flat ratio of screen sizes
+		if (marginFraction <= 0) return (int) (handY * (float) frameHeight/depthHeight);
+		// if the margin is greater than 1/2 (would give negative remaining size), return flat ratio
+		if (marginFraction > 0.5) return (int) (handY * (float) frameHeight/depthHeight);
 		//get margin size (fraction of total screen size)
-		float marginY = depthHeight/marginFraction;
+		float marginY = depthHeight * marginFraction;
 		//find remainder of depth image to zoom into
 		float scaledDepthHeight = depthHeight - 2 * marginY;
 		//translate coordinate to new zoomed frame, and then perform screen size ratio
