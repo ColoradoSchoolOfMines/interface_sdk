@@ -219,7 +219,6 @@ public class KinectOpenNIDriver implements DriverInterface,
 			EventManager.getInstance().removeReceivers(EventType.HAND_UPDATED);
 			EventManager.getInstance().removeReceivers(EventType.HAND_DESTROYED);
 			
-			OpenNIContextSingleton.destroy();
 		} catch (StatusException e) {
 			e.printStackTrace();
 		}
