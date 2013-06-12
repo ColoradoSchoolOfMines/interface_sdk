@@ -1,7 +1,9 @@
-package edu.mines.acmX.exhibit.input_services.events;
+package edu.mines.acmX.exhibit.stdlib.input_processing.receivers;
 
 import java.awt.Dimension;
 
+import edu.mines.acmX.exhibit.input_services.events.EventType;
+import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
 
