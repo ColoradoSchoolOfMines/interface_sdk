@@ -211,8 +211,7 @@ public class ModuleManager {
 		} catch (HardwareManagerManifestException e) {
 			throw e;
 		}
-		hardwareInstance
-				.checkPermissions(defaultModuleMetaData.getInputTypes());
+		hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
 		loadDefault = true;
 	}
 
