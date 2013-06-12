@@ -197,7 +197,6 @@ public class ModuleManager {
 
 		refreshModules();
 		try {
-			logger.debug("Setting default to: " + metaData.getDefaultModuleName());
 			setDefaultModule(metaData.getDefaultModuleName());
 		} catch (ModuleLoadException e) {
 			logger.fatal("Could not load the default module");
@@ -615,7 +614,6 @@ public class ModuleManager {
 	 * 
 	 */
 	private void setDefaultModule(String name) throws ModuleLoadException {
-		logger.debug("Contains: " + moduleConfigs.containsKey(name));
 		defaultModuleMetaData = moduleConfigs.get(name);
 	}
 
