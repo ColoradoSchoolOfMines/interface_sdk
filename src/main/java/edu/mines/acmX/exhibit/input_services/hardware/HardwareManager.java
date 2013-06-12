@@ -105,6 +105,24 @@ public class HardwareManager {
 	}
 	
 	/**
+	 * Sets the location to load the manifest config file from. Upon doing this,
+	 * a new instance of HardwareManager will be initialized.
+	 * 
+	 * @param filepath
+	 * @throws HardwareManagerManifestException
+	 * 
+	 * @see {@link #HardwareManager()}
+	 */
+	public static void setManifestFilepath(String filepath)
+			throws HardwareManagerManifestException {
+		if (null == filepath) {
+			throw new HardwareManagerManifestException("Null filepath given");
+		}
+		manifest_path = filepath;
+		instance = new HardwareManager();
+	}
+	
+	/**
 	 * Loads the configuration file.
 	 * 
 	 * @throws HardwareManagerManifestException
@@ -169,24 +187,6 @@ public class HardwareManager {
 			throw new HardwareManagerManifestException(
 					"Unknown functionality supported by device");
 		}
-	}
-
-	/**
-	 * Sets the location to load the manifest config file from. Upon doing this,
-	 * a new instance of HardwareManager will be initialized.
-	 * 
-	 * @param filepath
-	 * @throws HardwareManagerManifestException
-	 * 
-	 * @see {@link #HardwareManager()}
-	 */
-	public static void setManifestFilepath(String filepath)
-			throws HardwareManagerManifestException {
-		if (null == filepath) {
-			throw new HardwareManagerManifestException("Null filepath given");
-		}
-		manifest_path = filepath;
-		instance = new HardwareManager();
 	}
 	
 	/**
@@ -322,9 +322,6 @@ public class HardwareManager {
 	 */
 	public void buildRequiredDevices() throws InvalidConfigurationFileException {
 
-		devices = new HashMap<String, List<String>>(); // functionality -> list
-														// of driver paths
-
 		Set<String> moduleFunctionalities = currentModuleInputTypes.keySet();
 		for (String moduleFunc : moduleFunctionalities) {
 			if (currentModuleInputTypes.get(moduleFunc) == DependencyType.REQUIRED) {
@@ -340,7 +337,7 @@ public class HardwareManager {
 	 * @return list of strings of driver names supporting the given 
 	 *	functionality
 	 */
-	public List<String> findDeviceDriversSupporting(String func) {
+	private List<String> findDeviceDriversSupporting(String func) {
 		List<String> ret = new ArrayList<String>();
 
 		// Driver Name -> List of functionalities
@@ -373,7 +370,7 @@ public class HardwareManager {
 	 * like 'DriverLoadException'
 	 */
 	// instantiates and checks the availability from the provided list.
-	public void buildDriverList(List<String> driverNames)
+	private void buildDriverList(List<String> driverNames)
 			throws InvalidConfigurationFileException {
 		
 		// Driver Name -> Driver paths
@@ -421,7 +418,7 @@ public class HardwareManager {
 	 * internal list of available functionalities.
 	 * @param driverName driver that is available
 	 */
-	public void addDeviceFunctionalities(String driverName) {
+	private void addDeviceFunctionalities(String driverName) {
 		Map<String, List<String>> deviceSupports = metaData.getDeviceSupports();
 		List<String> functionalities = deviceSupports.get(driverName);
 		for (String s : functionalities) {
