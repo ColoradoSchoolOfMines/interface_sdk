@@ -11,6 +11,7 @@
 package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -110,14 +111,17 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * TODO try to run PApplet without creating a new frame.
      */
     public void execute(){
-		//TODO something smarter should be done with setting the size
-    	frame.setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
+    	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
+    	frame.setUndecorated(true); //disable bordering
+    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
         frame.addWindowListener( new WindowAdapter() {
             public void windowClosing( WindowEvent e ) {
-                exit();
+                exit(); //exit the specific module when the window is closed, not ModuleManager
             }
         });
-
+        
+        frame.setVisible(true); //get correct screen size for Windows
     	frame.add(this);
     	frame.setVisible(true);
         super.init();
