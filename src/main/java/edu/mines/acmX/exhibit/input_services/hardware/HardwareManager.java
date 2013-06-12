@@ -320,10 +320,7 @@ public class HardwareManager {
 	 * 
 	 * @throws InvalidConfigurationFileException
 	 */
-	private void buildRequiredDevices() throws InvalidConfigurationFileException {
-
-		devices = new HashMap<String, List<String>>(); // functionality -> list
-														// of driver paths
+	public void buildRequiredDevices() throws InvalidConfigurationFileException {
 
 		Set<String> moduleFunctionalities = currentModuleInputTypes.keySet();
 		for (String moduleFunc : moduleFunctionalities) {
