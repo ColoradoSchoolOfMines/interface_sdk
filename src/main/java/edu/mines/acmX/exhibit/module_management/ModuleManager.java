@@ -631,8 +631,6 @@ public class ModuleManager {
 	/**
 	 * Sets next module to be loaded, after the current module.
 	 * 
-	 * TODO check the module can run with the hardware manager.
-	 * 
 	 * @param name
 	 *            Package name of module to be loaded next.
 	 * 
@@ -718,6 +716,16 @@ public class ModuleManager {
 		return null;
 
 	}
+
+    /**
+     * This function allows for the current running module to get its own
+     * package name.
+     *
+     * TODO integrate this with Module Helper
+     */
+    public String getCurrentModulePackageName() {
+        return currentModuleMetaData.getPackageName();
+    }
 
 	public String[] getAllAvailableModules() {
 		if (currentModuleMetaData.getOptionalAll()) {
