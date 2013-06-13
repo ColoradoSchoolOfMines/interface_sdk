@@ -67,6 +67,7 @@ public class ModuleManager {
 
 	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
 
+
 	/**
 	 * Singleton instance of ModuleManager This is volatile in order to be safe
 	 * with multiple threads
