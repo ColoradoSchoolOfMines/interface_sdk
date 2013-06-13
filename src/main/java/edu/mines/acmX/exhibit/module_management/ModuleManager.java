@@ -537,6 +537,13 @@ public class ModuleManager {
 	 */
 	private void setDefaultModule(String name) throws ModuleLoadException {
 		defaultModuleMetaData = moduleConfigs.get(name);
+<<<<<<< HEAD
+=======
+		if (defaultModuleMetaData == null) {
+			String msg = "The default module [" + name + "] was never loaded";
+			throw new ModuleLoadException(msg);
+		}
+>>>>>>> Inform on which module was set as default
 	}
 
 	/**
