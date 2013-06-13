@@ -78,11 +78,22 @@ public class ModuleManifestLoader {
         checkAttribute(manifestTag, "class");
         builder.setClassName(manifestTag.getAttribute("class"));
         
+        checkAttribute( manifestTag, "icon");
+        builder.setIconPath( manifestTag.getAttribute("icon"));
+        checkAttribute( manifestTag, "title");
+        builder.setTitle( manifestTag.getAttribute("title"));
+        checkAttribute( manifestTag, "author");
+        builder.setAuthor( manifestTag.getAttribute("author"));
+        checkAttribute( manifestTag, "version");
+        builder.setVersion( manifestTag.getAttribute("version"));
+        
+        
         NodeList sdk = manifestTag.getElementsByTagName("uses-sdk");
         parseSdkVersion(sdk, builder);
-
-        NodeList moduleInfo = manifestTag.getElementsByTagName("module");
-        parseModuleInfo(moduleInfo, builder);
+        
+        
+        parseInputs(manifestTag.getElementsByTagName("inputs"), builder);
+        parseModuleDependencies(manifestTag.getElementsByTagName("requires-module"), builder);
 
         return builder.build();
 
@@ -101,31 +112,6 @@ public class ModuleManifestLoader {
         checkAttribute(singleUsesTag, "targetSdkVersion");
         builder.setMinSdkVersion(singleUsesTag.getAttribute("minSdkVersion"));
         builder.setTargetSdkVersion(singleUsesTag.getAttribute("targetSdkVersion"));
-    }
-
-	/**
-	 * Helper function that parses the manifest module dependency information.
-	 *
-	 * @param	module	The NodeList of all instances of the 'module' tag
-	 * @param	builder	The builder object that is gathering data
-	 * @throws ManifestLoadException 
-	 */
-    private static void parseModuleInfo( NodeList module,  ModuleMetaDataBuilder builder ) throws ManifestLoadException {
-        Element singleModuleTag = (Element) module.item(0);
-        checkAttribute( singleModuleTag, "icon");
-        builder.setIconPath( singleModuleTag.getAttribute("icon"));
-        checkAttribute( singleModuleTag, "title");
-        builder.setTitle( singleModuleTag.getAttribute("title"));
-        checkAttribute( singleModuleTag, "author");
-        builder.setAuthor( singleModuleTag.getAttribute("author"));
-        checkAttribute( singleModuleTag, "version");
-        builder.setVersion( singleModuleTag.getAttribute("version"));
-        
-        
-        parseInputs(singleModuleTag.getElementsByTagName("inputs"), builder);
-        parseModuleDependencies(singleModuleTag.getElementsByTagName("requires-module"), builder);
-        
-
     }
 
 	/**
@@ -166,11 +152,15 @@ public class ModuleManifestLoader {
 	 */
     private static void parseModuleDependencies(NodeList nodeList, ModuleMetaDataBuilder builder) throws ManifestLoadException {
         Element element = (Element) nodeList.item(0);
-		NodeList moduleAll = element.getElementsByTagName("optional-all");
-		if (moduleAll.getLength() > 0) {
-			builder.setOptionalAll(true);
-			return;
-		}
+        if (element.hasAttribute("optional-all")) {
+            boolean optional_all = Boolean.parseBoolean(element.getAttribute("optional-all"));
+            if (optional_all) {
+
+            	builder.setOptionalAll(true);
+            	return;
+            }
+        }
+        
         NodeList modules = element.getElementsByTagName("module");
         for( int i = 0; i < modules.getLength(); ++i ) {
             parseModuleDependency( (Element) modules.item(i), builder );

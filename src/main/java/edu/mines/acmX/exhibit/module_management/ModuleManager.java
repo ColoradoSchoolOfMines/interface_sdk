@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
-import edu.mines.acmX.exhibit.input_services.hardware.DeviceConnectionException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
@@ -43,6 +43,9 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
  * interface sdk library. This controls the lifecycle of modules and determines
  * which modules can run by ensuring that they have all of their required
  * dependencies. Also cycles through the next module to be run.
+ * 
+ * TODO Add code to check when the directory that the modules is said to be in
+ * from the manifest is invalid or cannot be opened.
  * 
  * Singleton
  * 
@@ -65,14 +68,6 @@ public class ModuleManager {
 		try {
 			cmd = cl.parse(opts, args);
 
-			if (cmd.getArgs().length != 0) {
-				logger.warn("Left over args: " + cmd.getArgs().toString());
-			}
-
-			String[] debugArgs = { "openni-config", "manifest", "modules-path",
-					"default-module", "help" };
-			debugArgs(cmd, debugArgs);
-
 			if (cmd.hasOption("help")) {
 				printHelp(opts);
 			} else {
@@ -81,8 +76,8 @@ public class ModuleManager {
 					ModuleManager.configure(cmd.getOptionValue("manifest"));
 				} else {
 					System.out
-							.println("A Module Manager Manifest is required to run the module manager"
-									+ "Please specify with the --manifest switch");
+							.println("A Module Manager Manifest is required to run the module manager" + 
+                                    "Please specify with the --manifest switch");
 					System.exit(1);
 				}
 				ModuleManager m;
@@ -115,15 +110,21 @@ public class ModuleManager {
 
 	private static void printHelp(Options opts) {
 		HelpFormatter formatter = new HelpFormatter();
-		// TODO header and footer
-		formatter.printHelp("java -jar [JARNAME]", "header", opts, "footer",
+        formatter.setDescPadding(0);
+        String header =
+            "\n" + 
+            "Welcome to the Interface SDK!\n" +
+            "The Interface SDK provides an intelligent environment in which to run modules. " + 
+            "To build a module visit the github wiki at " + 
+            "https://github.com/ColoradoSchoolOfMines/interface_sdk/wiki " +
+            "\n" + 
+            "Also please find the source code at " + 
+            "https://github.com/ColoradoSchoolOfMines/interface_sdk " + 
+            "where you can find more detail on the open source project.";
+        String footer = 
+            "\n";
+		formatter.printHelp("java -jar [JARNAME]", header, opts, footer,
 				true);
-	}
-
-	private static void debugArgs(CommandLine cmd, String[] args) {
-		for (String arg : args) {
-			logger.debug(arg + " was: " + cmd.getOptionValue(arg));
-		}
 	}
 
 	private static Options generateCLOptions() {
@@ -131,34 +132,18 @@ public class ModuleManager {
 		// options = optionsUsingIndividualAgruments(options);
 		options.addOption(optionsUsingManifest());
 		// options.addOption(openNiArguments());
-		options.addOption("h", "help", false, "Print these helpful hints");
+		options.addOption("h", "help", false, "\nPrint these helpful hints");
 		return options;
 	}
 
-	// TODO remove
-	/*
-	 * private static Option openNiArguments() { return OptionBuilder
-	 * .withLongOpt("openni-config") .withDescription(
-	 * "If using openNI, this argument must be populated with a path " +
-	 * "to a openNI xml configuration file.")
-	 * .hasArg().withArgName("PATH").create();
-	 * 
-	 * }
-	 */
-	// TODO remove
-	/*
-	 * private static Options optionsUsingIndividualAgruments(Options opts) {
-	 * opts.addOption(OptionBuilder .withLongOpt("default-module")
-	 * .withDescription( "Use this module as the default module to load")
-	 * .hasArg().withArgName("MODULE_PACKAGE").create());
-	 * 
-	 * opts.addOption(OptionBuilder.withLongOpt("modules-path")
-	 * .withDescription("Use this path to load modules from").hasArg()
-	 * .withArgName("PATH").create()); return opts; }
-	 */
 	private static Option optionsUsingManifest() {
 		return OptionBuilder.withLongOpt("manifest")
-				.withDescription("Use a custom module manager manifest file")
+				.withDescription(
+                        "\nUse a custom module manager manifest file. " + 
+                        "The manifest must specify the default module to load, " +
+                        "the location of the modules folder and any configuration files " +
+                        "that are needed for the drivers you would like to use."
+                        )
 				.hasArg().withArgName("PATH").create();
 	}
 
@@ -219,14 +204,14 @@ public class ModuleManager {
 		}
 
 		try {
+			HardwareManager.setManifestFilepath(HardwareManager.DEFAULT_MANIFEST_PATH);
 			hardwareInstance = HardwareManager.getInstance();
 			hardwareInstance.setConfigurationFileStore(metaData
 					.getConfigFiles());
+			hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
 		} catch (HardwareManagerManifestException e) {
 			throw e;
 		}
-		hardwareInstance
-				.checkPermissions(defaultModuleMetaData.getInputTypes());
 		loadDefault = true;
 	}
 
@@ -540,7 +525,7 @@ public class ModuleManager {
 	 * 
 	 * @throws InvalidConfigurationFileException
 	 * @throws BadDeviceFunctionalityRequestException
-	 * @throws ModuleLoadException 
+	 * @throws ModuleLoadException
 	 * 
 	 */
 	public void run() throws InvalidConfigurationFileException,
@@ -588,13 +573,13 @@ public class ModuleManager {
 	}
 
 	private void preModuleRuntime(ModuleMetaData mmd)
-			throws BadDeviceFunctionalityRequestException, ModuleLoadException, InvalidConfigurationFileException {
+			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
+			InvalidConfigurationFileException {
 		setCurrentModule(mmd);
-		hardwareInstance
-				.checkPermissions(mmd.getInputTypes());
-		hardwareInstance.setRunningModulePermissions(mmd
-				.getInputTypes());
-		logger.debug("Sending this stuff to hw instance: " + mmd.getInputTypes());
+		hardwareInstance.checkPermissions(mmd.getInputTypes());
+		hardwareInstance.setRunningModulePermissions(mmd.getInputTypes());
+		logger.debug("Sending this stuff to hw instance: "
+				+ mmd.getInputTypes());
 		hardwareInstance.resetAllDrivers();
 		logger.info("Loaded module " + mmd.getPackageName());
 	}
@@ -618,11 +603,6 @@ public class ModuleManager {
 		refreshModules();
 	}
 
-	// TODO remove
-	/*
-	 * public static void setPathToManifest(String path) {
-	 * ModuleManager.pathToModuleManagerManifest = path;}
-	 */
 
 	/**
 	 * Sets the default module for ModuleManager. Throws an exception if the
@@ -642,7 +622,8 @@ public class ModuleManager {
 	 * 
 	 * @throws ModuleLoadException
 	 */
-	private void setCurrentModule(ModuleMetaData mmd) throws ModuleLoadException {
+	private void setCurrentModule(ModuleMetaData mmd)
+			throws ModuleLoadException {
 		currentModuleMetaData = mmd;
 		currentModule = loadModuleFromMetaData(mmd);
 	}
@@ -700,6 +681,7 @@ public class ModuleManager {
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) {
 		ModuleMetaData data = moduleConfigs.get(packageName);
+		logger.debug("We will now load from the ModuleLoader" );
 		try {
 			return ModuleLoader.loadResource(metaData.getPathToModules() + "/"
 					+ data.getJarFileName(), data, this.getClass()
@@ -718,10 +700,31 @@ public class ModuleManager {
 				currentModuleMetaData.getPackageName());
 	}
 
-	/*
-	 * TODO removeprivate static void setOpenNiConfiguration(String path) {
-	 * pathToOpenNIConfig = path;}
+	/**
+	 * This function should be used by a module to get the information about its
+	 * meta data or other modules meta datas as long as they have the permission
+	 * to launch that module
+	 * 
+	 * @param packageName
+	 * @return
 	 */
+	public ModuleMetaData getModuleMetaData(String packageName) {
+		ModuleMetaData toReturn = moduleConfigs.get(packageName);
+		if (currentModuleMetaData.getOptionalAll()
+				|| currentModuleMetaData.getModuleDependencies().containsKey(
+						packageName)) {
+			return toReturn;
+		}
+		return null;
+
+	}
+
+	public String[] getAllAvailableModules() {
+		if (currentModuleMetaData.getOptionalAll()) {
+			return moduleConfigs.keySet().toArray(new String[0]);
+		}
+		return null;
+	}
 
 	// //////////////////////////////////////////////////
 	// TODO the remaing methods are for testing only! //
@@ -729,10 +732,6 @@ public class ModuleManager {
 
 	public void setCurrentModuleMetaData(String name) {
 		currentModuleMetaData = moduleConfigs.get(name);
-	}
-
-	public String[] getAllAvailableModules() {
-		return moduleConfigs.keySet().toArray(new String[0]);
 	}
 
 	// USED ONLY FOR TESTING BELOW THIS COMMENT
@@ -782,7 +781,6 @@ public class ModuleManager {
 		try {
 			hardwareInstance = HardwareManager.getInstance();
 		} catch (HardwareManagerManifestException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

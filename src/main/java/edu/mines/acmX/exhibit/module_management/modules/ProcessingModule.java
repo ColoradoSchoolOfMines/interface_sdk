@@ -11,9 +11,11 @@
 package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -24,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -40,6 +43,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     private final ModuleHelper module;
     
     private Frame frame;
+    
+    public static String IMAGES_LOCATION = "images/";
     
     public ProcessingModule() {
         super();
@@ -81,14 +86,22 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	module.finishExecution();
     }
     
-    public InputStream loadResourceFromModule( String jarResourcePath, String packageName ) throws ManifestLoadException, ModuleLoadException {
-    	return module.loadResourceFromModule(jarResourcePath, packageName);
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+    	return module.loadResourceFromModule(jarResourcePath, m);
 	}
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
 		return module.loadResourceFromModule(jarResourcePath);
 	}
-    
+	
+	public ModuleMetaData getModuleMetaData(String packageName) {
+		return module.getModuleMetaData(packageName);
+	}
+	
+	public String[] getAllAvailableModules() {
+		return module.getAllAvailableModules();
+	}
+	
     /**
      * This function does the dirty work for creating a new Processing window.
      * This will call Processing's init() function which does further Processing
@@ -98,14 +111,17 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * TODO try to run PApplet without creating a new frame.
      */
     public void execute(){
-		//TODO something smarter should be done with setting the size
-    	frame.setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
+    	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
+    	frame.setUndecorated(true); //disable bordering
+    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
         frame.addWindowListener( new WindowAdapter() {
             public void windowClosing( WindowEvent e ) {
-                exit();
+                exit(); //exit the specific module when the window is closed, not ModuleManager
             }
         });
-
+        
+        frame.setVisible(true); //get correct screen size for Windows
     	frame.add(this);
     	frame.setVisible(true);
         super.init();
@@ -130,7 +146,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	// loadImage function
 	@Override
 	public PImage loadImage(String name) {
-		name = "images/" + name;
+		//use original function if from an outside resource
+        if (name.startsWith("http://") || name.startsWith("https://")) {
+                return super.loadImage(name);
+        }
+		name = IMAGES_LOCATION + name;
 		try {
 			InputStream stream = module.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
 			//InputStream stream = module.loadResourceFromModule(name);
@@ -142,18 +162,34 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		}
 	}
 	
-	@Override 
-	public PImage loadImage(String name, String packageName) {
-		name = "images/" + name;
+	public PImage loadImage(String name, ModuleMetaData m) {
+
+		name = IMAGES_LOCATION + name;
+
+		InputStream stream;
 		try {
-			InputStream stream = module.loadResourceFromModule(name, packageName);
-			//InputStream stream = module.loadResourceFromModule(name);
+			stream = module.loadResourceFromModule(name, m);
+			if (stream == null ) {
+				log.debug("Could not load the image for the given resource");
+				return null;
+			}
+
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
-		} catch (Exception e) {
+
+		} catch (ManifestLoadException e) {
 			log.error("Exception was hit: " + e.getClass().toString());
-			return null;
+			e.printStackTrace();
+		} catch (ModuleLoadException e) {
+			log.error("Exception was hit: " + e.getClass().toString());
+			e.printStackTrace();
+		} catch (IOException e) {
+			log.error("Exception was hit: " + e.getClass().toString());
+			e.printStackTrace();
 		}
+		
+		return null;
+
 	}
 
     private static PImage buffImagetoPImage(BufferedImage bimg) {

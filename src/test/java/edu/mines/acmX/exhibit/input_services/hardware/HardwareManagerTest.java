@@ -34,10 +34,10 @@ public class HardwareManagerTest {
 	 * Checks to ensure the driver classes given by the manifest file exists and 
 	 * is able to be initialized.
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException 
+	 * @throws UnknownDriverRequest 
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
-	public void testMissingDriverClass() throws HardwareManagerManifestException, DeviceConnectionException  {
+	public void testMissingDriverClass() throws HardwareManagerManifestException, UnknownDriverRequest  {
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadMissingDriverClass.xml");
 	}
 	
@@ -45,10 +45,10 @@ public class HardwareManagerTest {
 	 * Checks to ensure the interfaces given by the manifest file exists
 	 * and is able to be initialized.
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException 
+	 * @throws UnknownDriverRequest 
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
-	public void testMissingInterface() throws HardwareManagerManifestException, DeviceConnectionException  {
+	public void testMissingInterface() throws HardwareManagerManifestException, UnknownDriverRequest  {
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadMissingInterface.xml");
 	}
 	
@@ -56,11 +56,11 @@ public class HardwareManagerTest {
 	 * Checks for disjointness between the functionalities and those supported
 	 * by devices.
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException 
+	 * @throws UnknownDriverRequest 
 	 */
 	@Test(expected=HardwareManagerManifestException.class)
 	public void testSupportsVersusAvailableFunctionalities()
-			throws HardwareManagerManifestException, DeviceConnectionException {
+			throws HardwareManagerManifestException, UnknownDriverRequest {
 		HardwareManager.setManifestFilepath(BASE_FILE + "BadDisjointSupportList.xml");
 	}
 	
@@ -69,12 +69,12 @@ public class HardwareManagerTest {
 	 * prevent the module from running if not supported.
 	 * 
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException
+	 * @throws UnknownDriverRequest
 	 * @throws BadDeviceFunctionalityRequestException
 	 */
 	@Test
 	public void testModulePermissionsPassingOptional()
-			throws 	HardwareManagerManifestException, DeviceConnectionException,
+			throws 	HardwareManagerManifestException, UnknownDriverRequest,
 					BadDeviceFunctionalityRequestException {
 		
 		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
@@ -93,12 +93,12 @@ public class HardwareManagerTest {
 	 * not supported.
 	 * 
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException
+	 * @throws UnknownDriverRequest
 	 * @throws BadDeviceFunctionalityRequestException
 	 */
 	@Test
 	public void testModulePermissionsPassingRequired()
-			throws 	HardwareManagerManifestException, DeviceConnectionException,
+			throws 	HardwareManagerManifestException, UnknownDriverRequest,
 					BadDeviceFunctionalityRequestException {
 		
 		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
@@ -116,12 +116,12 @@ public class HardwareManagerTest {
 	 * supported, prevent the module from running.
 	 * 
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException
+	 * @throws UnknownDriverRequest
 	 * @throws BadDeviceFunctionalityRequestException
 	 */
 	@Test(expected=BadDeviceFunctionalityRequestException.class)
 	public void testModulePermissionsFailing()
-			throws 	HardwareManagerManifestException, DeviceConnectionException,
+			throws 	HardwareManagerManifestException, UnknownDriverRequest,
 					BadDeviceFunctionalityRequestException {
 		
 		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");
@@ -141,13 +141,13 @@ public class HardwareManagerTest {
 	 * when requested the list of drivers that support it.
 	 * 
 	 * @throws HardwareManagerManifestException
-	 * @throws DeviceConnectionException
+	 * @throws UnknownDriverRequest
 	 * @throws BadFunctionalityRequestException
 	 * @throws InvalidConfigurationFileException 
 	 */
 	@Test(expected=BadFunctionalityRequestException.class)
 	public void testBadFunctionalityRequest()
-			throws 	HardwareManagerManifestException, DeviceConnectionException,
+			throws 	HardwareManagerManifestException, UnknownDriverRequest,
 					BadFunctionalityRequestException, InvalidConfigurationFileException {
 		
 		OpenNIContextSingleton.setConfigurationFile("openni_config.xml");

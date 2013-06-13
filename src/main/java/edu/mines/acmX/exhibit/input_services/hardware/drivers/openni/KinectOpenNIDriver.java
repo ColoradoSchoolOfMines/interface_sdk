@@ -35,7 +35,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
-import edu.mines.acmX.exhibit.stdlib.input_processing.imaging.HandTrackingUtilities;
+import edu.mines.acmX.exhibit.stdlib.input_processing.tracking.HandTrackingUtilities;
 
 /**
  * Kinect driver that provides depth and rgb image functionality. Uses the
@@ -112,6 +112,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 		
 	}
 
+	//HandTrackerInterface
 	/**
 	 * This updates all the nodes being observed by the context for any
 	 * available data. This should be called whenever updated information is
@@ -125,6 +126,14 @@ public class KinectOpenNIDriver implements DriverInterface,
 		}
 	}
 
+	public int getHandTrackingWidth() {
+		return depthWidth;
+	}
+	
+	public int getHandTrackingHeight() {
+		return depthHeight;
+	}
+	
 	class GestureRecognized implements IObserver<GestureRecognizedEventArgs> {
 
 		@Override
@@ -204,6 +213,12 @@ public class KinectOpenNIDriver implements DriverInterface,
 		try {
 			handsGen.StopTrackingAll();
 			context.stopGeneratingAll();
+			
+			// Remove all receivers connected to this driver
+			EventManager.getInstance().removeReceivers(EventType.HAND_CREATED);
+			EventManager.getInstance().removeReceivers(EventType.HAND_UPDATED);
+			EventManager.getInstance().removeReceivers(EventType.HAND_DESTROYED);
+			
 		} catch (StatusException e) {
 			e.printStackTrace();
 		}
