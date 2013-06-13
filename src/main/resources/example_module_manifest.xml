@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest 
         package="edu.mines.ademaria.module"
-        class="Module" >
+        class="Module" 
+		icon="some_image.jpg" 
+		title="some_title"
+		author="Andrew DeMaria"
+		version="1.2">
 
     <uses-sdk 
             minSdkVersion="0.1.0"
             targetSdkVersion="0.1.0"/>
 
-    <module 
-            icon="some_image.jpg" 
-            title="some_title"
-            author="Andrew DeMaria"
-            version="1.2">
 
-        <inputs>
-            <input optional="true" input-type="acceleration" />
-            <!-- without the optional, it will default to required -->
-            <input input-type="image2D" />
-        </inputs>
-        <requires-module>
-            <module package="edu.mines.acmX.some_other_game" />
-            <module optional="true" package="edu.mines.acmX.another_game" />
-            <!-- possibly include a label for easy typing / remembering -->
-            <!-- how does launcher require modules? maybe a requre-all tag? -->
-        </requires-module>
+	<inputs>
+		<input optional="true" input-type="acceleration" />
+		<!-- without the optional, it will default to required -->
+		<input input-type="image2D" />
+	</inputs>
+	<requires-module>
+		<module package="edu.mines.acmX.some_other_game" />
+		<module optional="true" package="edu.mines.acmX.another_game" />
+		<!-- possibly include a label for easy typing / remembering -->
+		<!-- how does launcher require modules? maybe a requre-all tag? -->
+	</requires-module>
 
-    </module>
 
 </manifest>
 <!-- vim:fenc=utf-8
