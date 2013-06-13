@@ -311,12 +311,16 @@ public class HardwareManager {
 	 * Add the input-types map into checkPermissions
 	 * 
 	 * Document the fact that it ONLY BUILDS required functionalities. This is
-	 * because we have already ensured that all the required ones are available.
+	 * because we have already ensured that all the required ones are supported.
 	 * However, we want to provide the user the knowledge that one of their
 	 * optional functionalities has failed to initialize.
 	 * 
 	 * Therefore, this function only loads required, and a special method inside
-	 * the inflateDriver method will load the optional one at runtime. *
+	 * the inflateDriver method will load the optional one at runtime.
+	 * 
+	 * TODO Check if a driver was loaded for the required functionality, throw
+	 * error on fail. This would indicate that a functionality considered to be
+	 * required does not have an available device supporting it.
 	 * 
 	 * @throws InvalidConfigurationFileException
 	 */
