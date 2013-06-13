@@ -4,8 +4,8 @@
         class="Module" >
 
     <uses-sdk 
-            minSdkVersion="4"
-            targetSdkVersion="5"/>
+            minSdkVersion="0.1.0"
+            targetSdkVersion="0.1.0"/>
 
     <module 
             icon="some_image.jpg" 
