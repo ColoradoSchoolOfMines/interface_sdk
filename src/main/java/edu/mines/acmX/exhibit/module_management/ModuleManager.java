@@ -76,8 +76,8 @@ public class ModuleManager {
 					ModuleManager.configure(cmd.getOptionValue("manifest"));
 				} else {
 					System.out
-							.println("A Module Manager Manifest is required to run the module manager" + 
-                                    "Please specify with the --manifest switch");
+							.println("A Module Manager Manifest is required to run the module manager"
+									+ "Please specify with the --manifest switch");
 					System.exit(1);
 				}
 				ModuleManager m;
@@ -110,21 +110,17 @@ public class ModuleManager {
 
 	private static void printHelp(Options opts) {
 		HelpFormatter formatter = new HelpFormatter();
-        formatter.setDescPadding(0);
-        String header =
-            "\n" + 
-            "Welcome to the Interface SDK!\n" +
-            "The Interface SDK provides an intelligent environment in which to run modules. " + 
-            "To build a module visit the github wiki at " + 
-            "https://github.com/ColoradoSchoolOfMines/interface_sdk/wiki " +
-            "\n" + 
-            "Also please find the source code at " + 
-            "https://github.com/ColoradoSchoolOfMines/interface_sdk " + 
-            "where you can find more detail on the open source project.";
-        String footer = 
-            "\n";
-		formatter.printHelp("java -jar [JARNAME]", header, opts, footer,
-				true);
+		formatter.setDescPadding(0);
+		String header = "\n"
+				+ "Welcome to the Interface SDK!\n"
+				+ "The Interface SDK provides an intelligent environment in which to run modules. "
+				+ "To build a module visit the github wiki at "
+				+ "https://github.com/ColoradoSchoolOfMines/interface_sdk/wiki "
+				+ "\n" + "Also please find the source code at "
+				+ "https://github.com/ColoradoSchoolOfMines/interface_sdk "
+				+ "where you can find more detail on the open source project.";
+		String footer = "\n";
+		formatter.printHelp("java -jar [JARNAME]", header, opts, footer, true);
 	}
 
 	private static Options generateCLOptions() {
@@ -137,13 +133,13 @@ public class ModuleManager {
 	}
 
 	private static Option optionsUsingManifest() {
-		return OptionBuilder.withLongOpt("manifest")
+		return OptionBuilder
+				.withLongOpt("manifest")
 				.withDescription(
-                        "\nUse a custom module manager manifest file. " + 
-                        "The manifest must specify the default module to load, " +
-                        "the location of the modules folder and any configuration files " +
-                        "that are needed for the drivers you would like to use."
-                        )
+						"\nUse a custom module manager manifest file. "
+								+ "The manifest must specify the default module to load, "
+								+ "the location of the modules folder and any configuration files "
+								+ "that are needed for the drivers you would like to use.")
 				.hasArg().withArgName("PATH").create();
 	}
 
@@ -199,16 +195,20 @@ public class ModuleManager {
 		try {
 			setDefaultModule(metaData.getDefaultModuleName());
 		} catch (ModuleLoadException e) {
-			logger.fatal("Could not load the default module");
+			// We give up at this point because the default module is depended
+			// upon as a failover
 			throw e;
 		}
 
+		// creating the hardware manager instance
 		try {
-			HardwareManager.setManifestFilepath(HardwareManager.DEFAULT_MANIFEST_PATH);
+			HardwareManager
+					.setManifestFilepath(HardwareManager.DEFAULT_MANIFEST_PATH);
 			hardwareInstance = HardwareManager.getInstance();
 			hardwareInstance.setConfigurationFileStore(metaData
 					.getConfigFiles());
-			hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
+			hardwareInstance.checkPermissions(defaultModuleMetaData
+					.getInputTypes());
 		} catch (HardwareManagerManifestException e) {
 			throw e;
 		}
@@ -603,7 +603,6 @@ public class ModuleManager {
 		refreshModules();
 	}
 
-
 	/**
 	 * Sets the default module for ModuleManager. Throws an exception if the
 	 * default module cannot be loaded in which case the ModuleManager should
@@ -615,6 +614,10 @@ public class ModuleManager {
 	 */
 	private void setDefaultModule(String name) throws ModuleLoadException {
 		defaultModuleMetaData = moduleConfigs.get(name);
+		if (defaultModuleMetaData == null) {
+			String msg = "The Default module was never loaded";
+			throw new ModuleLoadException(msg);
+		}
 	}
 
 	/**
@@ -681,7 +684,7 @@ public class ModuleManager {
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) {
 		ModuleMetaData data = moduleConfigs.get(packageName);
-		logger.debug("We will now load from the ModuleLoader" );
+		logger.debug("We will now load from the ModuleLoader");
 		try {
 			return ModuleLoader.loadResource(metaData.getPathToModules() + "/"
 					+ data.getJarFileName(), data, this.getClass()
