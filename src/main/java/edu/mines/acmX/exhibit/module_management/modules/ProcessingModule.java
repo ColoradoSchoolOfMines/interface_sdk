@@ -46,9 +46,8 @@ import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
-import processing.core.PApplet;
-import processing.core.PConstants;
-import processing.core.PImage;
+import processing.core.*;
+import processing.opengl.*;
 
 public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
