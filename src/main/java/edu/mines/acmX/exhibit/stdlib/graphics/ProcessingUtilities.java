@@ -14,6 +14,9 @@ public class ProcessingUtilities {
 	 * @param maxPixelsY The maximum number of pixels in height (double)
 	 */
 	public static void scaleImage(PImage img, double maxPixelsX, double maxPixelsY) {
+		//do nothing if the image doesn't exist, or if the sizing would be non-positive
+		if (img == null) return;
+		if (maxPixelsX <= 0 || maxPixelsY <= 0) return;
 		//get the ratio of height to width to conserve scaling
 		float ratio = (float) img.width / img.height;
 		//if statements to check which will hit cap first
