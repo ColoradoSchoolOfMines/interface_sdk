@@ -84,10 +84,11 @@ then
 
   # Check for a plugged in kinect ~ not sure if it actually makes a difference yet
   prompt="N"
-  until [[ "$prompt" == "Y" || "$prompt" == "Y" ]];
+  while [[ "$prompt" -ne "Y" && "$prompt" -ne "Y" ]];
   do
-    "Please disconnect your kinect before proceeding"
-    "Have you disconnected your kinect?"
+    echo "Please disconnect your kinect before proceeding"
+    echo "Have you disconnected your kinect?"
+    echo ""
     read -n 1 prompt
   done
   echo "Great!.. continuing"
