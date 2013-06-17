@@ -4,8 +4,16 @@
 ################################
 # Development                  #
 ################################
-# General Software Development dependencies
-sudo apt-get install -y git build-essential
+# General Software Development dependencies maven and git are not needed for
+# this script to run but will be most likely used by developers later and by
+# the interfacesdksetup script if you chose to run that.
+sudo apt-get install -y git build-essential maven
+
+###############################
+# configure git               #
+###############################
+git config --global user.name "KinectTeam"
+git config --global user.email ""
 
 ################################
 # install java                 #
