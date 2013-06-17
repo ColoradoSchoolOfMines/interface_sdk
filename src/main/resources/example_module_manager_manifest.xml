@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+  <module-manager
+      default-module="edu.mines.acmX.exhibit.modules.home_screen"
+      module-path="modules" >
+    <config-files>
+      <config-file name="kinectopenni" path="openni_config.xml" />
+    </config-files>
+  </module-manager>
+
+</manifest>
+<!-- vim:fenc=utf-8
+  -->
