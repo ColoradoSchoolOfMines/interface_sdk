@@ -3,5 +3,8 @@
 .settings/
 target/
 *.swp
+*.aux
+*.pdf
+*.toc
 logs
 bin/
