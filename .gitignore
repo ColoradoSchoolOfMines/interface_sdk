@@ -7,3 +7,4 @@ target/
 *.pdf
 *.toc
 logs
+bin/

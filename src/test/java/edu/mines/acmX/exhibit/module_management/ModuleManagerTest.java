@@ -452,8 +452,7 @@ public class ModuleManagerTest {
 			BadDeviceFunctionalityRequestException {
 		// remove the instance so we can actually call the constructor
 		ModuleManager.removeInstance();
-        String path = this.getClass().getClassLoader().getResource("module_manager/ModuleManagerManifestWithoutDevices.xml").getPath();
-        ModuleManager.configure(path);
+        ModuleManager.configure("src/test/resources/module_manager/ModuleManagerManifestWithoutDevices.xml");
 		ModuleManager m = ModuleManager.getInstance();
 
 		InputStream test = m.loadResourceFromModule(
@@ -477,8 +476,7 @@ public class ModuleManagerTest {
 			HardwareManagerManifestException,
 			BadDeviceFunctionalityRequestException {
 		ModuleManager.removeInstance();
-        String path = this.getClass().getClassLoader().getResource("module_manager/ModuleManagerManifestWithoutDevices.xml").getPath();
-        ModuleManager.configure(path);
+        ModuleManager.configure("src/test/resources/module_manager/ModuleManagerManifestWithoutDevices.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		ModuleMetaData current = m.getModuleMetaDataMap().get(
 				"com.andrew.random");
@@ -554,8 +552,7 @@ public class ModuleManagerTest {
 	@Test
 	public void testCanSetModuleWhenDriverPresent() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.removeInstance();
-		java.net.URL path = ModuleManager.class.getClassLoader().getResource("module_manager/ExampleModuleManagerManifest.xml");
-		ModuleManager.configure(path.getPath());
+		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
 		m.setCurrentModuleMetaData("com.austindiviness.cltest");
 
