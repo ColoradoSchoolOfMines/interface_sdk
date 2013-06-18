@@ -3,6 +3,7 @@
 \paperheight=11.0in
 \usepackage[top=0.5in, bottom=0.5in, left=0.75in, right=0.75in]{geometry}
 \usepackage{graphicx}
+\usepackage{hyperref}
 \setcounter{tocdepth}{2}
  
 \begin{document}
@@ -111,7 +112,7 @@
 	was put towards fully supporting Processing's library. All interaction 
 	between these libraries is internalized within the SDK so users can use 
 	the external libraries' functions without changing the design of their module. 
-	(Figure 1)
+	(\autoref{fig:system_architecture})
 	\pagebreak
    
 	\section{Technical Design}
@@ -200,7 +201,7 @@
 	is done in case JARs were added, removed or modified during the runtime of the
 	previous module. Finally, the Module Manager repeats the full cycle of loading
 	the next module as explained above.
-	(Figure 2)
+	(\autoref{fig:system_flow})
 
 	\subsection{Modules}
 
@@ -271,7 +272,7 @@
 	to retrieve data. Drivers automatically send their event information to 
 	the event management system, and the developer must register receivers 
 	that capture these events.
-	(Figure 3)
+	(\autoref{fig:system_interaction})
 
 	\pagebreak
    
@@ -389,24 +390,29 @@
 	the Input Services layer at the time.
 
 	\pagebreak
+
+	\appendix
    
 	\section{Figures and Tables}
 	\begin{figure}[h!]
 		\caption{System Architecture}
 		\centering
 		\includegraphics[width=0.9\textwidth]{overview}
+		\label{fig:system_architecture}
 	\end{figure}
 	\pagebreak
 	\begin{figure}[h!]
 		\caption{System Flow}
 		\centering
 		\includegraphics[height=0.9\textheight]{flow_diagram}
+		\label{fig:system_flow}
 	\end{figure}
 	\pagebreak
 	\begin{figure}[h!]
 		\caption{System Interaction}
 		\centering
 		\includegraphics[width=0.9\textwidth]{interface_sdk}
+		\label{fig:system_interaction}
 	\end{figure}
  
  
