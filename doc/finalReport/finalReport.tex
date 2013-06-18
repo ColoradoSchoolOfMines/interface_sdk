@@ -3,7 +3,11 @@
 \paperheight=11.0in
 \usepackage[top=0.5in, bottom=0.5in, left=0.75in, right=0.75in]{geometry}
 \usepackage{graphicx}
+\usepackage{hyperref}
 \setcounter{tocdepth}{2}
+%\def\sectionautorefname{Appendix}
+%\def\subsectionautorefname{Appendix}
+%\def\subsubsectionautorefname{Appendix}
  
 \begin{document}
 	%\pagenumbering{gobble}
@@ -12,8 +16,9 @@
 	\vspace*{\fill}
 	\includegraphics[height=0.4\textheight]{logo} \\
 	\linespread{2}
-	\LARGE EECS Kinect Exhibit \\
+	\huge EECS Kinect Exhibit Team\\
 	\Large Visualization Framework for Esoteric Sensory Devices \\
+	\Large \today \\
 	\large Andrew DeMaria \\
 	\linespread{1}
 	\large Austin Diviness \\
@@ -22,10 +27,12 @@
 	\large Matthew Stech \\
 	\vspace*{\fill}
 	\end{center}
+	\thispagestyle{empty}
 	\pagebreak
  
 	\tableofcontents
 	%\pagebreak
+	\thispagestyle{empty}
 	\newpage
  
 	\pagestyle{plain}
@@ -42,14 +49,14 @@
 	results of this class.
  
 	\subsection{Product Vision}
-	After seeing the results of the Recycler Robbie project, Professors Rader 
-	and Bakos contracted the field session team to use the existing code base 
-	and create a standalone, open-source framework for multiple interactive 
-	visualizations from it. As this project is intended to live beyond the 
-	life cycle of the group, the framework would need to be designed such that 
-	future teams and students could easily adapt and contribute to the code 
-	base. These students would also be able to create and run their own 
-	visualizations utilizing the framework. 
+  After seeing the results of the Recycler Robbie project, Professors Rader and
+  Bakos contracted the field session team to use the existing code base and
+  create a standalone, open-source framework for multiple interactive
+  visualizations. As this project is intended to live beyond the life cycle of
+  the group, the framework would need to be designed such that future teams and
+  students could easily adapt and contribute to the code base. These students
+  would also be able to create and run their own visualizations utilizing the
+  framework. 
 	\pagebreak
  
 	\section{Requirements}
@@ -62,7 +69,7 @@
 		\end{itemize}
 		\item Well-documented code base
 		\begin{itemize}
-			\item Original programs provide examples
+			\item Original programs as examples
 			\item Documentation explains the functionality and usage of SDK components
 		\end{itemize}
 		\item Facilitation of self-contained visualizations
@@ -80,7 +87,7 @@
 
 	\subsection{Non-Functional Requirements}
 	\begin{itemize}
-		\item Use Processing/Java
+		\item Use Java with the Processing library
 		\item Use the Colorado School of Mines Github as an easy, well known source revision control system
 		\begin{itemize}
 			\item Use Github's wiki capabilities to document the framework and facilitate student contributions
@@ -111,7 +118,7 @@
 	was put towards fully supporting Processing's library. All interaction 
 	between these libraries is internalized within the SDK so users can use 
 	the external libraries' functions without changing the design of their module. 
-	(Figure 1)
+	(\autoref{fig:system_architecture})
 	\pagebreak
    
 	\section{Technical Design}
@@ -140,51 +147,67 @@
 
 	Once the manifest is loaded, the Module Manager attempts to build a list 
 	of all available modules. Availability is determined by the integrity of 
-	the JAR This is checked by verifying that all of the required module 
-	dependencies are met by looking at the module manifest located in each JAR. 
-	This process also refreshes the list of modules of which it has knowledge. 
-	After this is completed, the manager has a list of modules that it can inflate.
-
+	the JAR, the availability of other required modules, and by checking requested
+	hardware functionalities against the current hardware capabilities. Required
+	modules and requested hardware functionalities are dictated by the module
+	manifest which is located in each JAR. After this is completed, only available
+	modules are remaining in the Module Manager's index of meta information on the
+	modules. In addition, valid modules' meta-data is updated to reflect which jar
+	the module can be found in.
+	
 	At this point, the Module Manager will allow the Hardware Manager to 
 	initialize its assets. This includes loading its own Hardware Manager 
 	manifest file, which includes information about all of the functionalities 
 	and devices that the framework supports. Through this, the Module Manager 
-	can give the Hardware Manager a module's hardware dependencies and 
-	indicate if they are met.
+	can give the Hardware Manager a module's hardware dependencies and receive
+	feedback on if these dependencies are met. 
 
-	Through this, the Module Manager can check whether the default module 
-	meets all its hardware dependencies. Checking its dependencies and 
-	indicating the default module in the Module Manager manifest is vital 
-	because the Module Manager relies heavily on the assumption that it can 
-	fall back to inflating the default in the case of a different module's 
-	failure. In the case where the default module fails, then the Module 
-	Manager will throw a fatal exception, which halts the framework's execution.
+	Using this same process, the Module Manager can check whether the default
+	module meets all its hardware dependencies. Checking its dependencies and
+	indicating the default module in the Module Manager manifest is vital because
+	the Module Manager relies heavily on the assumption that it can fall back to
+	inflating the default in the case of a different module's failure. In the case
+	where the default module fails, then the Module Manager will throw a fatal
+	exception, which halts the framework's execution.
 
 	Initially, the Module Manager loads the default module, and this is where 
 	the main loop is entered and modules are loaded and executed. This 
 	consists of a multitude of safeguards to ensure that the next module is 
-	capable of running. First and foremost is checking that the module's 
-	hardware dependencies are met. If so, the Hardware Manager attempts to 
-	build or re-build a cache of drivers, based on the next module's hardware 
-	requirements. Required functionalities have their drivers cached 
-	immediately at this step, while optional input types are cached at runtime 
-	when requested. In the case where any of these steps fail,  the Module 
-	Manager reverts to loading the default and repeats this process. It should 
-	be noted that the Module Manager will load the default module upon the 
+	capable of running. First and foremost, the module manager attempts to inflate
+	an instance of a Module. To do this, the Module Manager uses information in
+	the Module manifest indicating which class to load, in which package this
+	class can be found and the path of the JAR in which the module resides to
+	instantiate an instance of a generic ModuleInterface.  A couple typical
+	developer errors can occur at this point; first, the class may not be found
+	because the reference to the class or package was invalid, or second, the
+	class did not correctly extend from the current version for one of the
+	abstract Module classes. Unfortunately, there are a few other less common
+	errors that can occur at this stage including; the JAR file was tampered with
+	after the Module Manager updated its index, or there was a breach in security
+	policy for the class loader. However, if all goes well, the Module Manager is
+	left with a proper instance of the ModuleInterface and it can continue.
+	
+	Next, is to check that the module's hardware dependencies are met. If so, the
+	Hardware Manager attempts to build or re-build a cache of drivers, based on
+	the next module's hardware requirements. Required functionalities have their
+	drivers cached immediately at this step, while optional input types are cached
+	at runtime when requested. In the case where any of these steps fail,  the
+	Module Manager reverts to loading the default and repeats this process. It
+	should be noted that the Module Manager will load the default module upon the
 	current module's completion, unless directed otherwise.
 
-	Once the setup process is completed, a semaphore is handed off to the 
-	running module so that it may signal the Module Manager for when it is 
-	finished executing. The design uses the Java provided CountdownLatch to 
-	implement this functionality. At this step, control is completely given to 
-	the running Module until terminated.
+	Once the setup process is completed, a semaphore is handed off to the running
+	module so that it may signal the Module Manager for when it is finished
+	executing. The design uses the Java provided CountdownLatch to implement this
+	functionality. At this step, control is completely given to the running Module
+	until terminated (Appendix~\ref{sec:cont_dev_module_exception}).
 
-	Finally, once the running module terminates, control is returned to the 
-	Module Manager and the process of refreshing the internal list of modules 
-	is repeated. This is done in case JARs were added or removed during the 
-	runtime of the previous module. Furthermore, the Module Manager repeats 
-	the full cycle of loading the next module's meta-data as explained above.
-	(Figure 2)
+	Once the running module terminates, control is returned to the Module Manager
+	and the process of refreshing the internal list of modules is repeated. This
+	is done in case JARs were added, removed or modified during the runtime of the
+	previous module. Finally, the Module Manager repeats the full cycle of loading
+	the next module as explained above.
+	(\autoref{fig:system_flow})
 
 	\subsection{Modules}
 
@@ -231,7 +254,7 @@
 	execution of modules, the driver cache is cleared and rebuilt from the 
 	next module's requested input types. In order for a driver to be cached, a 
 	series of validations are necessary. First and foremost, the functionality 
-	supported by the driver must be required by the the next module. For 
+	supported by the driver must be required by the next module. For 
 	optional functionalities, this check is performed at runtime. Second, a 
 	given driver must adhere to the interface contracts for the 
 	functionalities specified. Finally, an instantiated driver must indicate 
@@ -255,89 +278,87 @@
 	to retrieve data. Drivers automatically send their event information to 
 	the event management system, and the developer must register receivers 
 	that capture these events.
-	(Figure 3)
+	(\autoref{fig:system_interaction})
 
 	\pagebreak
    
 	\section{Design and Implementation Decisions}
 
-	During the development of this project, the team went through several 
-	decisions that helped to shape the design of the framework. One of the 
-	first decisions was to continue using Maven as a software project 
-	management platform as used by the Readings in Software Engineering class. 
-	After initial exploration into the platform, the team found Maven to be a 
+	During the development of this project, the team made several decisions that
+	helped to shape the design of the framework. One of the first decisions was to
+	continue using Maven as a software project management platform as used by the
+	Readings in Software Engineering class. After initial exploration into the
+	platform and the following learning curve, the team found Maven to be a
 	flexible and adaptable tool for handling external libraries.
 
-	The team wanted to let the end developers have the ability to configure 
-	the framework to meet their needs. This led to a configuration-driven 
-	design implemented using the XML specification. By using an XML design, 
-	the team enabled the developer to dynamically gather information about 
-	individual modules without having to modify the source code itself, 
-	increasing flexibility. 
+	The team wanted to let the end developers have the ability to configure the
+	framework to meet their needs. This led to a configuration-driven design
+	implemented using the XML specification. By using an XML design, the team
+	enabled the developer to dynamically gather information about individual
+	modules without having to modify the source code itself, increasing
+	flexibility. 
 
-	The idea of the Module was created early in the development process.  By 
-	creating a module archetype, it became possible to abstract away the graphical 
-	library the visualization wanted to use, if any. By doing this, 
-	the Recycler Robbie game was able to stay in a runable state, despite it using AWT for 
-	its graphical interface rather than Processing.
+	The idea of the Module was also introduced early in the development process.
+	By creating a module archetype, the SDK could abstract away the graphical
+	library the visualization wanted to use, if any. By doing this, the team was
+	able to keep the Recycler Robbie game running, despite it using AWT for its
+	graphical interface rather than Processing.
 
-	Due to this XML design, the team felt the need for modules to enforce a 
-	contract indicating its intents and characteristics before being loaded 
-	by the Module Manager. This was to ensure that a module's dependencies can 
-	be satisfied by the Hardware Manager and also be read or visualized in a 
-	human-friendly manner. This led to the creation of the manifest for the 
-	modules that are loaded into the Module Manager.
+	Additionally, due to the decision to use an XML design, the team felt the need
+	for modules to enforce a contract indicating its intents and characteristics
+	before being loaded by the Module Manager. This was to ensure that a module's
+	dependencies can be satisfied by the Hardware Manager and also be represented
+	in a human-friendly manner. This led to the creation of the Module manifest
+	for the modules that are loaded into the Module Manager.
 
-	The Module Manager was necessary because the team wanted a way to manage a 
-	group of modules and the lifecycle of the exhibit. By having the Module 
-	Manager handle these aspects, the interaction between modules and their 
-	runtimes was greatly simplified. The Module Manager keeps track of several 
-	aspects of the exhibit, primarily the dependencies that modules require. 
-	This enables the manager to ensure that modules have an environment that 
-	satisfies these requirements. The Module Manager relies significantly on its 
+	The Module Manager was necessary because the team wanted a way to manage a
+	group of modules and the lifecycle of the exhibit. By having the Module
+	Manager handle these aspects, the interaction between modules and their
+	runtimes was greatly simplified. The Module Manager keeps track of several
+	aspects of the exhibit, primarily the dependencies that modules require. This
+	enables the manager to ensure that modules have an environment that satisfies
+	these requirements. The Module Manager relies significantly on its
 	communication with the Hardware Manager to verify these dependencies.
 
-	The necessity to be able to swap out various devices led to the creation 
-	of the Input Services layer. Input Services needed to abstract away the 
-	physical devices and their drivers, so that modules utilize the data they 
-	want without regard to what device is supplying that data. By having the 
-	Input Services abstract the specifics of a particular device driver away, 
-	the polling of data by a Module can be standardized.
+	The necessity to be able to swap out various devices led to the creation of
+	the Input Services layer. Input Services needed to abstract away the physical
+	devices and their drivers, so that modules can utilize the data they want
+	without regard to which device is supplying that data. By having the Input
+	Services abstract the specifics of a particular device driver into data
+	interfaces, the polling of data by a Module can be standardized.
 
-	Input Services has two separate entry paths.  Drivers can supply a 
-	continuous stream of data, or can be given at discrete intervals, such as 
-	depth imaging. Thus, the design needed to satisfy both methods of retrieval. 
-	For a continuous stream of data, modules are able to poll the driver at 
-	their leisure. However, for data given at specific times, an Event Manager 
-	had to be created to coordinate the propagation of data to receivers. The 
-	Event Manager's queuing system was designed to handle arbitrary data.
+	Input Services has two separate entry paths.  Drivers can supply a continuous
+	stream of data, or can be given at discrete intervals, such as depth imaging.
+	Thus, the design needed to satisfy both methods of retrieval. For a continuous
+	stream of data, modules are able to poll the driver at their leisure. However,
+	for data given at specific times, an Event Manager had to be created to
+	coordinate the propagation of data to receivers. The Event Manager's queuing
+	system was designed to handle arbitrary data to aid expandability.
 
-	The decision to centralize the receiving and reading of hardware data led 
-	to the creation of the Hardware Manager. The Hardware manager was 
-	necessary to control access to the devices as well as provide information 
-	about the environment that modules are running under. An additional XML 
-	manifest file had to be loaded in order for the Hardware Manager to be 
-	configured with devices.
+	The decision to centralize the receiving and reading of hardware data led to
+	the creation of the Hardware Manager. The Hardware Manager was necessary to
+	control access to the devices as well as provide information about the
+	environment in which the modules run. An additional XML manifest file had to
+	be loaded in order for the Hardware Manager to be configured with devices.
 
-	The team was directed by the clients to use source control, and chose to 
-	use Github for a central repository over other services. Github was 
-	selected due to a combination of familiarity with the inner workings of Git, 
-	as well as its friendliness towards open-source projects, and the 
-	preexistent Colorado School of Mines Github organization. Since one of the 
-	additional client requirements was to publish the framework as an open 
-	source project, the team found Github to be the ideal distribution system 
-	that met its needs.
+	The team was directed by the clients to use source control and chose to use
+	Github for a central repository over other services. Github was selected
+	because of the team's familiarity with the inner workings of Git, its
+	friendliness towards open-source projects, and the preexistent Colorado School
+	of Mines Github organization. Since one of the additional client requirements
+	was to publish the framework as an open-source project, the team found Github
+	to be an ideal distribution system that met this need.
 
-	An additional requirement set forth by the client was to have proper 
-	documentation and support for new developers to contribute. The decision 
-	to choose Github also addressed this requirement through the Wiki and 
-	Issue tracking functionalities provided.
+	A further requirement set forth by the client was to have proper documentation
+	and support for new developers to contribute to the SDK and develop their own
+	modules. The decision to choose Github also addressed this requirement through
+	the use of Github's wiki structure and integrated issue tracking.
 
 	\pagebreak
    
 	\section{Results}
-	Our goal for this project was to create an open-source interactive 
-	platform that can support user contributed visualizations, and be 
+	Our goal for this project was to create an open-source, interactive,
+	visualization platform that can support user contributed visualizations, and be 
 	demonstrated at any number of locations on campus. This was achieved by 
 	creating an underlying architecture that would allow for a number of 
 	arbitrary programs, referred to as modules, to be able to run on the system. 
@@ -353,9 +374,11 @@
 	a turn-key based system. Our project does meet all the requirements 
 	requested by the client. 
 
-	The framework's code base has all been documented, both through the Github 
-	Wiki and JavaDoc. The Github wiki also consists of setup \& installation, 
-	tutorials, samples, and API documentation.
+	The framework's code base has all been documented, both through the Github
+	Wiki and JavaDoc
+	(Appendix~\ref{sec:relevant_links}). The Github
+	wiki also consists of setup \& installation, tutorials, samples, and API
+	documentation.
 
 	Due to the complexity of the base architecture, the client requested that 
 	we deprioritize refactoring the Recycler Robbie game in favor of 
@@ -364,34 +387,247 @@
 	our design. 
 
 	Other aspects that could not be completed or tested due to time 
-	constraints were support for Processing 2.0, OpenGL, and other sensory 
-	devices (such as webcams). However, there are no safeguards to prevent 
+	constraints were support for Processing 2.0
+	(Appendix~\ref{sec:cont_dev_processing}), OpenGL
+	(Appendix~\ref{sec:cont_dev_opengl}), and other sensory 
+	devices (such as web cameras). In addition, there are no safeguards to prevent 
 	inappropriate or malicious submissions. Neither the Twitter feed nor the 
 	acmX game could be integrated into the system. The Twitter feed was purely 
 	due to time constraints in that the information necessary to continue was 
-	provided too late into our timeline. The completed acmX game relied on 
-	additional functionalities that we were unable to support at the time.
+	provided too late into our timeline. The completed acmX game relied on the
+	aforementioned OpenGL and scene map data.  Although the scene map data is
+	supported by OpenNI the team did not have this functionality integrated with
+	the Input Services layer at the time.
 
 	\pagebreak
+
+	\appendix
+	\section*{Appendix}
+	\renewcommand{\thesubsection}{\Alph{subsection}}
    
-	\section{Figures and Tables}
+	\subsection{Figures and Tables}
 	\begin{figure}[h!]
 		\caption{System Architecture}
 		\centering
 		\includegraphics[width=0.9\textwidth]{overview}
+		\label{fig:system_architecture}
 	\end{figure}
 	\pagebreak
 	\begin{figure}[h!]
 		\caption{System Flow}
 		\centering
 		\includegraphics[height=0.9\textheight]{flow_diagram}
+		\label{fig:system_flow}
 	\end{figure}
 	\pagebreak
 	\begin{figure}[h!]
 		\caption{System Interaction}
 		\centering
 		\includegraphics[width=0.9\textwidth]{interface_sdk}
+		\label{fig:system_interaction}
 	\end{figure}
+
+	\pagebreak
+
+
+	\subsection{Continuing Development}
+	\label{sec:cont_dev}
+
+	\subsubsection{Processing 2.0} 
+	\label{sec:cont_dev_processing}
+	Processing 2.0 is actually a drop in replacement for Processing 1.5.1 and does
+	not affect the Module Manager or other external controls. With that said, the
+	one issue is that Processing 2.0 does not keep the same API as Processing
+	1.5.1 and as such any Modules developed when referencing 1.5.1 will break when
+	deployed into an Interface SDK environment built with 2.0. This effect
+	dominoes to the point that the simple fix of replacing the library will force
+	all Modules to use the version of Processing the Interface SDK was compiled
+	against. 
+
+	There may be a couple solutions around this. The straight forward one is to
+	provide two different versions of the Interface SDK (and maintain them). This
+	would bring support for Processing 2.0 around much quicker. The downfall would
+	be the extra work to maintain two versions. In addition, this solution
+	provides no remedy for not being able to run Modules using Processing
+	1.5.1/2.0 side by side.
+
+	A different solution would be to split ProcessingModule into two separate
+	abstract Modules.  One for processing 2.0 and one for processing 1.5.1.  The
+	clear advantage over the former being that with this type of setup it should
+	be possible to run Modules extending from either version ProcessingModule side
+	by side allowing for a single version of the Interface SDK.  However, there is
+	a cost.  The Processing library would no longer be a direct dependency as
+	there would be library conflicts.  Instead, the Processing core.jar file would
+	be dynamically loaded in by either the ModuleManager or better yet, the
+	specific version of the ProcessingModule. The additional downside to this is
+	that developers may be exposed to the dependency on the Processing library if
+	they can no longer reference just the Interface SDK since the Processing
+	library is no longer a static dependency.
+
+	A possible final solution would be to find the differences between the
+	Processing 2.0/1.5.1 libraries and provide a conversion layer of a sort
+	between them. Although this may seem to be too time consuming, Processing does
+	seem to have a good document describing the major API differences.
+
+	At any rate, continued development should be sure to reference the
+	"processing\_2\_support" branch on Github (Appendix~\ref{sec:relevant_links}).
+
+	\subsubsection{OpenGL} 
+	\label{sec:cont_dev_opengl}
+	First, for those wondering what OpenGL is exactly, OpenGL is an interface for
+	interacting with the rendering power of a discrete or integrated graphics
+	processing unit(s).  Typically using OpenGL is much more performant than using
+	just the CPU and gives developers more advanced rendering techniques. There
+	are competing libraries such as Microsoft's DirectX, however OpenGL has more
+	widespread usage including applications on the mobile front.  With that said,
+	most of the aforementioned comes from the Team's limited experience with
+	OpenGL.  
+
+	OpenGL is used by Processing 1.5.1 and was even further integrated into
+	Processing 2.0.  OpenGL is used any 3D drawing in Processing 2.0 and can also
+	be used to speed up drawing 2D sketches.  Since OpenGL is so integrated into
+	Processing, the Team felt it is a necessary goal to include access to this
+	powerful library from within ProcessingModule.
+
+	However, OpenGL, since it talks directly with hardware, is architecture and
+	operating system dependent. For this reason, the system dependent library is
+	left out of the actual Processing dependency for OpenGL, JOGL.  These external
+	libraries are usually shared object files, however, with JOGL, the authors
+	were kind enough to wrap these up in some JAR files.  Looking into the
+	Processing source code this is exactly the route the developers went
+	(Appendix~\ref{sec:relevant_links}). 
+
+	Ideally, from the perspective of the Module Manager and the lifecycle of the
+	Modules, these extra libraries should be hidden in the details of the
+	ProcessingModule. With that said, the Team did not have enough time to
+	investigate this option further and instead tried to get something working by
+	including these libraries directly when running the Module Manager via setting
+	the classpath. This seemed to work just fine as an OpenGL module could run
+	(granted that the Module was based on Processing 2.0) and exit without
+	crashing.  However, when the time of this report was written there seemed to
+	be a critical bug in the shutdown process of OpenGL as once an OpenGL Module
+	was run, on following runs it would no longer render. From this and from the
+	holding off on integrating of Processing 2.0, we were unable to work on OpenGL
+	support further. 
+
+	\subsubsection{Module Exception Handling}
+	\label{sec:cont_dev_module_exception}
+	One future plan for the Interface SDK was to be able to handle exceptions
+	occurring while executing a Module.  This would ensure that if a Module
+	developer was careless and his/her Module threw, for example, a
+	NullPointerException, the Interface SDK would be able to catch this exception
+	and continue execution with the default Module. 
+
+	This feature would not be difficult to support in the CommandlineModule as we
+	would be able to bond a Thread UncaughtExceptionHandler with the run thread to
+	catch any exceptions.  However, this does not work as well with a
+	ProcessingModule because when the ProcessingModule is run, the parent PApplet
+	class will spawn a new Animation thread, among other threads, and so the bond
+	to the exception handler is lost.
+
+	To remedy the above, the Team has two possible solutions. One would be to
+	modify the source for the Processing PApplet so that child classes, such as
+	ProcessingModule, would be able to override the behavior for uncaught exception
+	handling. This would not affect the user directly as the Interface SDK has the
+	core.jar for Processing wrapped up with it, so it would be a simple swap out
+	of this JAR file. With that said, the downside is that up and to the writting
+	of this report, the Team has been able to keep with a vanilla, unmodified
+	Processing core.jar file which makes it easy to keep up with Processing
+	development. 
+
+	Another possible solution that has not received much consideration is to
+	instead have the run loop for the Interface SDK spawn new processes instead of
+	new Threads.  In theory, the Interface SDK would not care about a Module
+	spawning any number of threads as all exceptions in the threads should be
+	passed up to the Module process at which point the Interface SDK can decide to
+	handle the situation. With the current state, the Interface SDK would most
+	likely move execution to the next Module unless the currently executing Module
+	is the default Module at which point the Interface SDK would exit.
+
+	\subsubsection{Maven Repository Hosting}
+	\label{sec:cont_dev_maven_repo}
+	Maven is a powerful tool for developing Java projects.  It provides a central
+	toolkit for building code, managing dependencies, testing, packaging,
+	deployment and much more.  Overall the Team has found it very useful. 
+
+	The one aspect that sent us a speed bump was how to manage third-party
+	libraries in form of JARs. Maven has offered the typical solution of being
+	able to install these JARs locally so that any projects built with maven on
+	that local machine can reference the installed library.  This may work well
+	for those whose development platforms are unchanging, however, with our use
+	case we would like to make the development environment as portable as possible
+	so would like to refrain from having the user to manage this. 
+
+	In order to accomplish this, the Team found the solution of deploying our own
+	Maven repository on a file hosting web service called Amazon S3.
+	After referencing the repository in the Maven pom file, Maven will exhibit the
+	following behavior; it will first look for dependencies installed on the local
+	machine, it will then look for dependencies in the Team's custom Maven
+	repository, and finally it will look for unmet dependencies in the Maven
+	Central Repository. This behavior is ideal because the Team can
+	maintain a single location for all the third party JARs and does not have to
+	include these in the Github code repository. 
+
+	In addition to easier management of third party JARs, hosting our own Maven
+	repository allows the Team to easily deploy versioned JARs of the Interface
+	SDK. This makes Module developers lives even easier as they can always find a
+	specific version of the Interface SDK on the Amazon S3 instance. For Maven
+	users this is especially useful as the only update to their pom files is to
+	dictate the version of the Interface SDK they would like to build against.
+
+	However, the Amazon S3 instance is currently owned and maintained, not by
+	Colorado School of Mines, but by one of authors and original developers.
+	Although this student is certainly going to stick around as a lead
+	maintainer, this is less than ideal.
+
+	Going forward, there are a couple solutions. One would be to transition to
+	using the Maven Central Repository which has free Maven project hosting.  Open
+	source advocates would argue this is a necessity of a true open source
+	codebase.  This would keep the ease of access to versions of the Interface
+	SDK, however, there are some issues with referencing third party libraries. One
+	issue is that we would have to ensure that we are not breaking any licenses by
+	publishing third party libraries to the Maven Central Repository. In addition,
+	we cannot continue to reference our own Maven repository as the Maven Central
+	Repository has a policy of not including references to external repositories.
+	This would bring us back to having the user install third party JARs.  This
+	may not be the end of the world, but certainly it would be an inconvenience.
+
+	A more ideal solution may be to encourage the School to setup their own Maven
+	repository.  This could entail either deploying their own server on campus or
+	signing up for a service such as Amazon S3. The cost of the latter may be
+	negligible in the grand scheme of things but this decision is not one the Team
+	alone can make. This solution would maintain the current state of the project
+	and all of the benefits of hosting our own repository.
+
+	\pagebreak
+
+	\subsection{Relevant Links}
+	\label{sec:relevant_links}
+
+	\begin{enumerate}
+		\item
+			Interface SDK Github \\
+			\label{link:interface_sdk_github}
+			\url{https://github.com/ColoradoSchoolOfMines/interface\_sdk}
+		\item
+			Interface SDK Wiki \\
+			\label{link:interface_sdk_wiki}
+			\url{https://github.com/ColoradoSchoolOfMines/interface_sdk/wiki}
+		\item
+			Interface SDK JavaDoc \\
+			\label{link:javadoc}
+			\url{https://s3-us-west-2.amazonaws.com/acmx.mines.edu/site/apidocs/index.html}
+		\item
+			Processing 2 Support Branch \\
+			\label{link:processing_2}
+			\url{https://github.com/ColoradoSchoolOfMines/interface\_sdk/tree/processing\_2\_support}
+		\item
+			Processing Library
+			\label{link:processing}
+			\url{https://github.com/processing/processing}
+	\end{enumerate}
+
+
  
  
 \end{document}  
