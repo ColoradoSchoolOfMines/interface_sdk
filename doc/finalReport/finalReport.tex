@@ -261,77 +261,75 @@
    
 	\section{Design and Implementation Decisions}
 
-	During the development of this project, the team went through several 
-	decisions that helped to shape the design of the framework. One of the 
-	first decisions was to continue using Maven as a software project 
-	management platform as used by the Readings in Software Engineering class. 
-	After initial exploration into the platform, the team found Maven to be a 
-	flexible and adaptable tool for handling external libraries.
+	During the development of this project, the team made several decisions that
+	helped to shape the design of the framework. One of the first decisions was to
+	continue using Maven as a software project management platform as used by the
+	Readings in Software Engineering class. After initial exploration into the
+	platform, the team found Maven to be a flexible and adaptable tool for
+	handling external libraries.
 
-	The team wanted to let the end developers have the ability to configure 
-	the framework to meet their needs. This led to a configuration-driven 
-	design implemented using the XML specification. By using an XML design, 
-	the team enabled the developer to dynamically gather information about 
-	individual modules without having to modify the source code itself, 
-	increasing flexibility. 
+	The team wanted to let the end developers have the ability to configure the
+	framework to meet their needs. This led to a configuration-driven design
+	implemented using the XML specification. By using an XML design, the team
+	enabled the developer to dynamically gather information about individual
+	modules without having to modify the source code itself, increasing
+	flexibility. 
 
-	The idea of the Module was created early in the development process.  By 
-	creating a module archetype, it became possible to abstract away the graphical 
-	library the visualization wanted to use, if any. By doing this, 
-	the Recycler Robbie game was able to stay in a runable state, despite it using AWT for 
-	its graphical interface rather than Processing.
+	The idea of the Module was also introduced early in the development process.
+	By creating a module archetype, the SDK could abstract away the graphical
+	library the visualization wanted to use, if any. By doing this, the team was
+	able to keep the Recycler Robbie game running, despite it using AWT for its
+	graphical interface rather than Processing.
 
-	Due to this XML design, the team felt the need for modules to enforce a 
-	contract indicating its intents and characteristics before being loaded 
-	by the Module Manager. This was to ensure that a module's dependencies can 
-	be satisfied by the Hardware Manager and also be read or visualized in a 
-	human-friendly manner. This led to the creation of the manifest for the 
-	modules that are loaded into the Module Manager.
+	Additionally, due to the decision to use an XML design, the team felt the need
+	for modules to enforce a contract indicating its intents and characteristics
+	before being loaded by the Module Manager. This was to ensure that a module’s
+	dependencies can be satisfied by the Hardware Manager and also be represented
+	in a human-friendly manner. This led to the creation of the Module manifest
+	for the modules that are loaded into the Module Manager.
 
-	The Module Manager was necessary because the team wanted a way to manage a 
-	group of modules and the lifecycle of the exhibit. By having the Module 
-	Manager handle these aspects, the interaction between modules and their 
-	runtimes was greatly simplified. The Module Manager keeps track of several 
-	aspects of the exhibit, primarily the dependencies that modules require. 
-	This enables the manager to ensure that modules have an environment that 
-	satisfies these requirements. The Module Manager relies significantly on its 
+	The Module Manager was necessary because the team wanted a way to manage a
+	group of modules and the lifecycle of the exhibit. By having the Module
+	Manager handle these aspects, the interaction between modules and their
+	runtimes was greatly simplified. The Module Manager keeps track of several
+	aspects of the exhibit, primarily the dependencies that modules require. This
+	enables the manager to ensure that modules have an environment that satisfies
+	these requirements. The Module Manager relies significantly on its
 	communication with the Hardware Manager to verify these dependencies.
 
-	The necessity to be able to swap out various devices led to the creation 
-	of the Input Services layer. Input Services needed to abstract away the 
-	physical devices and their drivers, so that modules utilize the data they 
-	want without regard to what device is supplying that data. By having the 
-	Input Services abstract the specifics of a particular device driver away, 
-	the polling of data by a Module can be standardized.
+	The necessity to be able to swap out various devices led to the creation of
+	the Input Services layer. Input Services needed to abstract away the physical
+	devices and their drivers, so that modules can utilize the data they want
+	without regard to which device is supplying that data. By having the Input
+	Services abstract the specifics of a particular device driver into data
+	interfaces, the polling of data by a Module can be standardized.
 
-	Input Services has two separate entry paths.  Drivers can supply a 
-	continuous stream of data, or can be given at discrete intervals, such as 
-	depth imaging. Thus, the design needed to satisfy both methods of retrieval. 
-	For a continuous stream of data, modules are able to poll the driver at 
-	their leisure. However, for data given at specific times, an Event Manager 
-	had to be created to coordinate the propagation of data to receivers. The 
-	Event Manager's queuing system was designed to handle arbitrary data.
+	Input Services has two separate entry paths.  Drivers can supply a continuous
+	stream of data, or can be given at discrete intervals, such as depth imaging.
+	Thus, the design needed to satisfy both methods of retrieval. For a continuous
+	stream of data, modules are able to poll the driver at their leisure. However,
+	for data given at specific times, an Event Manager had to be created to
+	coordinate the propagation of data to receivers. The Event Manager’s queuing
+	system was designed to handle arbitrary data to aid expandability.
 
-	The decision to centralize the receiving and reading of hardware data led 
-	to the creation of the Hardware Manager. The Hardware manager was 
-	necessary to control access to the devices as well as provide information 
-	about the environment that modules are running under. An additional XML 
-	manifest file had to be loaded in order for the Hardware Manager to be 
-	configured with devices.
+	The decision to centralize the receiving and reading of hardware data led to
+	the creation of the Hardware Manager. The Hardware Manager was necessary to
+	control access to the devices as well as provide information about the
+	environment in which the modules run. An additional XML manifest file had to
+	be loaded in order for the Hardware Manager to be configured with devices.
 
-	The team was directed by the clients to use source control, and chose to 
-	use Github for a central repository over other services. Github was 
-	selected due to a combination of familiarity with the inner workings of Git, 
-	as well as its friendliness towards open-source projects, and the 
-	preexistent Colorado School of Mines Github organization. Since one of the 
-	additional client requirements was to publish the framework as an open 
-	source project, the team found Github to be the ideal distribution system 
-	that met its needs.
+	The team was directed by the clients to use source control and chose to use
+	Github for a central repository over other services. Github was selected due
+	to a combination of familiarity with the inner workings of Git, as well as its
+	friendliness towards open-source projects, and the preexistent Colorado School
+	of Mines Github organization. Since one of the additional client requirements
+	was to publish the framework as an open-source project, the team found Github
+	to be an ideal distribution system that met this need.
 
-	An additional requirement set forth by the client was to have proper 
-	documentation and support for new developers to contribute. The decision 
-	to choose Github also addressed this requirement through the Wiki and 
-	Issue tracking functionalities provided.
+	A further requirement set forth by the client was to have proper documentation
+	and support for new developers to contribute to the SDK and develop their own
+	modules. The decision to choose Github also addressed this requirement through
+	the use of Github’s wiki structure and integrated issue tracking.
 
 	\pagebreak
    
