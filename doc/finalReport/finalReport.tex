@@ -5,6 +5,9 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \setcounter{tocdepth}{2}
+%\def\sectionautorefname{Appendix}
+%\def\subsectionautorefname{Appendix}
+%\def\subsubsectionautorefname{Appendix}
  
 \begin{document}
 	%\pagenumbering{gobble}
@@ -194,7 +197,7 @@
 	module so that it may signal the Module Manager for when it is finished
 	executing. The design uses the Java provided CountdownLatch to implement this
 	functionality. At this step, control is completely given to the running Module
-	until terminated (TODO reference appendix for future work?).
+	until terminated (Appendix~\ref{sec:cont_dev_module_exception}).
 
 	Once the running module terminates, control is returned to the Module Manager
 	and the process of refreshing the internal list of modules is repeated. This
@@ -379,7 +382,9 @@
 	our design. 
 
 	Other aspects that could not be completed or tested due to time 
-	constraints were support for Processing 2.0, OpenGL, and other sensory 
+	constraints were support for Processing 2.0
+	(Appendix~\ref{sec:cont_dev_processing}), OpenGL
+	(Appendix~\ref{sec:cont_dev_opengl}), and other sensory 
 	devices (such as web cameras). In addition, there are no safeguards to prevent 
 	inappropriate or malicious submissions. Neither the Twitter feed nor the 
 	acmX game could be integrated into the system. The Twitter feed was purely 
@@ -392,8 +397,10 @@
 	\pagebreak
 
 	\appendix
+	\section*{Appendix}
+	\renewcommand{\thesubsection}{\Alph{subsection}}
    
-	\section{Figures and Tables}
+	\subsection{Figures and Tables}
 	\begin{figure}[h!]
 		\caption{System Architecture}
 		\centering
@@ -414,6 +421,72 @@
 		\includegraphics[width=0.9\textwidth]{interface_sdk}
 		\label{fig:system_interaction}
 	\end{figure}
+
+	\pagebreak
+
+
+	\subsection{Continuing Development}
+	\label{sec:cont_dev}
+
+	\subsubsection{Processing 2.0} 
+	\label{sec:cont_dev_processing}
+	Processing 2.0 is actually a drop in replacement for Processing 1.5.1 and does
+	not affect the Module Manager or other external controls. With that said, the
+	one issue is that Processing 2.0 does not keep the same API as Processing
+	1.5.1 and as such any Modules developed when referencing 1.5.1 will break when
+	deployed into an Interface SDK environment built with 2.0. This effect
+	dominoes to the point that the simple fix of replacing the library will force
+	all Modules to use the version of Processing the Interface SDK was compiled
+	against. 
+
+	There may be a couple solutions around this. The straight forward one is to
+	provide two different versions of the Interface SDK (and maintain them). This
+	would bring support for Processing 2.0 around much quicker. The downfall would
+	be the extra work to maintain two versions. In addition, this solution
+	provides no remedy for not being able to run Modules using Processing
+	1.5.1/2.0 side by side.
+
+	A different solution would be to split ProcessingModule into two separate
+	abstract Modules.  One for processing 2.0 and one for processing 1.5.1.  The
+	clear advantage over the former being that with this type of setup it should
+	be possible to run Modules extending from either version ProcessingModule side
+	by side allowing for a single version of the Interface SDK.  However, there is
+	a cost.  The Processing library would no longer be a direct dependency as
+	there would be library conflicts.  Instead, the Processing core.jar file would
+	be dynamically loaded in by either the ModuleManager or better yet, the
+	specific version of the ProcessingModule. The additional downside to this is
+	that developers may be exposed to the dependency on the Processing library if
+	they can no longer reference just the Interface SDK since the Processing
+	library is no longer a static dependency.
+
+	A possible final solution would be to find the differences between the
+	Processing 2.0/1.5.1 libraries and provide a conversion layer of a sort
+	between them. Although this may seem to be too time consuming, Processing does
+	seem to have a good document describing the major API differences.
+
+	At any rate, continued development should be sure to reference the
+	"processing\_2\_support" branch on Github (Link~\ref{link:processing_2}).
+
+	\subsubsection{OpenGL} 
+	\label{sec:cont_dev_opengl}
+	OpenGL needs lots more work
+
+	\subsubsection{Module Exception Handling Safety Net}
+	\label{sec:cont_dev_module_exception}
+	Write some stuff here
+
+	\pagebreak
+
+	\subsection{Relevant Links}
+	\label{sec:relevant_links}
+
+	\begin{enumerate}
+		\item
+			\url{https://github.com/ColoradoSchoolOfMines/interface\_sdk/tree/processing\_2\_support}
+			\label{link:processing_2}
+	\end{enumerate}
+
+
  
  
 \end{document}  
