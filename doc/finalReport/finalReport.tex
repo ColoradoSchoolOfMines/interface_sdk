@@ -470,7 +470,41 @@
 
 	\subsubsection{OpenGL} 
 	\label{sec:cont_dev_opengl}
-	OpenGL needs lots more work
+	First, for those wondering what OpenGL is exactly, OpenGL is an interface for
+	interacting with the rendering power of a discrete or integrated graphics
+	processing unit(s).  Typically using OpenGL is much more performant than using
+	just the CPU and gives developers more advanced rendering techniques. There
+	are competing libraries such as Microsoft's DirectX, however OpenGL has more
+	widespread usage including applications on the mobile front.  With that said,
+	most of the aforementioned comes from the Team's limited experience with
+	OpenGL.  
+
+	OpenGL is used by Processing 1.5.1 and was even further integrated into
+	Processing 2.0.  OpenGL is used any 3D drawing in Processing 2.0 and can also
+	be used to speed up drawing 2D sketches.  Since OpenGL is so integrated into
+	Processing, the Team felt it is a necessary goal to include access to this
+	powerful library from within ProcessingModule.
+
+	However, OpenGL, since it talks directly with hardware, is architecture and
+	operating system dependent. For this reason, the system dependent library is
+	left out of the actual Processing dependency for OpenGL, JOGL.  These external
+	libraries are usually shared object files, however, with JOGL, the authors
+	were kind enough to wrap these up in some JAR files.  Looking into the
+	Processing source code this is exactly the route the developers went
+	(Link~\ref{link:processing}). 
+
+	Ideally, from the perspective of the Module Manager and the lifecycle of the
+	Modules, these extra libraries should be hidden in the details of the
+	ProcessingModule. With that said, the Team did not have enough time to
+	investigate this option further and instead tried to get something working by
+	including these libraries directly when running the Module Manager via setting
+	the classpath. This seemed to work just fine as an OpenGL module could run
+	(granted that the Module was based on Processing 2.0) and exit without
+	crashing.  However, when the time of this report was written there seemed to
+	be a critical bug in the shutdown process of OpenGL as once an OpenGL Module
+	was run, on following runs it would no longer render. From this and from the
+	holding off on integrating of Processing 2.0, we were unable to work on OpenGL
+	support further. 
 
 	\subsubsection{Module Exception Handling Safety Net}
 	\label{sec:cont_dev_module_exception}
@@ -502,6 +536,10 @@
 			Processing 2 Support Branch \\
 			\label{link:processing_2}
 			\url{https://github.com/ColoradoSchoolOfMines/interface\_sdk/tree/processing\_2\_support}
+		\item
+			Processing Library
+			\label{link:processing}
+			\url{https://github.com/processing/processing}
 	\end{enumerate}
 
 
