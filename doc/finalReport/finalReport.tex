@@ -42,14 +42,14 @@
 	results of this class.
  
 	\subsection{Product Vision}
-	After seeing the results of the Recycler Robbie project, Professors Rader 
-	and Bakos contracted the field session team to use the existing code base 
-	and create a standalone, open-source framework for multiple interactive 
-	visualizations from it. As this project is intended to live beyond the 
-	life cycle of the group, the framework would need to be designed such that 
-	future teams and students could easily adapt and contribute to the code 
-	base. These students would also be able to create and run their own 
-	visualizations utilizing the framework. 
+  After seeing the results of the Recycler Robbie project, Professors Rader and
+  Bakos contracted the field session team to use the existing code base and
+  create a standalone, open-source framework for multiple interactive
+  visualizations. As this project is intended to live beyond the life cycle of
+  the group, the framework would need to be designed such that future teams and
+  students could easily adapt and contribute to the code base. These students
+  would also be able to create and run their own visualizations utilizing the
+  framework. 
 	\pagebreak
  
 	\section{Requirements}
@@ -62,7 +62,7 @@
 		\end{itemize}
 		\item Well-documented code base
 		\begin{itemize}
-			\item Original programs provide examples
+			\item Original programs as examples
 			\item Documentation explains the functionality and usage of SDK components
 		\end{itemize}
 		\item Facilitation of self-contained visualizations
@@ -80,7 +80,7 @@
 
 	\subsection{Non-Functional Requirements}
 	\begin{itemize}
-		\item Use Processing/Java
+		\item Use Java with the Processing library
 		\item Use the Colorado School of Mines Github as an easy, well known source revision control system
 		\begin{itemize}
 			\item Use Github's wiki capabilities to document the framework and facilitate student contributions
@@ -231,7 +231,7 @@
 	execution of modules, the driver cache is cleared and rebuilt from the 
 	next module's requested input types. In order for a driver to be cached, a 
 	series of validations are necessary. First and foremost, the functionality 
-	supported by the driver must be required by the the next module. For 
+	supported by the driver must be required by the next module. For 
 	optional functionalities, this check is performed at runtime. Second, a 
 	given driver must adhere to the interface contracts for the 
 	functionalities specified. Finally, an instantiated driver must indicate 
