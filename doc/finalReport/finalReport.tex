@@ -374,10 +374,11 @@
 	a turn-key based system. Our project does meet all the requirements 
 	requested by the client. 
 
-	The framework's code base has all been documented, both through the Github 
-	Wiki and JavaDoc (Link~\ref{link:interface_sdk_wiki})
-	(Link~\ref{link:javadoc}). The Github wiki also consists of
-		setup \& installation, tutorials, samples, and API documentation.
+	The framework's code base has all been documented, both through the Github
+	Wiki and JavaDoc
+	(Appendix~\ref{sec:relevant_links}). The Github
+	wiki also consists of setup \& installation, tutorials, samples, and API
+	documentation.
 
 	Due to the complexity of the base architecture, the client requested that 
 	we deprioritize refactoring the Recycler Robbie game in favor of 
@@ -469,7 +470,7 @@
 	seem to have a good document describing the major API differences.
 
 	At any rate, continued development should be sure to reference the
-	"processing\_2\_support" branch on Github (Link~\ref{link:processing_2}).
+	"processing\_2\_support" branch on Github (Appendix~\ref{sec:relevant_links}).
 
 	\subsubsection{OpenGL} 
 	\label{sec:cont_dev_opengl}
@@ -494,7 +495,7 @@
 	libraries are usually shared object files, however, with JOGL, the authors
 	were kind enough to wrap these up in some JAR files.  Looking into the
 	Processing source code this is exactly the route the developers went
-	(Link~\ref{link:processing}). 
+	(Appendix~\ref{sec:relevant_links}). 
 
 	Ideally, from the perspective of the Module Manager and the lifecycle of the
 	Modules, these extra libraries should be hidden in the details of the
@@ -509,7 +510,7 @@
 	holding off on integrating of Processing 2.0, we were unable to work on OpenGL
 	support further. 
 
-	\subsubsection{Module Exception Handling Safety Net}
+	\subsubsection{Module Exception Handling}
 	\label{sec:cont_dev_module_exception}
 	One future plan for the Interface SDK was to be able to handle exceptions
 	occurring while executing a Module.  This would ensure that if a Module
@@ -558,12 +559,12 @@
 	so would like to refrain from having the user to manage this. 
 
 	In order to accomplish this, the Team found the solution of deploying our own
-	Maven repository on a file hosting web service called Amazon S3 (TODO link).
+	Maven repository on a file hosting web service called Amazon S3.
 	After referencing the repository in the Maven pom file, Maven will exhibit the
 	following behavior; it will first look for dependencies installed on the local
 	machine, it will then look for dependencies in the Team's custom Maven
 	repository, and finally it will look for unmet dependencies in the Maven
-	Central Repository (TODO link). This behavior is ideal because the Team can
+	Central Repository. This behavior is ideal because the Team can
 	maintain a single location for all the third party JARs and does not have to
 	include these in the Github code repository. 
 
