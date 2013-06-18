@@ -511,11 +511,92 @@
 
 	\subsubsection{Module Exception Handling Safety Net}
 	\label{sec:cont_dev_module_exception}
-	Write some stuff here
+	One future plan for the Interface SDK was to be able to handle exceptions
+	occurring while executing a Module.  This would ensure that if a Module
+	developer was careless and his/her Module threw, for example, a
+	NullPointerException, the Interface SDK would be able to catch this exception
+	and continue execution with the default Module. 
+
+	This feature would not be difficult to support in the CommandlineModule as we
+	would be able to bond a Thread UncaughtExceptionHandler with the run thread to
+	catch any exceptions.  However, this does not work as well with a
+	ProcessingModule because when the ProcessingModule is run, the parent PApplet
+	class will spawn a new Animation thread, among other threads, and so the bond
+	to the exception handler is lost.
+
+	To remedy the above, the Team has two possible solutions. One would be to
+	modify the source for the Processing PApplet so that child classes, such as
+	ProcessingModule, would be able to override the behavior for uncaught exception
+	handling. This would not affect the user directly as the Interface SDK has the
+	core.jar for Processing wrapped up with it, so it would be a simple swap out
+	of this JAR file. With that said, the downside is that up and to the writting
+	of this report, the Team has been able to keep with a vanilla, unmodified
+	Processing core.jar file which makes it easy to keep up with Processing
+	development. 
+
+	Another possible solution that has not received much consideration is to
+	instead have the run loop for the Interface SDK spawn new processes instead of
+	new Threads.  In theory, the Interface SDK would not care about a Module
+	spawning any number of threads as all exceptions in the threads should be
+	passed up to the Module process at which point the Interface SDK can decide to
+	handle the situation. With the current state, the Interface SDK would most
+	likely move execution to the next Module unless the currently executing Module
+	is the default Module at which point the Interface SDK would exit.
 
 	\subsubsection{Maven Repository Hosting}
 	\label{sec:cont_dev_maven_repo}
-	Write about maven repository issues/etc
+	Maven is a powerful tool for developing Java projects.  It provides a central
+	toolkit for building code, managing dependencies, testing, packaging,
+	deployment and much more.  Overall the Team has found it very useful. 
+
+	The one aspect that sent us a speed bump was how to manage third-party
+	libraries in form of JARs. Maven has offered the typical solution of being
+	able to install these JARs locally so that any projects built with maven on
+	that local machine can reference the installed library.  This may work well
+	for those whose development platforms are unchanging, however, with our use
+	case we would like to make the development environment as portable as possible
+	so would like to refrain from having the user to manage this. 
+
+	In order to accomplish this, the Team found the solution of deploying our own
+	Maven repository on a file hosting web service called Amazon S3 (TODO link).
+	After referencing the repository in the Maven pom file, Maven will exhibit the
+	following behavior; it will first look for dependencies installed on the local
+	machine, it will then look for dependencies in the Team's custom Maven
+	repository, and finally it will look for unmet dependencies in the Maven
+	Central Repository (TODO link). This behavior is ideal because the Team can
+	maintain a single location for all the third party JARs and does not have to
+	include these in the Github code repository. 
+
+	In addition to easier management of third party JARs, hosting our own Maven
+	repository allows the Team to easily deploy versioned JARs of the Interface
+	SDK. This makes Module developers lives even easier as they can always find a
+	specific version of the Interface SDK on the Amazon S3 instance. For Maven
+	users this is especially useful as the only update to their pom files is to
+	dictate the version of the Interface SDK they would like to build against.
+
+	However, the Amazon S3 instance is currently owned and maintained, not by
+	Colorado School of Mines, but by one of authors and original developers.
+	Although this student is certainly going to stick around as a lead
+	maintainer, this is less than ideal.
+
+	Going forward, there are a couple solutions. One would be to transition to
+	using the Maven Central Repository which has free Maven project hosting.  Open
+	source advocates would argue this is a necessity of a true open source
+	codebase.  This would keep the ease of access to versions of the Interface
+	SDK, however, there are some issues with referencing third party libraries. One
+	issue is that we would have to ensure that we are not breaking any licenses by
+	publishing third party libraries to the Maven Central Repository. In addition,
+	we cannot continue to reference our own Maven repository as the Maven Central
+	Repository has a policy of not including references to external repositories.
+	This would bring us back to having the user install third party JARs.  This
+	may not be the end of the world, but certainly it would be an inconvenience.
+
+	A more ideal solution may be to encourage the School to setup their own Maven
+	repository.  This could entail either deploying their own server on campus or
+	signing up for a service such as Amazon S3. The cost of the latter may be
+	negligible in the grand scheme of things but this decision is not one the Team
+	alone can make. This solution would maintain the current state of the project
+	and all of the benefits of hosting our own repository.
 
 	\pagebreak
 
