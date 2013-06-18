@@ -140,50 +140,66 @@
 
 	Once the manifest is loaded, the Module Manager attempts to build a list 
 	of all available modules. Availability is determined by the integrity of 
-	the JAR This is checked by verifying that all of the required module 
-	dependencies are met by looking at the module manifest located in each JAR. 
-	This process also refreshes the list of modules of which it has knowledge. 
-	After this is completed, the manager has a list of modules that it can inflate.
-
+	the JAR, the availability of other required modules, and by checking requested
+	hardware functionalities against the current hardware capabilities. Required
+	modules and requested hardware functionalities are dictated by the module
+	manifest which is located in each JAR. After this is completed, only available
+	modules are remaining in the Module Manager's index of meta information on the
+	modules. In addition, valid modules' meta-data is updated to reflect which jar
+	the module can be found in.
+	
 	At this point, the Module Manager will allow the Hardware Manager to 
 	initialize its assets. This includes loading its own Hardware Manager 
 	manifest file, which includes information about all of the functionalities 
 	and devices that the framework supports. Through this, the Module Manager 
-	can give the Hardware Manager a module's hardware dependencies and 
-	indicate if they are met.
+	can give the Hardware Manager a module's hardware dependencies and receive
+	feedback on if these dependencies are met. 
 
-	Through this, the Module Manager can check whether the default module 
-	meets all its hardware dependencies. Checking its dependencies and 
-	indicating the default module in the Module Manager manifest is vital 
-	because the Module Manager relies heavily on the assumption that it can 
-	fall back to inflating the default in the case of a different module's 
-	failure. In the case where the default module fails, then the Module 
-	Manager will throw a fatal exception, which halts the framework's execution.
+	Using this same process, the Module Manager can check whether the default
+	module meets all its hardware dependencies. Checking its dependencies and
+	indicating the default module in the Module Manager manifest is vital because
+	the Module Manager relies heavily on the assumption that it can fall back to
+	inflating the default in the case of a different module's failure. In the case
+	where the default module fails, then the Module Manager will throw a fatal
+	exception, which halts the framework's execution.
 
 	Initially, the Module Manager loads the default module, and this is where 
 	the main loop is entered and modules are loaded and executed. This 
 	consists of a multitude of safeguards to ensure that the next module is 
-	capable of running. First and foremost is checking that the module's 
-	hardware dependencies are met. If so, the Hardware Manager attempts to 
-	build or re-build a cache of drivers, based on the next module's hardware 
-	requirements. Required functionalities have their drivers cached 
-	immediately at this step, while optional input types are cached at runtime 
-	when requested. In the case where any of these steps fail,  the Module 
-	Manager reverts to loading the default and repeats this process. It should 
-	be noted that the Module Manager will load the default module upon the 
+	capable of running. First and foremost, the module manager attempts to inflate
+	an instance of a Module. To do this, the Module Manager uses information in
+	the Module manifest indicating which class to load, in which package this
+	class can be found and the path of the JAR in which the module resides to
+	instantiate an instance of a generic ModuleInterface.  A couple typical
+	developer errors can occur at this point; first, the class may not be found
+	because the reference to the class or package was invalid, or second, the
+	class did not correctly extend from the current version for one of the
+	abstract Module classes. Unfortunately, there are a few other less common
+	errors that can occur at this stage including; the JAR file was tampered with
+	after the Module Manager updated its index, or there was a breach in security
+	policy for the class loader. However, if all goes well, the Module Manager is
+	left with a proper instance of the ModuleInterface and it can continue.
+	
+	Next, is to check that the module's hardware dependencies are met. If so, the
+	Hardware Manager attempts to build or re-build a cache of drivers, based on
+	the next module's hardware requirements. Required functionalities have their
+	drivers cached immediately at this step, while optional input types are cached
+	at runtime when requested. In the case where any of these steps fail,  the
+	Module Manager reverts to loading the default and repeats this process. It
+	should be noted that the Module Manager will load the default module upon the
 	current module's completion, unless directed otherwise.
 
-	Once the setup process is completed, a semaphore is handed off to the 
-	running module so that it may signal the Module Manager for when it is 
-	finished executing. The design uses the Java provided CountdownLatch to 
-	implement this functionality. At this step, control is completely given to 
-	the running Module until terminated.
+	Once the setup process is completed, a semaphore is handed off to the running
+	module so that it may signal the Module Manager for when it is finished
+	executing. The design uses the Java provided CountdownLatch to implement this
+	functionality. At this step, control is completely given to the running Module
+	until terminated (TODO reference appendix for future work?).
 
-	Finally, once the running module terminates, control is returned to the 
-	Module Manager and the process of refreshing the internal list of modules 
-	is repeated. This is done in case JARs were added or removed during the 
-	runtime of the previous module. Furthermore, the Module Manager repeats 
-	the full cycle of loading the next module's meta-data as explained above.
+	Once the running module terminates, control is returned to the Module Manager
+	and the process of refreshing the internal list of modules is repeated. This
+	is done in case JARs were added, removed or modified during the runtime of the
+	previous module. Finally, the Module Manager repeats the full cycle of loading
+	the next module as explained above.
 	(Figure 2)
 
 	\subsection{Modules}
@@ -265,8 +281,8 @@
 	helped to shape the design of the framework. One of the first decisions was to
 	continue using Maven as a software project management platform as used by the
 	Readings in Software Engineering class. After initial exploration into the
-	platform, the team found Maven to be a flexible and adaptable tool for
-	handling external libraries.
+	platform and the following learning curve, the team found Maven to be a
+	flexible and adaptable tool for handling external libraries.
 
 	The team wanted to let the end developers have the ability to configure the
 	framework to meet their needs. This led to a configuration-driven design
@@ -283,7 +299,7 @@
 
 	Additionally, due to the decision to use an XML design, the team felt the need
 	for modules to enforce a contract indicating its intents and characteristics
-	before being loaded by the Module Manager. This was to ensure that a module’s
+	before being loaded by the Module Manager. This was to ensure that a module's
 	dependencies can be satisfied by the Hardware Manager and also be represented
 	in a human-friendly manner. This led to the creation of the Module manifest
 	for the modules that are loaded into the Module Manager.
@@ -309,7 +325,7 @@
 	Thus, the design needed to satisfy both methods of retrieval. For a continuous
 	stream of data, modules are able to poll the driver at their leisure. However,
 	for data given at specific times, an Event Manager had to be created to
-	coordinate the propagation of data to receivers. The Event Manager’s queuing
+	coordinate the propagation of data to receivers. The Event Manager's queuing
 	system was designed to handle arbitrary data to aid expandability.
 
 	The decision to centralize the receiving and reading of hardware data led to
@@ -319,8 +335,8 @@
 	be loaded in order for the Hardware Manager to be configured with devices.
 
 	The team was directed by the clients to use source control and chose to use
-	Github for a central repository over other services. Github was selected due
-	to a combination of familiarity with the inner workings of Git, as well as its
+	Github for a central repository over other services. Github was selected
+	because of the team's familiarity with the inner workings of Git, its
 	friendliness towards open-source projects, and the preexistent Colorado School
 	of Mines Github organization. Since one of the additional client requirements
 	was to publish the framework as an open-source project, the team found Github
@@ -329,13 +345,13 @@
 	A further requirement set forth by the client was to have proper documentation
 	and support for new developers to contribute to the SDK and develop their own
 	modules. The decision to choose Github also addressed this requirement through
-	the use of Github’s wiki structure and integrated issue tracking.
+	the use of Github's wiki structure and integrated issue tracking.
 
 	\pagebreak
    
 	\section{Results}
-	Our goal for this project was to create an open-source interactive 
-	platform that can support user contributed visualizations, and be 
+	Our goal for this project was to create an open-source, interactive,
+	visualization platform that can support user contributed visualizations, and be 
 	demonstrated at any number of locations on campus. This was achieved by 
 	creating an underlying architecture that would allow for a number of 
 	arbitrary programs, referred to as modules, to be able to run on the system. 
@@ -363,12 +379,14 @@
 
 	Other aspects that could not be completed or tested due to time 
 	constraints were support for Processing 2.0, OpenGL, and other sensory 
-	devices (such as webcams). However, there are no safeguards to prevent 
+	devices (such as web cameras). In addition, there are no safeguards to prevent 
 	inappropriate or malicious submissions. Neither the Twitter feed nor the 
 	acmX game could be integrated into the system. The Twitter feed was purely 
 	due to time constraints in that the information necessary to continue was 
-	provided too late into our timeline. The completed acmX game relied on 
-	additional functionalities that we were unable to support at the time.
+	provided too late into our timeline. The completed acmX game relied on the
+	aforementioned OpenGL and scene map data.  Although the scene map data is
+	supported by OpenNI the team did not have this functionality integrated with
+	the Input Services layer at the time.
 
 	\pagebreak
    
