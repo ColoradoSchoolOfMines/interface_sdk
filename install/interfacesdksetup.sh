@@ -2,8 +2,8 @@
 
 # This script clones the proper github repositories to run the interface sdk and other major modules (such as the homescreen) 
 
-exhibit_dir=./exhibit
-exhibit_source_dir=./exhibit/source
+exhibit_dir=`pwd`/exhibit
+exhibit_source_dir=`pwd`/exhibit/source
 interfaceSDKdirname="interfaceSDK"
 
 interfacesdk_repo="https://github.com/ColoradoSchoolOfMines/interface_sdk.git" 
