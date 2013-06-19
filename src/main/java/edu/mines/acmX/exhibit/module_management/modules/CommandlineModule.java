@@ -85,6 +85,10 @@ public abstract class CommandlineModule implements ModuleInterface {
 	public String[] getAllAvailableModules() {
 		return module.getAllAvailableModules();
 	}
+	
+	public String getCurrentModulePackageName() {
+        return module.getCurrentModulePackageName();
+    }
     
     /**
      * This function should be overridden to provide the desired functionality

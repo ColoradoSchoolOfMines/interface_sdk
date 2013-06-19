@@ -124,6 +124,10 @@ public class ModuleHelper implements ModuleInterface {
 	public String[] getAllAvailableModules() {
 		return moduleManager.getAllAvailableModules();
 	}
+	
+	public String getCurrentModulePackageName() {
+        return moduleManager.getCurrentModulePackageName();
+    }
 
 	/**
 	 * Performs all initialization tasks. Currently, it only sets the CountDown
