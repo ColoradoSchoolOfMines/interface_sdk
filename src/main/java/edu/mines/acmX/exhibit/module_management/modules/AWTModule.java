@@ -61,6 +61,10 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	public String[] getAllAvailableModules() {
 		return moduleHelper.getAllAvailableModules();
 	}
+	
+	public String getCurrentModulePackageName() {
+        return moduleHelper.getCurrentModulePackageName();
+    }
 
 	/**
 	 * Sets up module environment and calls the implemented run function

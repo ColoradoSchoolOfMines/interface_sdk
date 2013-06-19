@@ -102,6 +102,10 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		return module.getAllAvailableModules();
 	}
 	
+	public String getCurrentModulePackageName() {
+        return module.getCurrentModulePackageName();
+    }
+	
     /**
      * This function does the dirty work for creating a new Processing window.
      * This will call Processing's init() function which does further Processing
