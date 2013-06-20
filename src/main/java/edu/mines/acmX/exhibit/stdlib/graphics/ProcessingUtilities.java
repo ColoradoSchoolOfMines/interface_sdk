@@ -1,5 +1,8 @@
 package edu.mines.acmX.exhibit.stdlib.graphics;
 
+import java.awt.image.BufferedImage;
+
+import processing.core.PConstants;
 import processing.core.PImage;
 
 public class ProcessingUtilities {
@@ -27,5 +30,18 @@ public class ProcessingUtilities {
 			//height is limiting factor
 			img.resize((int) (maxPixelsY * ratio), (int) maxPixelsY);
 		}
+	}
+	
+	/**
+	 * Utility function that takes a standard BufferedImage and converts it to
+	 * a Processing PImage. 
+	 * 
+	 * @param bimg the original BufferedImage
+	 * @return a PImage from the BufferedImage
+	 */
+	public static PImage buffImagetoPImage(BufferedImage bimg) {
+		PImage img = new PImage(bimg.getWidth(), bimg.getHeight(), PConstants.ARGB);
+		bimg.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
+		return img;
 	}
 }

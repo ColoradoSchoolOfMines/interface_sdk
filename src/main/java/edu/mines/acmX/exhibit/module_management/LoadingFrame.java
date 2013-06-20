@@ -18,9 +18,9 @@ public class LoadingFrame extends JFrame {
     	setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
-        //hide the cursor
+        //hide the cursor (currently doesn't work)
         BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
         Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0,0), "blank");
-        getContentPane().setCursor(blankCursor);
+        setCursor(blankCursor);
 	}
 }
