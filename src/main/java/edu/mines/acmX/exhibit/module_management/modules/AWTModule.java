@@ -1,6 +1,9 @@
 package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -71,9 +74,14 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * of the module.
 	 */
 	public void execute() {
-		// TODO need a better way to set the size
-		setSize(500, 500);
-		setVisible(true);
+		setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
+    	setUndecorated(true); //disable bordering
+    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
+        
+        setVisible(true); //get correct screen size for Windows
+    	add(this);
+    	setVisible(true);
 		this.run();
 	}
 
