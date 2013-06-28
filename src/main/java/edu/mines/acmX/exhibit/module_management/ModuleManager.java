@@ -544,12 +544,10 @@ public class ModuleManager {
 
 	private void setupPreRuntime() throws InvalidConfigurationFileException,
 			BadDeviceFunctionalityRequestException, ModuleLoadException {
-		System.out.println("What is load default?" + loadDefault);
 		if (loadDefault) {
 			preModuleRuntime(defaultModuleMetaData);
 		} else {
 			try {
-				System.out.println("HIIII");
 				preModuleRuntime(nextModuleMetaData);
 				logger.debug("Module was set correctly!");
 			} catch (ModuleLoadException e) {
