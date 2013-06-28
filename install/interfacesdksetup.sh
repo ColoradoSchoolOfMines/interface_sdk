@@ -3,9 +3,11 @@
 # This script clones the proper github repositories to run the interface sdk and
 # other major modules (such as the homescreen) 
 
-# if the --with-repos option is specified, the git repos will be downloaded and the most recent
-# version of the interface sdk will be downloaded.  Otherwise the interface sdk
-# specified in the script will be downloaded
+# if the --with-repos option is specified, the git repos will be downloaded and
+# the most recent version of the interface sdk will be downloaded based on the
+# most recent tagged version in the git repository (it will not be built from
+# the repo to avoid having to install maven and such).  Otherwise the interface
+# sdk specified in the script will be downloaded
 
 # set the default options
 repos=false
