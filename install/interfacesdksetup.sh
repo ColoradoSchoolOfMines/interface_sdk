@@ -44,21 +44,21 @@ module_repositories=( "https://github.com/ColoradoSchoolOfMines/home_screen_modu
 # create directory structure
 mkdir -p "$exhibit_dir/development/modules"
 mkdir -p "$exhibit_dir/production/modules"
-mkdir -p "$exhibit_source_dir/modules"
 
 if [[ "$repos" == "true" ]];
 then
-# clone the source repos
-# these are not actually needed for running as later we will be referencing another location
-cd "$exhibit_source_dir" 
-echo "Cloning interface sdk"
-git clone "$interfacesdk_repo" "$interfaceSDKdirname"
-cd "$exhibit_source_dir/modules" 
-for module in ${module_repositories[@]}
-do
-  echo "Cloning $module"
-  git clone $module
-done
+  mkdir -p "$exhibit_source_dir/modules"
+  # clone the source repos
+  # these are not actually needed for running as later we will be referencing another location
+  cd "$exhibit_source_dir" 
+  echo "Cloning interface sdk"
+  git clone "$interfacesdk_repo" "$interfaceSDKdirname"
+  cd "$exhibit_source_dir/modules" 
+  for module in ${module_repositories[@]}
+  do
+    echo "Cloning $module"
+    git clone $module
+  done
 fi
 
 # create a basic setup in development.  production is not populated as it should be tested in development first and then copied over
@@ -79,3 +79,4 @@ wget "https://raw.github.com/ColoradoSchoolOfMines/interface_sdk/master/src/main
 
 cd "$exhibit_dir/development/modules"
 wget "https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release/edu/mines/acmX/exhibit/modules/home_screen/0.0.1/home_screen-0.0.1.jar"
+wget "https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release/com/austindiviness/cltest/CLIModuleLauncher/1.0/CLIModuleLauncher-1.0.jar"
