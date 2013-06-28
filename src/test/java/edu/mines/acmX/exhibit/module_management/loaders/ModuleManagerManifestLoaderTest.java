@@ -24,7 +24,6 @@ public class ModuleManagerManifestLoaderTest {
     			"src/test/resources/modules",
     			configs);
     	ModuleManagerMetaData actual = ModuleManagerManifestLoader.load("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
-    	System.out.println("Actual: " + actual);
 		assertEquals(data, actual);
     }
 

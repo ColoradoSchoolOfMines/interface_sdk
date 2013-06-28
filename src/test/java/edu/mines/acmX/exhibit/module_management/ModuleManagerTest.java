@@ -852,7 +852,6 @@ public class ModuleManagerTest {
 		setupPreRT.invoke(m);
 		
 		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
-		System.out.println("Current module is: " + currMMD.getPackageName());
 		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
 	}
 	

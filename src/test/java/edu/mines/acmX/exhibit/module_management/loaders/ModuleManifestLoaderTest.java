@@ -38,7 +38,6 @@ public class ModuleManifestLoaderTest {
                 false);
         
         ModuleMetaData actual = ModuleManifestLoader.load( pathToJar );
-        System.out.println("Actual: " + actual);
         assertTrue( shouldEqual.equals(actual));
     }
 
