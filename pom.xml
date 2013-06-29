@@ -107,7 +107,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>edu.mines.acmX.exhibit.module_management.ModuleManager</mainClass>
+              <mainClass>edu.mines.acmX.exhibit.runner.ModuleManagerRunner</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
