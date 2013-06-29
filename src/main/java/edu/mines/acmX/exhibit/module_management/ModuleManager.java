@@ -1,7 +1,5 @@
 package edu.mines.acmX.exhibit.module_management;
 
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -12,20 +10,20 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import javax.swing.JFrame;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
@@ -82,10 +80,6 @@ public class ModuleManager {
                                     "Please specify with the --manifest switch");
 					System.exit(1);
 				}
-				//show a blank screen that is shown whenever modules are being loaded
-				JFrame loadFrame = new LoadingFrame();
-		        loadFrame.setVisible(true); 
-		        
 				ModuleManager m;
 				m = ModuleManager.getInstance();
 				m.run();
@@ -111,6 +105,7 @@ public class ModuleManager {
 			logger.fatal(e.getMessage());
 			e.printStackTrace();
 		}
+
 	}
 
 	private static void printHelp(Options opts) {
