@@ -11,6 +11,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import edu.mines.acmX.exhibit.Common;
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
@@ -29,7 +30,7 @@ public class ModuleManagerRunner {
 	 * Arguments: The single argument that is needed is the path to a valid
 	 * module manager manifest file. This is specified using the --manifest arg.
 	 * For additional documentation on running the module manager please refer
-	 * to the wiki
+	 * to the wiki in Common.REPOSITORY
 	 */
 	public static void main(String[] args) {
 		CommandLineParser cl = new GnuParser();
@@ -85,9 +86,9 @@ public class ModuleManagerRunner {
 				+ "Welcome to the Interface SDK!\n"
 				+ "The Interface SDK provides an intelligent environment in which to run modules. "
 				+ "To build a module visit the github wiki at "
-				+ "https://github.com/ColoradoSchoolOfMines/interface_sdk/wiki "
+				+ Common.REPOSITORY + "/wiki "
 				+ "\n" + "Also please find the source code at "
-				+ "https://github.com/ColoradoSchoolOfMines/interface_sdk "
+				+ Common.REPOSITORY + " "
 				+ "where you can find more detail on the open source project.";
 		String footer = "\n";
 		formatter.printHelp("java -jar [JARNAME]", header, opts, footer, true);
