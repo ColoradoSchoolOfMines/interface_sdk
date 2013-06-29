@@ -20,4 +20,5 @@ package edu.mines.acmX.exhibit;
 
 public class Common {
 	public static final String SDK_VERSION = "0.1.1";
+	public static final String REPOSITORY = "https://github.com/ColoradoSchoolOfMines/interface_sdk";
 }
