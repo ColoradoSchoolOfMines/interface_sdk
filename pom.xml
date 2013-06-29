@@ -14,6 +14,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.year>2013</project.year>
 		<project.owner>Colorado School of Mines</project.owner>
+    <!--**/*WithKinectPluggedInTest.java-->
+    <kinect.test.skip></kinect.test.skip>
   </properties>
   <repositories>
     <repository>
@@ -108,7 +110,7 @@
         <version>2.15</version>
         <configuration>
           <excludes>
-            <exclude>**/*WithKinectPluggedInTest.java</exclude>
+            <exclude>${kinect.test.skip}</exclude>
           </excludes>
         </configuration>
       </plugin>
