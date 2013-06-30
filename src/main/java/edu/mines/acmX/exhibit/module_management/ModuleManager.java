@@ -26,22 +26,11 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.OptionGroup;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
-import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
@@ -54,6 +43,8 @@ import edu.mines.acmX.exhibit.module_management.metas.CheckType;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.module_executors.ModuleExecutor;
+import edu.mines.acmX.exhibit.module_management.module_executors.ModuleThreadExecutor;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
@@ -95,6 +86,7 @@ public class ModuleManager {
 	private ModuleMetaData nextModuleMetaData;
 	private ModuleMetaData currentModuleMetaData;
 	private ModuleMetaData defaultModuleMetaData;
+	private ModuleExecutor moduleExecutor;
 	private boolean loadDefault;
 	private Map<String, ModuleMetaData> moduleConfigs;
 
@@ -459,6 +451,7 @@ public class ModuleManager {
 	public void run() throws InvalidConfigurationFileException,
 			BadDeviceFunctionalityRequestException, ModuleLoadException {
 		while (true) {
+			// create a new Module Executor
 			setupPreRuntime();
 			runCurrentModule();
 			postModuleRuntime();
@@ -467,6 +460,7 @@ public class ModuleManager {
 
 	private void setupPreRuntime() throws InvalidConfigurationFileException,
 			BadDeviceFunctionalityRequestException, ModuleLoadException {
+
 		if (loadDefault) {
 			preModuleRuntime(defaultModuleMetaData);
 		} else {
@@ -501,6 +495,7 @@ public class ModuleManager {
 	private void preModuleRuntime(ModuleMetaData mmd)
 			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
 			InvalidConfigurationFileException {
+	 this.moduleExecutor = new ModuleThreadExecutor( mmd, metaData.getPathToModules() );
 		setCurrentModule(mmd);
 		hardwareInstance.checkPermissions(mmd.getInputTypes());
 		hardwareInstance.setRunningModulePermissions(mmd.getInputTypes());
@@ -511,17 +506,7 @@ public class ModuleManager {
 	}
 
 	private void runCurrentModule() {
-		CountDownLatch waitForModule = new CountDownLatch(1);
-
-		currentModule.init(waitForModule);
-		currentModule.execute();
-
-		try {
-			waitForModule.await();
-		} catch (InterruptedException e) {
-			logger.warn("Module execution was interrupted");
-		}
-
+		this.moduleExecutor.run();
 	}
 
 	private void postModuleRuntime() {
@@ -551,7 +536,6 @@ public class ModuleManager {
 	private void setCurrentModule(ModuleMetaData mmd)
 			throws ModuleLoadException {
 		currentModuleMetaData = mmd;
-		currentModule = loadModuleFromMetaData(mmd);
 	}
 
 	/**
