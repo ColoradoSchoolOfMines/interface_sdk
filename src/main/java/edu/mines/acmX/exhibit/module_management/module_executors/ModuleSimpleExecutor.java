@@ -23,7 +23,6 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoader;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
@@ -70,13 +69,14 @@ public class ModuleSimpleExecutor extends ModuleExecutor {
 	 * Arg 1: fully qualified classname of module
 	 * Arg 2: Path to Module Jar
 	 * @throws ModuleLoadException 
+	 * @throws ModuleRuntimeException 
 	 */
-	public static void main(String[] args) throws ModuleLoadException {
+	public static void main(String[] args) throws ModuleLoadException, ModuleRuntimeException {
 		// TODO arg checking
 		main(args[0], args[1]);
 	}
 	
-	public static void main(String fullyQualifiedModuleName, String jarPath) throws ModuleLoadException {
+	public static void main(String fullyQualifiedModuleName, String jarPath) throws ModuleLoadException, ModuleRuntimeException {
 		ModuleExecutor executor = new ModuleSimpleExecutor(fullyQualifiedModuleName, jarPath);
 		executor.run();
 	}
