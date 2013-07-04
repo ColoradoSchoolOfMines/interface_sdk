@@ -19,7 +19,7 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 public class ModuleSimpleExecutor extends ModuleExecutor {
 
-	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
+	static Logger logger = LogManager.getLogger(ModuleSimpleExecutor.class.getName());
 	private ModuleInterface moduleToRun;
 
 //	public ModuleSimpleExecutor( ModuleMetaData moduleData, String moduleParentDirectory ) throws ModuleLoadException {
