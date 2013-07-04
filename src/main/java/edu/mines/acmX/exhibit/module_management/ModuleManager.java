@@ -44,7 +44,8 @@ import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 import edu.mines.acmX.exhibit.module_management.module_executors.ModuleExecutor;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleSimpleExecutor;
+import edu.mines.acmX.exhibit.module_management.module_executors.ModuleProcessExecutor;
+import edu.mines.acmX.exhibit.module_management.module_executors.ModuleRuntimeException;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
@@ -453,7 +454,13 @@ public class ModuleManager {
 		while (true) {
 			// create a new Module Executor
 			setupPreRuntime();
-			runCurrentModule();
+			try {
+				runCurrentModule();
+			} catch (ModuleRuntimeException e) {
+				logger.error("Module Runtime exception occured while running " + currentModuleMetaData.getPackageName());
+				logger.warn("Setting default module just in case");
+				loadDefault = true;
+			}
 			postModuleRuntime();
 		}
 	}
@@ -496,7 +503,7 @@ public class ModuleManager {
 			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
 			InvalidConfigurationFileException {
 		
-		this.moduleExecutor = new ModuleSimpleExecutor(mmd.getPackageName()
+		this.moduleExecutor = new ModuleProcessExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
 				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
 		setCurrentModule(mmd);
@@ -508,7 +515,7 @@ public class ModuleManager {
 		logger.info("Loaded module " + mmd.getPackageName());
 	}
 
-	private void runCurrentModule() {
+	private void runCurrentModule() throws ModuleRuntimeException {
 		this.moduleExecutor.run();
 	}
 
