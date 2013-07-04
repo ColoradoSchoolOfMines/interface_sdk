@@ -19,10 +19,17 @@ public abstract class ModuleExecutor {
 
 	private String moduleParentDirectory;
 	private ModuleMetaData moduleData;
+	private String fullyQualifiedModuleName;
+	private String jarPath;
 
-	public ModuleExecutor( ModuleMetaData moduleData, String moduleParentDirectory ) {
-		this.moduleData = moduleData;
-		this.moduleParentDirectory = moduleParentDirectory;
+//	public ModuleExecutor( ModuleMetaData moduleData, String moduleParentDirectory ) {
+//		this.moduleData = moduleData;
+//		this.moduleParentDirectory = moduleParentDirectory;
+//	}
+	
+	public ModuleExecutor(String fullyQualifiedModuleName, String jarPath) {
+		this.fullyQualifiedModuleName = fullyQualifiedModuleName;
+		this.jarPath = jarPath;
 	}
 
 	public abstract void run();
