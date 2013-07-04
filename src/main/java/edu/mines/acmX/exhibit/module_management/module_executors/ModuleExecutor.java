@@ -26,7 +26,7 @@ public abstract class ModuleExecutor {
 		this.jarPath = jarPath;
 	}
 
-	public abstract void run();
+	public abstract void run() throws ModuleRuntimeException;
 
 }
 
