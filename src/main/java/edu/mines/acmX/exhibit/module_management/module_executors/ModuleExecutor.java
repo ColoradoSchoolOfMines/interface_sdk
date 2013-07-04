@@ -18,10 +18,6 @@
  */
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 public abstract class ModuleExecutor {
