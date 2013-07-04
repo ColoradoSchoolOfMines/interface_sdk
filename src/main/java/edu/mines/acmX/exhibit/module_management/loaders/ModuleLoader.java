@@ -42,6 +42,7 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 public class ModuleLoader {
 	
 	private static Logger log = LogManager.getLogger(ModuleLoader.class.getName());
+	
     /**
 	 * Takes a path to a module jar and returns a Module object as specified in the
      * module's manifest.
@@ -54,6 +55,23 @@ public class ModuleLoader {
 	public static ModuleInterface loadModule(String jarPath,
 			ModuleMetaData data, ClassLoader classLoader)
 			throws ModuleLoadException {
+		return loadModule(jarPath,
+				data.getPackageName() + "." + data.getClassName(), classLoader);
+	}
+	
+	/**
+	 * Takes a path to a module jar and returns a Module object as specified in
+	 * the module's manifest. A simpler version of the other loadModule method
+	 * with a less demanding set of inputs.
+	 * 
+	 * @param jarPath
+	 * @param data
+	 * @param classLoader
+	 * @return
+	 * @throws ModuleLoadException
+	 */
+	public static ModuleInterface loadModule(String jarPath,
+			String fullyQualifiedClassName, ClassLoader classLoader) throws ModuleLoadException {
 		Class<? extends ModuleInterface> moduleClassToLoad;
 		try {
 			log.debug("Trying to set class loader for jar file: " + jarPath);
@@ -66,7 +84,7 @@ public class ModuleLoader {
 			// TODO change later?
 			// Finally, cast it into the usable ModuleInterface class
 			moduleClassToLoad = Class.forName(
-					data.getPackageName() + "." + data.getClassName(), true,
+					fullyQualifiedClassName, true,
 					loader).asSubclass(ModuleInterface.class);
 			return moduleClassToLoad.newInstance();
 		} catch (IOException e) {
@@ -95,8 +113,8 @@ public class ModuleLoader {
 			log.error(msg);
 			throw new ModuleLoadException(msg);
 		}
-
-    }
+		
+	}
 
 	public static InputStream loadResource(String jarPath, ModuleMetaData
 			data, ClassLoader classLoader, String resourcePath) throws
