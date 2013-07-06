@@ -12,10 +12,10 @@
   </appenders>
   <loggers>
     <!--Change the log level in the following-->
-    <root level="warn">
+    <root level="debug">
       <appender-ref ref="File"/>
       <!--Uncomment to log to console-->
-      <!--<appender-ref ref="Console"/>-->
+			<appender-ref ref="Console"/>
     </root>
   </loggers>
 </configuration>
