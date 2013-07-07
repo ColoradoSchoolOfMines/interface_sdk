@@ -46,6 +46,7 @@ import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 import edu.mines.acmX.exhibit.module_management.module_executors.ModuleExecutor;
 import edu.mines.acmX.exhibit.module_management.module_executors.ModuleProcessExecutor;
 import edu.mines.acmX.exhibit.module_management.module_executors.ModuleRuntimeException;
+import edu.mines.acmX.exhibit.module_management.module_executors.ModuleSimpleExecutor;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
@@ -454,14 +455,18 @@ public class ModuleManager {
 			BadDeviceFunctionalityRequestException, ModuleLoadException {
 		while (true) {
 			// create a new Module Executor
+			logger.debug("PreModuleRuntime");
 			setupPreRuntime();
 			try {
+				logger.debug("Module Run");
 				runCurrentModule();
+				logger.debug("Module finish Run");
 			} catch (ModuleRuntimeException e) {
 				logger.error("Module Runtime exception occured while running " + currentModuleMetaData.getPackageName());
 				logger.warn("Setting default module just in case");
 				loadDefault = true;
 			}
+			logger.debug("Post module runtime");
 			postModuleRuntime();
 		}
 	}
@@ -503,10 +508,18 @@ public class ModuleManager {
 	private void preModuleRuntime(ModuleMetaData mmd)
 			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
 			InvalidConfigurationFileException {
-		
+
+	 if( mmd.getPackageName().matches(".*cltest.*") ) {
+		 logger.debug("Loading Simple Module Executor");
+		this.moduleExecutor = new ModuleSimpleExecutor(mmd.getPackageName()
+				+ "." + mmd.getClassName(), (new File(
+				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
+	 } else {
+		 logger.debug("Loading Process Module Executor");
 		this.moduleExecutor = new ModuleProcessExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
 				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
+	 }
 		setCurrentModule(mmd);
 		hardwareInstance.checkPermissions(mmd.getInputTypes());
 		hardwareInstance.setRunningModulePermissions(mmd.getInputTypes());

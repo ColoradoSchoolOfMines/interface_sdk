@@ -1,15 +1,23 @@
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.module_executors.etc.ProcessIORedirection;
 
 
 public class ModuleProcessExecutor extends ModuleExecutor {
@@ -26,7 +34,36 @@ public class ModuleProcessExecutor extends ModuleExecutor {
 	@Override
 	public void run() throws ModuleRuntimeException {
 		try {
-			Process p = Runtime.getRuntime().exec(getProcessArguments());
+			ProcessBuilder build = new ProcessBuilder(getProcessArguments());
+			build.redirectErrorStream(true);
+			Process p = build.start();
+			final BufferedReader reader = new BufferedReader( new InputStreamReader(p.getInputStream()));
+			BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(p.getOutputStream()));
+			
+			Scanner commandWriter = new Scanner(System.in);
+			Writer commandReader = new PrintWriter(System.out);
+			new Thread() {
+				public void run() {
+					String line;
+					try {
+						line = reader.readLine();
+
+						while (line != null && !line.trim().equals("--EOF--")) {
+							System.out.println("Stdout: " + line);
+							line = reader.readLine();
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
+			commandReader.close();
+			commandWriter.close();
+			
+//			ProcessIORedirection redir = new ProcessIORedirection(p);
+//			new Thread(redir).start();
 			p.waitFor();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -42,6 +79,9 @@ public class ModuleProcessExecutor extends ModuleExecutor {
 	
 	private String[] getProcessArguments() {
 		ArrayList<String> args = new ArrayList<String>();
+//		args.add("/usr/bin/gnome-terminal");
+//		args.add("/bin/bash");
+//		args.add("-e");
 		args.add("java");
 		args.add("-cp");
 		args.add(getClassPathArg());
