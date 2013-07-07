@@ -21,10 +21,12 @@ public class ModuleProcessExecutor extends ModuleExecutor {
 
 	public ModuleProcessExecutor(String fullyQualifiedModuleName, String jarPath) {
 		super(fullyQualifiedModuleName, jarPath);
+		logger.debug("Created ModuleProcessExecutor");
 	}
 
 	@Override
 	public void run() throws ModuleRuntimeException {
+		logger.debug("Using ModuleProcessExecutor to run a module");
 		try {
 			Process p = Runtime.getRuntime().exec(getProcessArguments());
 			p.waitFor();

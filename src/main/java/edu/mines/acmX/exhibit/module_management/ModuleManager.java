@@ -504,7 +504,7 @@ public class ModuleManager {
 	private void preModuleRuntime(ModuleMetaData mmd)
 			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
 			InvalidConfigurationFileException {
-		if( mmd.getPackageName().matches(".*austindiviness.*") ) {
+		if( mmd.getPackageName().matches(".*cltest.*") ) {
 			this.moduleExecutor = new ModuleSimpleExecutor(mmd.getPackageName()
 					+ "." + mmd.getClassName(), (new File(
 							metaData.getPathToModules(), mmd.getJarFileName())).getPath());
