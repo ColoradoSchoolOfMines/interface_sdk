@@ -61,6 +61,8 @@ public class ModuleProcessExecutor extends ModuleExecutor {
         for(URL url: urls){
         	toReturn += url.getFile() + File.pathSeparator;
         }
+
+		logger.debug("classpath: " + toReturn);
         
         return toReturn;
 	}
