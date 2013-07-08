@@ -1,6 +1,6 @@
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
-public class ModuleRuntimeException extends Exception {
+public class ModuleRuntimeException extends RuntimeException {
 
 	public ModuleRuntimeException() {
 		

@@ -9,7 +9,7 @@ package edu.mines.acmX.exhibit.module_management.module_executors;
 
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
-public abstract class ModuleExecutor {
+public abstract class ModuleExecutor implements Runnable {
 
 	protected String moduleParentDirectory;
 	protected ModuleMetaData moduleData;

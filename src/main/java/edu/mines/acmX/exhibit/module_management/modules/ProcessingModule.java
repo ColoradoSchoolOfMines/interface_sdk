@@ -61,12 +61,12 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     
     private Frame frame;
     
+    
     public static String IMAGES_LOCATION = "images/";
     
     public ProcessingModule() {
         super();
         module = new ModuleHelper();
-        frame = new Frame();
     }
 
 	/**
@@ -132,6 +132,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * TODO try to run PApplet without creating a new frame.
      */
     public void execute(){
+    	frame = new Frame();
     	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
     	frame.setUndecorated(true); //disable bordering
     	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();

@@ -44,9 +44,9 @@ import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 import edu.mines.acmX.exhibit.module_management.module_executors.ModuleExecutor;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleProcessExecutor;
 import edu.mines.acmX.exhibit.module_management.module_executors.ModuleRuntimeException;
 import edu.mines.acmX.exhibit.module_management.module_executors.ModuleSimpleExecutor;
+import edu.mines.acmX.exhibit.module_management.module_executors.ModuleThreadExecutor;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
@@ -509,7 +509,7 @@ public class ModuleManager {
 					+ "." + mmd.getClassName(), (new File(
 							metaData.getPathToModules(), mmd.getJarFileName())).getPath());
 		} else {
-			this.moduleExecutor = new ModuleProcessExecutor(mmd.getPackageName()
+			this.moduleExecutor = new ModuleSimpleExecutor(mmd.getPackageName()
 					+ "." + mmd.getClassName(), (new File(
 							metaData.getPathToModules(), mmd.getJarFileName())).getPath());
 		}
