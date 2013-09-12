@@ -100,10 +100,11 @@ then
     read -n 1 prompt
   done
   echo "Great!.. continuing"
-
+	
+	temp_dir=kinect
   cd ~
-  mkdir kinect
-  cd kinect
+  mkdir $temp_dir
+  cd $temp_dir
 
   # download and extract
   echo "Downloading sources"
@@ -148,6 +149,9 @@ then
   cd ~/kinect/nite/
   chmod a+x install.sh
   sudo ./install.sh
+
+	echo "Openni, nite and other drivers have been installed to [$temp_dir]"
+	echo "[$temp_dir] may be removed if you like, but checkout the samples in there. It also contains the makefiles if you would ever like to uninstall these drivers"
 
 else
   echo "Skipping the installation of openni"
