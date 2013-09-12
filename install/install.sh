@@ -15,13 +15,24 @@ sudo apt-get install -y git build-essential maven
 git config --global user.name "KinectTeam"
 git config --global user.email ""
 
+###############################
+# define a prompt function    #
+###############################
+yesnoprompt () {
+  echo "$1 (y/n):"
+  read prompt
+  if [[ "${prompt:0:1}" == "y" || "${prompt:0:1}" == "Y" ]];
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
 ################################
 # install java                 #
 ################################
-echo 'Would you like to install java 7 from oracle? (y/n): '
-read -n 1 prompt
-echo ""
-if [[ "$prompt" == "y" || "$prompt" == "Y" ]];
+if yesnoprompt 'Would you like to install java 7 from oracle?';
 then
   echo "Installing java 7 from oracle"
   sudo add-apt-repository -y ppa:webupd8team/java
@@ -40,9 +51,7 @@ if [[ "$arch" == "x86_64" ]];
 then
   echo "Detected 64 bit system"
   echo "For processing 1.5.1 we will need the 32 bit comptability layers"
-  echo "Can I install this for you? (y/n)"
-  read -n 1 prompt
-  if [[ "$prompt" == "y" || "$prompt" == "Y" ]];
+  if yesnoprompt "Can I install this for you?";
   then
     echo "installing ia32-libs..."
     sudo apt-get install -y ia32-libs
@@ -55,9 +64,7 @@ then
   echo "Continuing..."
 else
   echo "Could not recognize the system or the system may not be supported"
-  echo "Are you sure you want to continue? (y/n)"
-  read -n 1 prompt
-  if [[ "$prompt" == "y" || "$prompt" == "Y" ]];
+  if yesnoprompt "Are you sure you want to continue?";
   then
     echo "Continuing..."
   else
@@ -69,9 +76,7 @@ fi
 ## OpenNI and Nite              #
 #################################
 echo "I am about to begin the installation of openni, nite and the kinect libraries"
-echo "Continue? (y/n)"
-read -n 1 prompt
-if [[ "$prompt" == "y" || "$prompt" == "Y" ]];
+if yesnoprompt "Continue?";
 then
   echo "Continuing..."
 
@@ -91,13 +96,10 @@ then
 
 
   # Check for a plugged in kinect ~ not sure if it actually makes a difference yet
-  prompt="N"
-  while [[ "$prompt" -ne "Y" && "$prompt" -ne "Y" ]];
+  echo "Please disconnect your kinect before proceeding"
+  while ! yesnoprompt "Have you disconnected your kinect?";
   do
     echo "Please disconnect your kinect before proceeding"
-    echo "Have you disconnected your kinect?"
-    echo ""
-    read -n 1 prompt
   done
   echo "Great!.. continuing"
 
@@ -156,10 +158,7 @@ fi
 
 # install processing
 # TODO nested directories
-echo "I would like to install processing 1.5.1"
-echo "Continue? (y/n):"
-read -n 1 prompt
-if [[ "$prompt" == "y" || "$prompt" == "Y" ]];
+if yesnoprompt "Install Processing 1.5.1?";
 then
   processing_source="http://processing.googlecode.com/files/processing-1.5.1-linux.tgz"
   cd ~
@@ -179,11 +178,10 @@ then
   ln -s /usr/bin/java java
 
   # Not needed for the interface sdk
-  echo "Would you like to download the OPTIONAL simple openni processing library? (y/n)"
-  echo "Note this is not required for the interface sdk and is a separate processing library for standalone sketches"
+  echo "The SimpleOpenNI Processing library is an OPTIONAL component."
+  echo "It is NOT REQUIRED for the interface sdk, and is a SEPARATE Processing library for standalone sketches."
 
-  read -n 1 prompt
-  if [[ "$prompt" == "y" || "$prompt" == "Y" ]];
+  if yesnoprompt "Install the SimpleOpenNI Processing library?";
   then
     simpleni_source='https://simple-openni.googlecode.com/files/SimpleOpenNI-0.27.zip'
     cd ~/sketchbook
