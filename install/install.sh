@@ -10,12 +10,6 @@
 sudo apt-get install -y git build-essential maven
 
 ###############################
-# configure git               #
-###############################
-git config --global user.name "KinectTeam"
-git config --global user.email ""
-
-###############################
 # define a prompt function    #
 ###############################
 yesnoprompt () {
