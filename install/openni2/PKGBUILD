@@ -42,6 +42,7 @@ package() {
 	# TODO etc for config file
 	install OpenNI.ini "${pkgdir}/usr/lib"
 	# TODO include java stuffs?
+	# TODO should the jar be put in here somewhere?
 	# TODO change the location for drivers
 	install OpenNI2/Drivers/* "${pkgdir}/usr/lib/OpenNI2/Drivers"
 
@@ -50,6 +51,8 @@ package() {
 	install Bin/SimpleViewer "${pkgdir}/usr/bin"
 
 	# TODO add license to the things installed
+
+	# TODO add documentation to the install
 
 	install -Dm644 "${srcdir}/${_source_name}/primesense-usb.rules" "${pkgdir}/etc/udev/rules.d/557-primesense-usb.rules"
 }
