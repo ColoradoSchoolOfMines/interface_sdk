@@ -1,0 +1,97 @@
+# Maintainer: Sven Schneider <archlinux.sandmann@googlemail.com>
+# Contributor: bugix
+# Contributor: Lubosz Sarnecki <lubosz at gmail>
+
+pkgname=openni2
+pkgver=2.2
+pkgrel=1
+pkgdesc="Framework providing an interface for physical devices (IR, RGB, etc) and for middleware components (NiTE)"
+# TODO 
+#arch=('i686' 'x86_64')
+arch=('x86_64')
+url="http://www.openni.org/"
+license=('GPL')
+# TODO add mesa and other stuff?
+depends=('freeglut' 'mesa' 'libusb' 'java-environment' 'python2' )
+#makedepends=('git')
+provides=('openni2')
+# TODO check if this library is safe to be installed alongside the other one
+conflicts=('openni' 'openni2')
+_source_name="OpenNI-Linux-x64-2.2"
+source=("http://www.openni.org/wp-content/uploads/2013/07/${_source_name}.tar.zip")
+md5sums=("2eb832c296b12bfa99975c8707d7d4d0")
+
+prepare() {
+	unzip -f "${_source_name}.tar.zip"
+	tar -xvf "${_source_name}.tar.bz2"
+}
+
+
+#build() {
+  #cd "${srcdir}"
+  #msg "Connecting to GIT server...."
+
+  #if [ -d ${_gitname} ] ; then
+    #cd ${_gitname} && git pull origin
+    #msg "The local files are updated."
+  #else
+    #git clone -b ${_gitbranch} ${_gitroot} ${_gitname}
+  #fi
+
+  #msg "GIT checkout done or server timeout"
+  #msg "Starting make..."
+
+  #rm -rf "${srcdir}/${_gitname}-build"
+  #git clone "${srcdir}/${_gitname}" "${srcdir}/${_gitname}-build"
+  
+  #find "${srcdir}/${_gitname}-build/Samples" -type f -exec sed -i 's#../../../../Data/SamplesConfig.xml#/usr/share/openni/SamplesConfig.xml#g' {} \;
+  
+  #cd "${srcdir}/${_gitname}-build/Platform/Linux/Build"
+  
+  #if [ -f Common ]; then ln -fs `cat Common` Common; fi
+  
+  ## BUILD
+  #LDFLAGS+=' -lGL' make
+#}
+
+package() {
+	install -d -m755 "${pkgdir}/usr/"{lib/OpenNI2/Drivers,bin,include/OpenNI2/{Driver,Linux-x86}}
+	cd "${srcdir}/${_source_name}/Include"
+	install *.h "${pkgdir}/usr/include/OpenNI2"
+	install Linux-x86/* "${pkgdir}/usr/include/OpenNI2/Linux-x86"
+	install Driver/* "${pkgdir}/usr/include/OpenNI2/Driver"
+
+	cd "${srcdir}/${_source_name}/Redist"
+	install *.so "${pkgdir}/usr/lib"
+	# TODO etc for config file
+	install OpenNI.ini "${pkgdir}/usr/lib"
+	# TODO include java stuffs?
+	# TODO change the location for drivers
+	install OpenNI2/Drivers/* "${pkgdir}/usr/lib/OpenNI2/Drivers"
+
+	# TODO other samples
+	cd "${srcdir}/${_source_name}/Samples"
+	install Bin/SimpleViewer "${pkgdir}/usr/bin"
+
+
+
+	install -Dm644 "${srcdir}/${_source_name}/primesense-usb.rules" "${pkgdir}/etc/udev/rules.d/557-primesense-usb.rules"
+}
+
+#package() {
+  #install -d -m755 "${pkgdir}/usr/"{lib,bin,share/openni,include/ni/Linux-x86}
+  #install -d -m755 "${pkgdir}/var/lib/ni"
+
+  #cd "${srcdir}/${_gitname}-build/Include"
+  #install *.h "${pkgdir}/usr/include/ni"
+  #install Linux-x86/* "${pkgdir}/usr/include/ni/Linux-x86"
+  
+  #cd "${srcdir}/${_gitname}-build/Data"
+  #install SamplesConfig.xml "${pkgdir}/usr/share/openni"
+
+  #cd "${srcdir}/${_gitname}-build/Platform/Linux/Bin/${_platform}-Release"
+  #install niLicense niReg "${pkgdir}/usr/bin"
+  #install Sample* "${pkgdir}/usr/bin"
+
+  #install libnimCodecs.so libnimMockNodes.so libnimRecorder.so libOpenNI.so "${pkgdir}/usr/lib"
+#}
