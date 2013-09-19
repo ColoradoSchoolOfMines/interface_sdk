@@ -1,0 +1,56 @@
+# Maintainer: Andrew DeMaria <ademaria AT mines DOT edu>
+pkgname=primesense-nite2
+pkgver=2.2
+pkgrel=1
+pkgdesc="3D computer vision middleware for OpenNI"
+# TODO check for x86 support
+arch=('x86_64')
+url="http://www.openni.org/files/nite/"
+license=('custom')
+depends=('openni2')
+#makedepends=()
+#checkdepends=()
+#optdepends=()
+#provides=()
+#conflicts=()
+#replaces=()
+#backup=()
+#options=()
+source=("http://www.openni.org/wp-content/uploads/2013/08/NiTE-Linux-x64-${pkgver}.tar.zip" )
+noextract=()
+md5sums=('050cd2669f397e121c14da34a545971c')
+_source_name="NiTE-Linux-x64-2.2"
+
+prepare() {
+	unzip -f "${_source_name}.tar.zip"
+	tar -xvf "${_source_name}.tar.bz2"
+}
+
+package() {
+	install -dm755 "${pkgdir}/usr/"{include/NiTE2,lib/NiTE2/Data,bin}
+
+
+	cd "${srcdir}/${_source_name}/Include"
+	install *.h "${pkgdir}/usr/include/NiTE2"
+
+	cd "${srcdir}/${_source_name}/Redist"
+	# TODO move ini file elsewhere i.e /etc
+	install libNiTE2.jni.so libNiTE2.so NiTE.ini "${pkgdir}/usr/lib"
+
+	# TODO possibly put some of this stuff in share?
+	cd "${srcdir}/${_source_name}/Redist/NiTE2"
+	install *.{ini,dat} "${pkgdir}/usr/lib/NiTE2"
+
+	cd "${srcdir}/${_source_name}/Redist/NiTE2/Data"
+	install *.{lbd,idx} "${pkgdir}/usr/lib/NiTE2/Data"
+
+	install -D "${srcdir}/${_source_name}/License/NiTE.License.2013.rtf" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.rtf"
+
+	# TODO add documentation to the install
+
+	# TODO should the jar be put in here somewhere?
+
+	# TODO install other samples
+	install "${srcdir}/${_source_name}/Samples/Bin/SimpleUserTracker" "${pkgdir}/usr/bin"
+
+}
