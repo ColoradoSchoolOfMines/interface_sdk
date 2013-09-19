@@ -49,7 +49,7 @@ package() {
 	cd "${srcdir}/${_source_name}/Samples"
 	install Bin/SimpleViewer "${pkgdir}/usr/bin"
 
-
+	# TODO add license to the things installed
 
 	install -Dm644 "${srcdir}/${_source_name}/primesense-usb.rules" "${pkgdir}/etc/udev/rules.d/557-primesense-usb.rules"
 }
