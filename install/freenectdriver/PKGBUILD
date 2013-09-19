@@ -2,8 +2,8 @@
 # and remove these comments. For more information, see 'man PKGBUILD'.
 # NOTE: Please fill out the license field for your package! If it is unknown,
 # then please put 'unknown'.
-# TODO maintainer
-# Maintainer: Your Name <youremail@domain.com>
+
+# Maintainer: Andrew DeMaria <ademaria@mines.edu>
 pkgname=openni2-freenectdriver-git
 pkgver=20130917
 pkgrel=1
@@ -14,20 +14,9 @@ license=('APACHE')
 groups=()
 depends=('libfreenect' 'openni2')
 makedepends=('git' 'python')
-#checkdepends=()
-# TODO optional dependencies
-#optdepends=()
 provides=('openni2-freenectdriver')
 conflicts=('openni2-freenectdriver')
-#replaces=()
-#backup=()
-#options=()
 install="openni2-freenectdriver.install"
-#changelog=
-#source=($pkgname-$pkgver.tar.gz
-        #$pkgname-$pkgver.patch)
-#noextract=()
-#md5sums=() #generate with 'makepkg -g'
 
 _gitroot="https://github.com/piedar/OpenNI2-FreenectDriver.git"
 _gitname=OpenNI2-FreenectDriver
