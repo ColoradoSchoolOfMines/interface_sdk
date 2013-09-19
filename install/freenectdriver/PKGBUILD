@@ -15,7 +15,6 @@ install="openni2-freenectdriver.install"
 
 _gitroot="https://github.com/piedar/OpenNI2-FreenectDriver.git"
 _gitname=OpenNI2-FreenectDriver
-_openni_drivers_dir="/usr/lib/OpenNI2/Drivers"
 
 build() {
 	msg "Preparing git repo"
