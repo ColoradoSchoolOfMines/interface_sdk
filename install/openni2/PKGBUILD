@@ -14,6 +14,9 @@ url="http://www.openni.org/"
 license=('GPL')
 # TODO add mesa and other stuff?
 depends=('freeglut' 'mesa' 'libusb' 'java-environment' 'python2' )
+optdepends=(
+	'openni2-freenectdriver-git: A kinect driver implementation wrapping libfreenect'
+)
 #makedepends=('git')
 provides=('openni2')
 # TODO check if this library is safe to be installed alongside the other one
