@@ -12,14 +12,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-<<<<<<< HEAD
 		<project.year>2013</project.year>
 		<project.owner>Colorado School of Mines</project.owner>
     <!--**/*WithKinectPluggedInTest.java-->
     <kinect.test.skip></kinect.test.skip>
-=======
     <kinect.test.skip>**/*WithKinectPluggedInTest.java</kinect.test.skip>
->>>>>>> Better argument for specificying the kinect is not attached
   </properties>
   <repositories>
     <repository>
