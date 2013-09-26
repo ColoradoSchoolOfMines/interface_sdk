@@ -39,7 +39,13 @@ exhibit_source_dir=`pwd`/exhibit/source
 interfaceSDKdirname="interfaceSDK"
 
 interfacesdk_repo="https://github.com/ColoradoSchoolOfMines/interface_sdk.git" 
-module_repositories=( "https://github.com/ColoradoSchoolOfMines/home_screen_module" "https://github.com/TheCrownedFox/fractalModule.git"  "https://github.com/TheCrownedFox/CLIModuleLauncher.git" "https://github.com/TheCrownedFox/brickBreaker.git" )
+module_repositories=(
+"https://github.com/ColoradoSchoolOfMines/home_screen_module"
+"https://github.com/TheCrownedFox/fractalModule.git"
+"https://github.com/TheCrownedFox/CLIModuleLauncher.git"
+"https://github.com/TheCrownedFox/brickBreaker.git"
+"https://github.com/ColoradoSchoolOfMines/Pong.git"
+"https://github.com/ColoradoSchoolOfMines/simple_module.git")
 
 # create directory structure
 mkdir -p "$exhibit_dir/development/modules"
