@@ -54,6 +54,8 @@ import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurati
 import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
 import edu.mines.acmX.exhibit.stdlib.input_processing.tracking.HandTrackingUtilities;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverException;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverHelper;
 
 /**
  * Kinect driver that provides depth and rgb image functionality. Uses the
@@ -70,6 +72,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 	public static final EventManager evtMgr = EventManager.getInstance();
 
 	private Context context;
+	private boolean loaded;
 
 	private DepthGenerator depthGen;
 	private ImageGenerator imageGen;
@@ -82,16 +85,36 @@ public class KinectOpenNIDriver implements DriverInterface,
 	private int depthWidth;
 	private int depthHeight;
 
-	public KinectOpenNIDriver()
-			throws InvalidConfigurationFileException, 
-			OpenNIConfigurationException, GeneralException{
+	public KinectOpenNIDriver() {
+		context = null;
+		loaded = false;
+
+		depthGen = null;
+		imageGen = null;
+		gestureGen = null;
+		handsGen = null;
+
+		imageWidth = 0;
+		imageHeight = 0;
+
+		depthWidth = 0;
+		depthHeight = 0;
+	}
+
+	@Override
+	public void load() throws InvalidConfigurationFileException, DriverException {
+
+		if(loaded)
+			destroy(); //reset driver
+
+		loaded = true;
 		try {
 			HardwareManager hm = HardwareManager.getInstance();
 			String canName = KinectOpenNIDriver.class.getCanonicalName();
 			if (!hm.hasConfigFile(canName)) {
 				throw new InvalidConfigurationFileException("Missing " +
-															canName +
-															" config file");
+						canName +
+						" config file");
 			}
 			OpenNIContextSingleton.setConfigurationFile(hm.getConfigFile(canName));
 			context = OpenNIContextSingleton.getContext();
@@ -99,36 +122,50 @@ public class KinectOpenNIDriver implements DriverInterface,
 			// We should never be here, and it should be caught by the
 			// ModuleManager
 			log.error("HardwareManager Manifest Exception");
+		} catch (OpenNIConfigurationException e){
+			throw new InvalidConfigurationFileException("Invalid OpenNI configuration file.");
+		}  catch (GeneralException e){
+			throw new DriverException("Exception in OpenNI");
 		}
-		gestureGen = GestureGenerator.create(context);
-		gestureGen.addGesture("Wave");
-		gestureGen.getGestureRecognizedEvent().addObserver(
-				new GestureRecognized());
 
-		handsGen = HandsGenerator.create(context);
-		handsGen.getHandCreateEvent().addObserver(new HandCreated());
-		handsGen.getHandUpdateEvent().addObserver(new HandUpdated());
-		handsGen.getHandDestroyEvent().addObserver(new HandDestroyed());
+		try{
+			gestureGen = GestureGenerator.create(context);
+			gestureGen.addGesture("Wave");
+			gestureGen.getGestureRecognizedEvent().addObserver(
+					new GestureRecognized());
 
-		depthGen = DepthGenerator.create(context);
-		DepthMetaData depthMD = depthGen.getMetaData();
+			handsGen = HandsGenerator.create(context);
+			handsGen.getHandCreateEvent().addObserver(new HandCreated());
+			handsGen.getHandUpdateEvent().addObserver(new HandUpdated());
+			handsGen.getHandDestroyEvent().addObserver(new HandDestroyed());
 
-		context.startGeneratingAll();
+			depthGen = DepthGenerator.create(context);
+			DepthMetaData depthMD = depthGen.getMetaData();
 
-		imageGen = ImageGenerator.create(context);
+			context.startGeneratingAll();
 
-		ImageMetaData imageMD = imageGen.getMetaData();
-		imageWidth = imageMD.getFullXRes();
-		imageHeight = imageMD.getFullYRes();
+			imageGen = ImageGenerator.create(context);
 
-		depthWidth = depthMD.getFullXRes();
-		depthHeight = depthMD.getFullYRes();
+			ImageMetaData imageMD = imageGen.getMetaData();
+			imageWidth = imageMD.getFullXRes();
+			imageHeight = imageMD.getFullYRes();
 
-		EventManager.getInstance().fireEvent(EventType.VIEWPORT_DIMENSION,
-				new Dimension(depthWidth, depthHeight));
-			
-		
+			depthWidth = depthMD.getFullXRes();
+			depthHeight = depthMD.getFullYRes();
+
+			EventManager.getInstance().fireEvent(EventType.VIEWPORT_DIMENSION,
+					new Dimension(depthWidth, depthHeight));
+
+		} catch (GeneralException e){
+			throw new DriverException("Exception in OpenNI");
+		}
 	}
+
+	@Override
+	public boolean loaded(){
+		return loaded;
+	}
+
 
 	//HandTrackerInterface
 	/**
@@ -137,6 +174,8 @@ public class KinectOpenNIDriver implements DriverInterface,
 	 * desired.
 	 */
 	public void updateDriver() {
+		DriverHelper.checkLoaded(this);
+
 		try {
 			context.waitAnyUpdateAll();
 		} catch (StatusException e) {
@@ -145,10 +184,12 @@ public class KinectOpenNIDriver implements DriverInterface,
 	}
 
 	public int getHandTrackingWidth() {
+		DriverHelper.checkLoaded(this);
 		return depthWidth;
 	}
 	
 	public int getHandTrackingHeight() {
+		DriverHelper.checkLoaded(this);
 		return depthHeight;
 	}
 	
@@ -214,11 +255,16 @@ public class KinectOpenNIDriver implements DriverInterface,
 	public boolean isAvailable() {
 		boolean ret = true;
 		try {
+			if(!loaded) {
+				load();
+			}
 			context = OpenNIContextSingleton.getContext();
 		} catch (GeneralException e) {
 			ret = false;
 		} catch (OpenNIConfigurationException e) {
 			ret = false;
+		} catch (Throwable t){
+			ret = false; // load threw an exception;
 		}
 		return ret;
 	}
@@ -228,22 +274,25 @@ public class KinectOpenNIDriver implements DriverInterface,
 	 * stopped on the context singleton.
 	 */
 	public void destroy() {
-		try {
-			handsGen.StopTrackingAll();
-			context.stopGeneratingAll();
-			
-			// Remove all receivers connected to this driver
-			EventManager.getInstance().removeReceivers(EventType.HAND_CREATED);
-			EventManager.getInstance().removeReceivers(EventType.HAND_UPDATED);
-			EventManager.getInstance().removeReceivers(EventType.HAND_DESTROYED);
-			
-		} catch (StatusException e) {
-			e.printStackTrace();
+		if(loaded)  {
+			try {
+				handsGen.StopTrackingAll();
+				context.stopGeneratingAll();
+
+				// Remove all receivers connected to this driver
+				EventManager.getInstance().removeReceivers(EventType.HAND_CREATED);
+				EventManager.getInstance().removeReceivers(EventType.HAND_UPDATED);
+				EventManager.getInstance().removeReceivers(EventType.HAND_DESTROYED);
+
+			} catch (StatusException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	// DepthDataInterface
 	public ShortBuffer getDepthImageData() {
+		DriverHelper.checkLoaded(this);
 		DepthMetaData depthMD = depthGen.getMetaData();
 
 		DepthMap dm = depthMD.getData();
@@ -253,25 +302,30 @@ public class KinectOpenNIDriver implements DriverInterface,
 	}
 
 	public int getRGBImageWidth() {
+		DriverHelper.checkLoaded(this);
 		return imageWidth;
 	}
 
 	public int getRGBImageHeight() {
+		DriverHelper.checkLoaded(this);
 		return imageHeight;
 	}
 
 	// RGBImageInterface
 	public ByteBuffer getVisualData() {
+		DriverHelper.checkLoaded(this);
 		ImageMetaData imageMD = imageGen.getMetaData();
 		ByteBuffer rgbBuffer = imageMD.getData().createByteBuffer();
 		return rgbBuffer;
 	}
 
 	public int getDepthImageWidth() {
+		DriverHelper.checkLoaded(this);
 		return depthWidth;
 	}
 
 	public int getDepthImageHeight() {
+		DriverHelper.checkLoaded(this);
 		return depthHeight;
 	}
 

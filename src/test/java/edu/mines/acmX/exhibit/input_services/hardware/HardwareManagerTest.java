@@ -258,7 +258,7 @@ public class HardwareManagerTest {
 		hm.setRunningModulePermissions(mmd);
 
 		Map<String, String> configStore = new HashMap<String, String>();
-		configStore.put("kinectopenni", "openni_config.xml");
+		configStore.put("kinectopenni", "src/test/resources/openni_config.xml");
 		
 		hm.setConfigurationFileStore(configStore);
 		hm.resetAllDrivers();

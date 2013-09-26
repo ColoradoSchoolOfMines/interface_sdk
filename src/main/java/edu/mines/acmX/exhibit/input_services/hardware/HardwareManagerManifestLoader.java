@@ -172,7 +172,7 @@ public class HardwareManagerManifestLoader {
 				throw new HardwareManagerManifestException("No device definitions in devices tag");
 			}
 			
-			for (int j = 0; j < devicesTagList.getLength(); ++j) {
+			for (int j = 0; j < deviceTagList.getLength(); ++j) {
 				Element deviceTag = (Element) deviceTagList.item(j);
 				String name = deviceTag.getAttribute("name").toLowerCase();
 				String driver = deviceTag.getAttribute("driver");

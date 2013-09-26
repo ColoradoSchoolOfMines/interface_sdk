@@ -27,6 +27,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.OpenNIConfigurationExcepti
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverHelper;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import org.apache.logging.log4j.LogManager;
@@ -55,6 +56,7 @@ public class KinectOpenNI2Driver implements DriverInterface,
 	private static Logger log = LogManager.getLogger(KinectOpenNI2Driver.class);
 	public static final EventManager evtMgr = EventManager.getInstance();
 	private static boolean init = false;
+	private boolean loaded;
 
 	private int imageWidth;
 	private int imageHeight;
@@ -62,11 +64,32 @@ public class KinectOpenNI2Driver implements DriverInterface,
 	private int depthHeight;
 	private Device device;
 	private VideoStream colorStream;
-	private VideoStream depthtream;
+	private VideoStream depthStream;
 
-	public KinectOpenNI2Driver()
-			throws InvalidConfigurationFileException, OpenNIConfigurationException {
+	public KinectOpenNI2Driver() {
+		loaded = false;
+		imageWidth = 0;
+		imageHeight = 0;
+		depthWidth = 0;
+		depthHeight = 0;
+		device = null;
+		colorStream = null;
+		depthStream = null;
+	}
 
+	@Override
+	public ShortBuffer getDepthImageData() {
+		DriverHelper.checkLoaded(this);
+		VideoFrameRef frame = depthStream.readFrame();
+		return frame.getData().asShortBuffer();
+	}
+
+	@Override
+	public void load() {
+		if(loaded)
+			destroy(); // reset driver
+
+		loaded = true;
 		if(!init){
 			init = true;
 			OpenNI.initialize();
@@ -76,14 +99,14 @@ public class KinectOpenNI2Driver implements DriverInterface,
 
 		colorStream = VideoStream.create(device, SensorType.COLOR);
 		colorStream.start();
-		depthtream = VideoStream.create(device, SensorType.DEPTH);
-		depthtream.start();
+		depthStream = VideoStream.create(device, SensorType.DEPTH);
+		depthStream.start();
 
 		VideoFrameRef frameColor = colorStream.readFrame();
 		imageHeight = frameColor.getHeight();
 		imageWidth = frameColor.getWidth();
 
-		VideoFrameRef frameDepth = depthtream.readFrame();
+		VideoFrameRef frameDepth = depthStream.readFrame();
 		depthHeight = frameDepth.getHeight();
 		depthWidth = frameDepth.getWidth();
 
@@ -92,44 +115,58 @@ public class KinectOpenNI2Driver implements DriverInterface,
 	}
 
 	@Override
-	public ShortBuffer getDepthImageData() {
-		VideoFrameRef frame = depthtream.readFrame();
-		return frame.getData().asShortBuffer();
+	public boolean loaded(){
+		return loaded;
 	}
 
 	@Override
 	public int getDepthImageWidth() {
+		DriverHelper.checkLoaded(this);
 		return depthWidth;
 	}
 
 	@Override
 	public int getDepthImageHeight() {
+		DriverHelper.checkLoaded(this);
 		return depthHeight;
 	}
 
 	@Override
 	public boolean isAvailable() {
+		if(!loaded) {
+			try{
+				load();
+			} catch (Throwable t){
+				return false;
+			}
+		}
 		return device != null;
 	}
 
 	@Override
 	public void destroy() {
-		colorStream.destroy();
-		device.close();
+		if(loaded){
+			colorStream.destroy();
+			depthStream.destroy();
+			device.close();
+		}
 	}
 
 	@Override
 	public void updateDriver() {
+		DriverHelper.checkLoaded(this);
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
 	public int getHandTrackingWidth() {
+		DriverHelper.checkLoaded(this);
 		return 0;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
 	public int getHandTrackingHeight() {
+		DriverHelper.checkLoaded(this);
 		return 0;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -150,17 +187,20 @@ public class KinectOpenNI2Driver implements DriverInterface,
 
 	@Override
 	public ByteBuffer getVisualData() {
+		DriverHelper.checkLoaded(this);
 		VideoFrameRef frame = colorStream.readFrame();
 		return frame.getData();
 	}
 
 	@Override
 	public int getRGBImageWidth() {
+		DriverHelper.checkLoaded(this);
 		return imageWidth;
 	}
 
 	@Override
 	public int getRGBImageHeight() {
+		DriverHelper.checkLoaded(this);
 		return imageHeight;
 	}
 }
