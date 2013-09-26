@@ -61,7 +61,7 @@ public class ModuleManagerWithKinectPluggedInTest {
 		
 		// The next three lines are to give the hardware manager support
 		Map<String, String> configStore = new HashMap<String, String>();
-		configStore.put("kinectopenni", "openni_config.xml");
+		configStore.put("kinectopenni", "src/test/resources/openni_config.xml");
 		HardwareManager.getInstance().setConfigurationFileStore(configStore);
 		
 		// pretend the next module was set (to skip that logic)
