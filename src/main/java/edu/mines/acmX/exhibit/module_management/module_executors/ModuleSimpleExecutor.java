@@ -21,11 +21,6 @@ public class ModuleSimpleExecutor extends ModuleExecutor {
 
 	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
 	private ModuleInterface moduleToRun;
-
-//	public ModuleSimpleExecutor( ModuleMetaData moduleData, String moduleParentDirectory ) throws ModuleLoadException {
-//		super( moduleData, moduleParentDirectory );
-//		this.moduleToRun = loadModuleFromMetaData( moduleData, moduleParentDirectory );
-//	}
 	
 	public ModuleSimpleExecutor(String fullyQualifiedModuleName, String jarPath) throws ModuleLoadException {
 		super(fullyQualifiedModuleName, jarPath);
@@ -49,13 +44,6 @@ public class ModuleSimpleExecutor extends ModuleExecutor {
 		}
 
 	}
-
-//	private ModuleInterface loadModuleFromMetaData(ModuleMetaData data, String parentDir )
-//			throws ModuleLoadException {
-//		String path = (new File(parentDir, data.getJarFileName())).getPath();
-//		return ModuleLoader.loadModule(path, data, this.getClass()
-//				.getClassLoader());
-//	}
 	
 	private ModuleInterface loadModuleFromMetaData(
 			String fullyQualifiedModuleName, String jarPath)
