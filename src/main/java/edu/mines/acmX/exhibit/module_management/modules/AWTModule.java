@@ -1,6 +1,27 @@
+/**
+ * Copyright (C) 2013 Colorado School of Mines
+ *
+ * This file is part of the Interface Software Development Kit (SDK).
+ *
+ * The InterfaceSDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The InterfaceSDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -71,9 +92,14 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * of the module.
 	 */
 	public void execute() {
-		// TODO need a better way to set the size
-		setSize(500, 500);
-		setVisible(true);
+		setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
+    	setUndecorated(true); //disable bordering
+    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
+        
+        setVisible(true); //get correct screen size for Windows
+    	add(this);
+    	setVisible(true);
 		this.run();
 	}
 

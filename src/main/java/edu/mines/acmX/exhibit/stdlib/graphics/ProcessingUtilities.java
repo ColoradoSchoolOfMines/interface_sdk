@@ -1,5 +1,26 @@
+/**
+ * Copyright (C) 2013 Colorado School of Mines
+ *
+ * This file is part of the Interface Software Development Kit (SDK).
+ *
+ * The InterfaceSDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The InterfaceSDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package edu.mines.acmX.exhibit.stdlib.graphics;
 
+import java.awt.image.BufferedImage;
+
+import processing.core.PConstants;
 import processing.core.PImage;
 
 public class ProcessingUtilities {
@@ -27,5 +48,18 @@ public class ProcessingUtilities {
 			//height is limiting factor
 			img.resize((int) (maxPixelsY * ratio), (int) maxPixelsY);
 		}
+	}
+	
+	/**
+	 * Utility function that takes a standard BufferedImage and converts it to
+	 * a Processing PImage. 
+	 * 
+	 * @param bimg the original BufferedImage
+	 * @return a PImage from the BufferedImage
+	 */
+	public static PImage buffImagetoPImage(BufferedImage bimg) {
+		PImage img = new PImage(bimg.getWidth(), bimg.getHeight(), PConstants.ARGB);
+		bimg.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
+		return img;
 	}
 }

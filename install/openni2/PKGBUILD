@@ -1,0 +1,59 @@
+# Maintainer: Andrew DeMaria <ademaria AT mines DOT edu>
+# Contributor: Sven Schneider <archlinux DOT sandmann AT googlemail DOT com>
+# Contributor: bugix
+# Contributor: Lubosz Sarnecki <lubosz at gmail>
+
+pkgname=openni2
+pkgver=2.2
+pkgrel=1
+pkgdesc="Framework providing an interface for physical devices (IR, RGB, etc) and for middleware components (NiTE)"
+# TODO 
+#arch=('i686' 'x86_64')
+arch=('x86_64')
+url="http://www.openni.org/"
+license=('GPL')
+# TODO add mesa and other stuff?
+depends=('freeglut' 'mesa' 'libusb' 'java-environment' 'python2' )
+optdepends=(
+	'openni2-freenectdriver-git: A kinect driver implementation wrapping libfreenect'
+)
+makedepends=('unzip')
+provides=('openni2')
+# TODO check if this library is safe to be installed alongside the other one
+conflicts=('openni' 'openni2')
+_source_name="OpenNI-Linux-x64-2.2"
+source=("http://www.openni.org/wp-content/uploads/2013/07/${_source_name}.tar.zip")
+md5sums=("2eb832c296b12bfa99975c8707d7d4d0")
+
+prepare() {
+	unzip -f "${_source_name}.tar.zip"
+	tar -xvf "${_source_name}.tar.bz2"
+}
+
+package() {
+	install -d -m755 "${pkgdir}/usr/"{lib/OpenNI2/Drivers,bin,include/OpenNI2/{Driver,Linux-x86}}
+	cd "${srcdir}/${_source_name}/Include"
+	install *.h "${pkgdir}/usr/include/OpenNI2"
+	install Linux-x86/* "${pkgdir}/usr/include/OpenNI2/Linux-x86"
+	install Driver/* "${pkgdir}/usr/include/OpenNI2/Driver"
+
+	cd "${srcdir}/${_source_name}/Redist"
+	install *.so "${pkgdir}/usr/lib"
+	# TODO etc for config file
+	install OpenNI.ini "${pkgdir}/usr/lib"
+	# TODO include java stuffs?
+	# TODO should the jar be put in here somewhere?
+	# TODO change the location for drivers
+	install OpenNI2/Drivers/* "${pkgdir}/usr/lib/OpenNI2/Drivers"
+
+	# TODO other samples
+	cd "${srcdir}/${_source_name}/Samples"
+	install Bin/SimpleViewer "${pkgdir}/usr/bin"
+
+	# TODO add license to the things installed
+
+	# TODO add documentation to the install
+
+	install -Dm644 "${srcdir}/${_source_name}/primesense-usb.rules" "${pkgdir}/etc/udev/rules.d/557-primesense-usb.rules"
+}
+

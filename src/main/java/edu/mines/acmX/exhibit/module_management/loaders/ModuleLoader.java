@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2013 Colorado School of Mines
+ *
+ * This file is part of the Interface Software Development Kit (SDK).
+ *
+ * The InterfaceSDK is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The InterfaceSDK is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package edu.mines.acmX.exhibit.module_management.loaders;
 
 import java.io.File;
@@ -24,6 +42,7 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 public class ModuleLoader {
 	
 	private static Logger log = LogManager.getLogger(ModuleLoader.class.getName());
+	
     /**
 	 * Takes a path to a module jar and returns a Module object as specified in the
      * module's manifest.
@@ -36,6 +55,23 @@ public class ModuleLoader {
 	public static ModuleInterface loadModule(String jarPath,
 			ModuleMetaData data, ClassLoader classLoader)
 			throws ModuleLoadException {
+		return loadModule(jarPath,
+				data.getPackageName() + "." + data.getClassName(), classLoader);
+	}
+	
+	/**
+	 * Takes a path to a module jar and returns a Module object as specified in
+	 * the module's manifest. A simpler version of the other loadModule method
+	 * with a less demanding set of inputs.
+	 * 
+	 * @param jarPath
+	 * @param data
+	 * @param classLoader
+	 * @return
+	 * @throws ModuleLoadException
+	 */
+	public static ModuleInterface loadModule(String jarPath,
+			String fullyQualifiedClassName, ClassLoader classLoader) throws ModuleLoadException {
 		Class<? extends ModuleInterface> moduleClassToLoad;
 		try {
 			log.debug("Trying to set class loader for jar file: " + jarPath);
@@ -48,7 +84,7 @@ public class ModuleLoader {
 			// TODO change later?
 			// Finally, cast it into the usable ModuleInterface class
 			moduleClassToLoad = Class.forName(
-					data.getPackageName() + "." + data.getClassName(), true,
+					fullyQualifiedClassName, true,
 					loader).asSubclass(ModuleInterface.class);
 			return moduleClassToLoad.newInstance();
 		} catch (IOException e) {
@@ -77,8 +113,8 @@ public class ModuleLoader {
 			log.error(msg);
 			throw new ModuleLoadException(msg);
 		}
-
-    }
+		
+	}
 
 	public static InputStream loadResource(String jarPath, ModuleMetaData
 			data, ClassLoader classLoader, String resourcePath) throws

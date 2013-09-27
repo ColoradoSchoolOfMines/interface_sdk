@@ -7,11 +7,16 @@
   <version>0.1.1</version>
   <packaging>jar</packaging>
 
-  <name>interfacesdk</name>
-  <url>http://maven.apache.org</url>
+  <name>InterfaceSDK</name>
+	<url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.year>2013</project.year>
+		<project.owner>Colorado School of Mines</project.owner>
+    <!--**/*WithKinectPluggedInTest.java-->
+    <kinect.test.skip></kinect.test.skip>
+    <kinect.test.skip>**/*WithKinectPluggedInTest.java</kinect.test.skip>
   </properties>
   <repositories>
     <repository>
@@ -60,24 +65,57 @@
       <artifactId>commons-cli</artifactId>
       <version>1.2</version>
     </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <version>3.1</version>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.7</source>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<properties>
+						<year>${project.year}</year>
+						<owner>${project.owner}</owner>
+						<name>Interface Software Development Kit (SDK)</name>
+						<short-name>${project.name}</short-name>
+					</properties>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<header>src/etc/license_header.txt</header>
+					<includes>
+						<include>src/main/java/**/*.java</include>
+						<include>src/test/java/**/*.java</include>
+					</includes>
+					<useDefaultMapping>true</useDefaultMapping>
+					<useDefaultExcludes>true</useDefaultExcludes>
+					<strictCheck>true</strictCheck>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<version>3.1</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
           <target>1.7</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.15</version>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <archive>
             <manifest>
-              <mainClass>edu.mines.acmX.exhibit.module_management.ModuleManager</mainClass>
+              <mainClass>edu.mines.acmX.exhibit.runner.ModuleManagerRunner</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -137,6 +175,31 @@
       </extension>
     </extensions>
   </build>
+  <profiles>
+    <profile>
+      <id>NoKinectTests</id>
+      <activation>
+        <property>
+          <name>nokinect</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.15</version>
+            <configuration>
+              <excludes>
+                <exclude>${kinect.test.skip}</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <distributionManagement>
     <site>

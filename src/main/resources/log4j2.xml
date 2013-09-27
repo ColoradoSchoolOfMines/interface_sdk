@@ -11,9 +11,11 @@
     </File>
   </appenders>
   <loggers>
-    <root level="trace">
+    <!--Change the log level in the following-->
+    <root level="warn">
       <appender-ref ref="File"/>
-      <appender-ref ref="Console"/>
+      <!--Uncomment to log to console-->
+			<appender-ref ref="Console"/>
     </root>
   </loggers>
 </configuration>
