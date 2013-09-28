@@ -16,10 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.mines.acmX.exhibit.input_services.openni;
-
-import java.io.File;
-import java.io.IOException;
+package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni;
 
 import org.OpenNI.Context;
 import org.OpenNI.GeneralException;
@@ -27,8 +24,6 @@ import org.OpenNI.OutArg;
 import org.OpenNI.ScriptNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import edu.mines.acmX.exhibit.input_services.hardware.OpenNIConfigurationException;
 
 /**
  * A singleton for the OpenNI Context that manages communication between

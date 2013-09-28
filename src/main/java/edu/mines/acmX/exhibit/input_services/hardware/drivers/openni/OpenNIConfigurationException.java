@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.mines.acmX.exhibit.input_services.hardware;
+package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni;
 
 public class OpenNIConfigurationException extends Exception {
 	public OpenNIConfigurationException(String msg) {

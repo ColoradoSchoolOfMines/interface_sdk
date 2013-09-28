@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
-import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 

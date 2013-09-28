@@ -23,13 +23,11 @@ import java.awt.Dimension;
 import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
-import edu.mines.acmX.exhibit.input_services.hardware.OpenNIConfigurationException;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverHelper;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
-import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -149,6 +147,10 @@ public class KinectOpenNI2Driver implements DriverInterface,
 			colorStream.destroy();
 			depthStream.destroy();
 			device.close();
+
+			colorStream = null;
+			depthStream = null;
+			device = null;
 		}
 	}
 
