@@ -151,6 +151,7 @@ public class KinectOpenNI2Driver implements DriverInterface,
 			colorStream = null;
 			depthStream = null;
 			device = null;
+			loaded = false;
 		}
 	}
 

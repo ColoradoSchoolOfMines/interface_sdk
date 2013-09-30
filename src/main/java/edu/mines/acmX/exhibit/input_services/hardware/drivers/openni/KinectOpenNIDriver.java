@@ -277,11 +277,29 @@ public class KinectOpenNIDriver implements DriverInterface,
 				handsGen.StopTrackingAll();
 				context.stopGeneratingAll();
 
+				handsGen.dispose();
+				String[] strs = gestureGen.enumerateAllGestures();
+				for(String s: strs){
+					gestureGen.removeGesture(s);
+				}
+
+				gestureGen.dispose();
+				imageGen.dispose();
+				depthGen.dispose();
+				OpenNIContextSingleton.destroy();
+
+				context = null;
+				handsGen = null;
+				gestureGen = null;
+				imageGen = null;
+				depthGen = null;
+
 				// Remove all receivers connected to this driver
 				EventManager.getInstance().removeReceivers(EventType.HAND_CREATED);
 				EventManager.getInstance().removeReceivers(EventType.HAND_UPDATED);
 				EventManager.getInstance().removeReceivers(EventType.HAND_DESTROYED);
 
+				loaded = false;
 			} catch (StatusException e) {
 				e.printStackTrace();
 			}

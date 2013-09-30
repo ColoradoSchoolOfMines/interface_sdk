@@ -56,6 +56,7 @@ public class OpenNIContextSingleton {
     }
     
     public static void destroy() {
+	    context.release();
     	context = null;
     }
 }
