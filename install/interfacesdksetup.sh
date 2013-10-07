@@ -69,7 +69,7 @@ fi
 # create a basic setup in development.  production is not populated as it should be tested in development first and then copied over
 # first get the most recent jar file
 # also here we reference the maven repository so that we dont have to worry about locally building the jars.
-version="0.1.0"
+version="0.1.2"
 if [[ "$repos" == "true" ]];
 then
   cd "$exhibit_source_dir/$interfaceSDKdirname"
