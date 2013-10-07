@@ -64,7 +64,7 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
  * @author Austin Diviness
  */
 
-public class ModuleManager {
+public class ModuleManager implements ModuleManagerRemote {
 
 	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
 
@@ -563,6 +563,7 @@ public class ModuleManager {
 	 * 
 	 * @return true if module is set, false otherwise.
 	 */
+	@Override
 	public boolean setNextModule(String name) {
 		// make a test to check that xml is checked as well even if the module
 		// exists
@@ -603,6 +604,7 @@ public class ModuleManager {
 		}
 	}
 
+	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) {
 		ModuleMetaData data = moduleConfigs.get(packageName);
@@ -620,6 +622,7 @@ public class ModuleManager {
 		}
 	}
 
+	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath) {
 		return loadResourceFromModule(jarResourcePath,
 				currentModuleMetaData.getPackageName());
@@ -633,6 +636,7 @@ public class ModuleManager {
 	 * @param packageName
 	 * @return
 	 */
+	@Override
 	public ModuleMetaData getModuleMetaData(String packageName) {
 		ModuleMetaData toReturn = moduleConfigs.get(packageName);
 		if (currentModuleMetaData.getOptionalAll()
@@ -650,10 +654,12 @@ public class ModuleManager {
      *
      * TODO integrate this with Module Helper
      */
+	@Override
     public String getCurrentModulePackageName() {
         return currentModuleMetaData.getPackageName();
     }
 
+    @Override
 	public String[] getAllAvailableModules() {
 		if (currentModuleMetaData.getOptionalAll()) {
 			return moduleConfigs.keySet().toArray(new String[0]);
@@ -728,6 +734,7 @@ public class ModuleManager {
 		this.nextModuleMetaData = mmd;
 	}
 
+	@Override
 	public ModuleMetaData getDefaultModuleMetaData() {
 		return defaultModuleMetaData;
 	}

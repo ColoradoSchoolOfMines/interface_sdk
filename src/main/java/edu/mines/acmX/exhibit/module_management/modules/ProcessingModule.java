@@ -45,7 +45,7 @@ import org.apache.logging.log4j.Logger;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
-
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -58,7 +58,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * uses a ModuleHelper so that it can extend PApplet while keeping the 
 	 * functionality of a Module.
 	 */
-    private final ModuleHelper module;
+    private final ModuleInterface module;
     
     private Frame frame;
     

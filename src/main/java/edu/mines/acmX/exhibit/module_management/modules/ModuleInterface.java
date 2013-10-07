@@ -51,6 +51,8 @@ public interface ModuleInterface {
 	
 	public void finishExecution();
 
+	public String getCurrentModulePackageName();
+
 }
 
 

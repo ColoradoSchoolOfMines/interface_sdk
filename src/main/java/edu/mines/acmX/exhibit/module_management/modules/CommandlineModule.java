@@ -24,6 +24,8 @@ import java.util.concurrent.CountDownLatch;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 
 /**
  * Non graphical versions of Module should extend from this.
@@ -37,11 +39,11 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * allows CommandlineModule to mimic multiple inheritence by 
 	 * using delegation to wrap ModuleHelper's function in its own
 	 */
-    private final ModuleHelper module;
+    private final ModuleInterface module;
 
     public CommandlineModule() {
         super();
-        module = new ModuleHelper();
+        module = new ModuleRMIHelper();
     }
 
 	/**

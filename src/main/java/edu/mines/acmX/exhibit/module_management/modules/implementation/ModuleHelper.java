@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.mines.acmX.exhibit.module_management.modules;
+package edu.mines.acmX.exhibit.module_management.modules.implementation;
 
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,9 +28,11 @@ import org.apache.logging.log4j.Logger;
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
+import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
  * This class is meant to be used as a delegated class instance inside other
@@ -65,23 +68,33 @@ public class ModuleHelper implements ModuleInterface {
 	 * to be counted down before the module exits, or else the ModuleManager
 	 * will be unable to continue.
 	 */
-	private CountDownLatch countDownWhenDone;
-	
-	private ModuleManager moduleManager;
+	protected CountDownLatch countDownWhenDone;
 	
 	public ModuleHelper() {
+		// no op
+	}
+	
+	protected ModuleManagerRemote getManager() throws ModuleManagerCommunicationException {
 		try {
-			this.moduleManager = ModuleManager.getInstance();
-			// TODO throw all these execptions.
+			return ModuleManager.getInstance();
 		} catch (ManifestLoadException e) {
-			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+			String msg = "Could not get instance of ModuleManager in ModuleHelper";
+			log.fatal(msg);
+			throw new ModuleManagerCommunicationException();
 		} catch (ModuleLoadException e) {
-			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+			String msg = "Could not get instance of ModuleManager in ModuleHelper";
+			log.fatal(msg);
+			throw new ModuleManagerCommunicationException();
 		} catch (HardwareManagerManifestException e) {
-			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+			String msg = "Could not get instance of ModuleManager in ModuleHelper";
+			log.fatal(msg);
+			throw new ModuleManagerCommunicationException();
 		} catch (BadDeviceFunctionalityRequestException e) {
-			log.fatal("Could not get instance of ModuleManager in ModuleHelper");
+			String msg = "Could not get instance of ModuleManager in ModuleHelper";
+			log.fatal(msg);
+			throw new ModuleManagerCommunicationException();
 		}
+		
 	}
 
 	// just a slim layer for interfacing with a modulemanager and will return a
@@ -94,9 +107,14 @@ public class ModuleHelper implements ModuleInterface {
 	 * 
 	 * @return true if successful, false otherwise
 	 */
-	public final boolean setNextModuleToLoad(String moduleName) {
+	public boolean setNextModuleToLoad(String moduleName) {
 
-		return moduleManager.setNextModule(moduleName);
+		try {
+			return getManager().setNextModule(moduleName);
+		} catch (RemoteException e) {
+			// TODO throw instead of catch
+			return false;
+		}
 //		} catch (ManifestLoadException e) {
 //			// This should never happen because ModuleManager is already past
 //			// the point
@@ -120,31 +138,57 @@ public class ModuleHelper implements ModuleInterface {
 //			log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
 //			e.printStackTrace();
 //		}
+
 	}
 
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			ModuleMetaData m) throws ManifestLoadException,
 			ModuleLoadException {
 
-		return moduleManager.loadResourceFromModule(jarResourcePath, m.getPackageName());
+		try {
+			return getManager().loadResourceFromModule(jarResourcePath, m.getPackageName());
+		} catch (RemoteException e) {
+			// TODO throw instead
+			return null;
+		}
 
 	}
 
 	public InputStream loadResourceFromModule(String jarResourcePath)
 			throws ManifestLoadException, ModuleLoadException {
-		return moduleManager.loadResourceFromModule(jarResourcePath);
+		try {
+			return getManager().loadResourceFromModule(jarResourcePath);
+		} catch (RemoteException e) {
+			// TODO throw instead
+			return null;
+		}
 	}
 	
 	public ModuleMetaData getModuleMetaData(String packageName) {
-		return moduleManager.getModuleMetaData(packageName);
+		try {
+			return getManager().getModuleMetaData(packageName);
+		} catch (RemoteException e) {
+			// TODO throw instead
+			return null;
+		}
 	}
 	
 	public String[] getAllAvailableModules() {
-		return moduleManager.getAllAvailableModules();
+		try {
+			return getManager().getAllAvailableModules();
+		} catch (RemoteException e) {
+			// TODO throw instead
+			return null;
+		}
 	}
 	
 	public String getCurrentModulePackageName() {
-        return moduleManager.getCurrentModulePackageName();
+        try {
+			return getManager().getCurrentModulePackageName();
+		} catch (RemoteException e) {
+			// TODO throw instead
+			return null;
+		}
     }
 
 	/**

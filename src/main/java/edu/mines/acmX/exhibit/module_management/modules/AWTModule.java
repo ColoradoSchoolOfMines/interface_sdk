@@ -28,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
 
 /**
  * Abstract module for AWT projects. Used to create modules that want to
@@ -42,7 +43,7 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	/**
 	 * Delegation object used by AWTModule to implement ModuleInterface
 	 */
-	private final ModuleHelper moduleHelper;
+	private final ModuleInterface moduleHelper;
 
 	public AWTModule() {
 		super();

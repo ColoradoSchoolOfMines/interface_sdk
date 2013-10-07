@@ -28,10 +28,15 @@
 
 package edu.mines.acmX.exhibit.module_management.metas;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ModuleMetaData {
-    // This is only used by the module manager and will known when a
+public class ModuleMetaData implements Serializable {
+
+	private static final long serialVersionUID = -3715015362736836137L;
+
+
+	// This is only used by the module manager and will known when a
     // modulemetadata object is built
     private String jarFileName;
 
