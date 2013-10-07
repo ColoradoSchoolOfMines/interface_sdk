@@ -75,16 +75,31 @@ then
   cd "$exhibit_source_dir/$interfaceSDKdirname"
   version="`git describe --abbrev=0 | sed 's/v//'`"
 fi
+
+function check_download {
+if [[ "$1" -ne "0" ]];
+then
+	echo "Could not download: $2"
+	echo "Please report a broken link"
+	exit 1
+fi
+}
+
+
 wget -P "$exhibit_dir/development" "https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release/edu/mines/acmX/exhibit/interfacesdk/$version/interfacesdk-$version-jar-with-dependencies.jar" 
 
 # now get a general configuration file
 cd "$exhibit_dir/development"
 wget "https://raw.github.com/ColoradoSchoolOfMines/interface_sdk/development/src/main/resources/example_module_manager_manifest.xml" -O "manifest.xml"
-wget "https://raw.github.com/ColoradoSchoolOfMines/interface_sdk/master/src/main/resources/openni_config.xml" -O "openni_config.xml"
+check_download $? "manifest.xml"
+wget "https://raw.github.com/ColoradoSchoolOfMines/interface_sdk/master/src/test/resources/openni_config.xml" -O "openni_config.xml"
+check_download $? "openni_config.xml"
 
 cd "$exhibit_dir/development/modules"
 wget "https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release/edu/mines/acmX/exhibit/modules/home_screen/0.0.1/home_screen-0.0.1.jar"
+check_download $? "home screen module"
 wget "https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release/com/austindiviness/cltest/CLIModuleLauncher/1.0/CLIModuleLauncher-1.0.jar"
+check_download $? "cli module"
 
 # create an identical folder for production
 cp -r "${exhibit_dir}/development" "${exhibit_dir}/production"
