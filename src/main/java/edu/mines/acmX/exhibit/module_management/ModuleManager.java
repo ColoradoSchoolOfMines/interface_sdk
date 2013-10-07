@@ -24,8 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,6 +94,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	private ModuleExecutor moduleExecutor;
 	private boolean loadDefault;
 	private Map<String, ModuleMetaData> moduleConfigs;
+	private Scanner in;
 
 	/**
 	 * TODO document
@@ -124,6 +128,8 @@ public class ModuleManager implements ModuleManagerRemote {
 			logger.fatal("Could not load the default module");
 			throw e;
 		}
+		
+		in = new Scanner(System.in);
 
 		try {
 			HardwareManager.setManifestFilepath(HardwareManager.DEFAULT_MANIFEST_PATH);
@@ -621,6 +627,12 @@ public class ModuleManager implements ModuleManagerRemote {
 			return null;
 		}
 	}
+	
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			ModuleMetaData md) {
+		return loadResourceFromModule(jarResourcePath, md.getPackageName());
+	}
 
 	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath) {
@@ -749,5 +761,20 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	public ModuleMetaData getCurrentModuleMetaData() {
 		return currentModuleMetaData;
+	}
+	
+	//////////////////////////////////////////////////////////
+	// Scanner Interface Stuff
+	// * These methods are pure delegators.
+	//////////////////////////////////////////////////////////
+
+	@Override
+	public String next() throws NoSuchElementException {
+		return in.next();
+	}
+
+	@Override
+	public int nextInt() throws InputMismatchException, NoSuchElementException {
+		return in.nextInt();
 	}
 }

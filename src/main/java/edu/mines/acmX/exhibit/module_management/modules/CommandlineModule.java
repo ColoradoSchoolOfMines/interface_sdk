@@ -19,6 +19,7 @@
 package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
@@ -52,10 +53,12 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * @param	moduleName	Package name of next Module to load
 	 *
 	 * @return				true if loaded, false otherwise
+	 * @throws RemoteException 
 	 */
-    public boolean setNextModuleToLoad( String moduleName ) {
-        return module.setNextModuleToLoad( moduleName );
-    }
+    @Override
+    public boolean setNextModule( String moduleName ) throws RemoteException {
+		return module.setNextModule(moduleName);
+	}
 
 
     /** 
@@ -65,6 +68,7 @@ public abstract class CommandlineModule implements ModuleInterface {
      *
      * @param   waitformodule   @see ModuleHelper.java
      */
+    @Override
     public final void init(CountDownLatch waitForModule) {
     	module.init(waitForModule);
     }
@@ -74,6 +78,7 @@ public abstract class CommandlineModule implements ModuleInterface {
      * execution. The idea is that the implementing CommandlineModule will
      * implement its own loop inside its implementation for run if so desired.
      */
+    @Override
     public final void execute() {
     	this.run();
     	this.finishExecution();
@@ -86,29 +91,57 @@ public abstract class CommandlineModule implements ModuleInterface {
      *
      * @param   waitformodule   @see ModuleHelper.java
      */
+    @Override
     public final void finishExecution() {
     	module.finishExecution();
     }
     
-    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+    @Override
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
     	return module.loadResourceFromModule(jarResourcePath, m);
 	}
 
-	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+    @Override
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return module.loadResourceFromModule(jarResourcePath);
 	}
 	
-	public ModuleMetaData getModuleMetaData(String packageName) {
+    @Override
+	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
 		return module.getModuleMetaData(packageName);
 	}
 	
-	public String[] getAllAvailableModules() {
+    @Override
+	public String[] getAllAvailableModules() throws RemoteException {
 		return module.getAllAvailableModules();
 	}
 	
-	public String getCurrentModulePackageName() {
+    @Override
+	public String getCurrentModulePackageName() throws RemoteException {
         return module.getCurrentModulePackageName();
     }
+
+	@Override
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
+		return module.getDefaultModuleMetaData();
+	}
+
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			String packageName) throws RemoteException, ManifestLoadException,
+			ModuleLoadException {
+		return module.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	@Override
+	public String next() throws RemoteException {
+		return module.next();
+	}
+
+	@Override
+	public int nextInt() throws RemoteException {
+		return module.nextInt();
+	}
     
     /**
      * This function should be overridden to provide the desired functionality

@@ -35,6 +35,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
@@ -75,9 +76,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * in its own method.
 	 *
 	 * @param	moduleName	Package name of next module to load
+	 * @throws RemoteException 
 	 */
-    public boolean setNextModuleToLoad( String moduleName ) {
-        return module.setNextModuleToLoad( moduleName );
+    @Override
+    public boolean setNextModule( String moduleName ) throws RemoteException {
+        return module.setNextModule( moduleName );
     }
 
     /**
@@ -88,6 +91,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * @param   waitForModule   @see ModuleHelper.java
      *
      */
+    @Override
     public void init(CountDownLatch waitForModule) {
     	module.init(waitForModule);
     }
@@ -104,25 +108,52 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	module.finishExecution();
     }
     
-    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+    @Override
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
     	return module.loadResourceFromModule(jarResourcePath, m);
 	}
 
-	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+    @Override
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return module.loadResourceFromModule(jarResourcePath);
 	}
 	
-	public ModuleMetaData getModuleMetaData(String packageName) {
+    @Override
+	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
 		return module.getModuleMetaData(packageName);
 	}
 	
-	public String[] getAllAvailableModules() {
+    @Override
+	public String[] getAllAvailableModules() throws RemoteException {
 		return module.getAllAvailableModules();
 	}
 	
-	public String getCurrentModulePackageName() {
+    @Override
+	public String getCurrentModulePackageName() throws RemoteException {
         return module.getCurrentModulePackageName();
     }
+    
+	@Override
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
+		return module.getDefaultModuleMetaData();
+	}
+
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			String packageName) throws RemoteException, ManifestLoadException,
+			ModuleLoadException {
+		return module.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	@Override
+	public String next() throws RemoteException {
+		return module.next();
+	}
+
+	@Override
+	public int nextInt() throws RemoteException {
+		return module.nextInt();
+	}
 	
     /**
      * This function does the dirty work for creating a new Processing window.
@@ -132,6 +163,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      *
      * TODO try to run PApplet without creating a new frame.
      */
+    @Override
     public void execute(){
     	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
     	frame.setUndecorated(true); //disable bordering
@@ -219,6 +251,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		bimg.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
 		return img;
 	}
+
+
 
 
 

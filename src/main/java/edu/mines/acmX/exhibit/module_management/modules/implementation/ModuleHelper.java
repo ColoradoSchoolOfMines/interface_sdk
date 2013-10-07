@@ -20,6 +20,8 @@ package edu.mines.acmX.exhibit.module_management.modules.implementation;
 
 import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
@@ -69,12 +71,13 @@ public class ModuleHelper implements ModuleInterface {
 	 * will be unable to continue.
 	 */
 	protected CountDownLatch countDownWhenDone;
-	
+
 	public ModuleHelper() {
 		// no op
 	}
-	
-	protected ModuleManagerRemote getManager() throws ModuleManagerCommunicationException {
+
+	protected ModuleManagerRemote getManager()
+			throws ModuleManagerCommunicationException {
 		try {
 			return ModuleManager.getInstance();
 		} catch (ManifestLoadException e) {
@@ -94,7 +97,7 @@ public class ModuleHelper implements ModuleInterface {
 			log.fatal(msg);
 			throw new ModuleManagerCommunicationException();
 		}
-		
+
 	}
 
 	// just a slim layer for interfacing with a modulemanager and will return a
@@ -107,7 +110,8 @@ public class ModuleHelper implements ModuleInterface {
 	 * 
 	 * @return true if successful, false otherwise
 	 */
-	public boolean setNextModuleToLoad(String moduleName) {
+	@Override
+	public boolean setNextModule(String moduleName) {
 
 		try {
 			return getManager().setNextModule(moduleName);
@@ -115,81 +119,62 @@ public class ModuleHelper implements ModuleInterface {
 			// TODO throw instead of catch
 			return false;
 		}
-//		} catch (ManifestLoadException e) {
-//			// This should never happen because ModuleManager is already past
-//			// the point
-//			// of throwing errors when a default module cannot be loaded
-//			log.error("ManifestLoadException thrown to ModuleHelper");
-//		} catch (ModuleLoadException e) {
-//			// This should never happen because ModuleManager is already past
-//			// the point
-//			// of throwing errors when a default module cannot be loaded
-//			log.error("ModuleLoadException thrown to ModuleHelper");
-//		} catch (HardwareManagerManifestException e) {
-//			log.error("HardwareManagerManifestException thrown to ModuleHelper");
-//			e.printStackTrace();
-//		} catch (BadDeviceFunctionalityRequestException e) {
-//			// This should never happen because module manager already went
-//			// through this logic for the default module when the module manager
-//			// was first initiated. As such this exception is being thrown from
-//			// getting an instance of module manager and the assumption is that
-//			// the module manager was initiated previously. This also applies
-//			// for the above HardwareManagerManifestException
-//			log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
-//			e.printStackTrace();
-//		}
+		// } catch (ManifestLoadException e) {
+		// // This should never happen because ModuleManager is already past
+		// // the point
+		// // of throwing errors when a default module cannot be loaded
+		// log.error("ManifestLoadException thrown to ModuleHelper");
+		// } catch (ModuleLoadException e) {
+		// // This should never happen because ModuleManager is already past
+		// // the point
+		// // of throwing errors when a default module cannot be loaded
+		// log.error("ModuleLoadException thrown to ModuleHelper");
+		// } catch (HardwareManagerManifestException e) {
+		// log.error("HardwareManagerManifestException thrown to ModuleHelper");
+		// e.printStackTrace();
+		// } catch (BadDeviceFunctionalityRequestException e) {
+		// // This should never happen because module manager already went
+		// // through this logic for the default module when the module manager
+		// // was first initiated. As such this exception is being thrown from
+		// // getting an instance of module manager and the assumption is that
+		// // the module manager was initiated previously. This also applies
+		// // for the above HardwareManagerManifestException
+		// log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
+		// e.printStackTrace();
+		// }
 
 	}
 
+	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			ModuleMetaData m) throws ManifestLoadException,
-			ModuleLoadException {
+			ModuleLoadException, RemoteException {
+		return getManager().loadResourceFromModule(jarResourcePath,
+				m.getPackageName());
 
-		try {
-			return getManager().loadResourceFromModule(jarResourcePath, m.getPackageName());
-		} catch (RemoteException e) {
-			// TODO throw instead
-			return null;
-		}
 
 	}
 
+	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath)
-			throws ManifestLoadException, ModuleLoadException {
-		try {
-			return getManager().loadResourceFromModule(jarResourcePath);
-		} catch (RemoteException e) {
-			// TODO throw instead
-			return null;
-		}
+			throws ManifestLoadException, ModuleLoadException, RemoteException {
+		return getManager().loadResourceFromModule(jarResourcePath);
 	}
-	
-	public ModuleMetaData getModuleMetaData(String packageName) {
-		try {
-			return getManager().getModuleMetaData(packageName);
-		} catch (RemoteException e) {
-			// TODO throw instead
-			return null;
-		}
+
+	@Override
+	public ModuleMetaData getModuleMetaData(String packageName) throws ModuleManagerCommunicationException, RemoteException {
+		return getManager().getModuleMetaData(packageName);
 	}
-	
-	public String[] getAllAvailableModules() {
-		try {
-			return getManager().getAllAvailableModules();
-		} catch (RemoteException e) {
-			// TODO throw instead
-			return null;
-		}
+
+	@Override
+	public String[] getAllAvailableModules() throws RemoteException {
+		return getManager().getAllAvailableModules();
 	}
-	
-	public String getCurrentModulePackageName() {
-        try {
-			return getManager().getCurrentModulePackageName();
-		} catch (RemoteException e) {
-			// TODO throw instead
-			return null;
-		}
-    }
+
+	@Override
+	public String getCurrentModulePackageName() throws RemoteException {
+		return getManager().getCurrentModulePackageName();
+	}
 
 	/**
 	 * Performs all initialization tasks. Currently, it only sets the CountDown
@@ -199,6 +184,7 @@ public class ModuleHelper implements ModuleInterface {
 	 *            The CountDownLatch that needs to be counted down on when the
 	 *            module is ready to exit.
 	 */
+	@Override
 	public void init(CountDownLatch waitForModule) {
 		this.countDownWhenDone = waitForModule;
 	}
@@ -208,12 +194,42 @@ public class ModuleHelper implements ModuleInterface {
 	 * CountDownLatch that is blocking ModuleManager. After this is called,
 	 * ModuleManager should be able to continue to use its run loop.
 	 */
+	@Override
 	public void finishExecution() {
+		log.debug("Releasing latch");
 		this.countDownWhenDone.countDown();
 	}
 
+	@Override
 	public void execute() {
 		// Never used
+	}
+
+	@Override
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			String packageName) throws RemoteException, ManifestLoadException,
+			ModuleLoadException {
+
+		return getManager()
+				.loadResourceFromModule(jarResourcePath, packageName);
+
+	}
+
+	@Override
+	public String next() throws RemoteException {
+		return getManager().next();
+
+	}
+
+	@Override
+	public int nextInt() throws RemoteException {
+		return getManager().nextInt();
 	}
 
 	// TODO

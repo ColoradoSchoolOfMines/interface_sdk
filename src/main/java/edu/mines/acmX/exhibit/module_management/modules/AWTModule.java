@@ -20,9 +20,8 @@ package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
@@ -56,42 +55,73 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * @param	moduleName	Package name of next module to load
 	 *
 	 * @return				true if next module can load, false otherwise
+	 * @throws RemoteException 
 	 */
-	public boolean setNextModuleToLoad(String moduleName) {
-        return moduleHelper.setNextModuleToLoad( moduleName );
+	@Override
+	public boolean setNextModule(String moduleName) throws RemoteException {
+        return moduleHelper.setNextModule( moduleName );
 	}
 
 	/**
 	 * Calls moduleHelper.init().
 	 */
+	@Override
 	public void init(CountDownLatch waitForModule) {
 		moduleHelper.init(waitForModule);
 	}
 	
-    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+	@Override
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
     	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
-	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+	@Override
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
 	
-	public ModuleMetaData getModuleMetaData(String packageName) {
+	@Override
+	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
 		return moduleHelper.getModuleMetaData(packageName);
 	}
 	
-	public String[] getAllAvailableModules() {
+	@Override
+	public String[] getAllAvailableModules() throws RemoteException {
 		return moduleHelper.getAllAvailableModules();
 	}
 	
-	public String getCurrentModulePackageName() {
+	@Override
+	public String getCurrentModulePackageName() throws RemoteException {
         return moduleHelper.getCurrentModulePackageName();
     }
+
+	@Override
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
+		return moduleHelper.getDefaultModuleMetaData();
+	}
+
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			String packageName) throws RemoteException, ManifestLoadException,
+			ModuleLoadException {
+		return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	@Override
+	public String next() throws RemoteException {
+		return moduleHelper.next();
+	}
+
+	@Override
+	public int nextInt() throws RemoteException {
+		return moduleHelper.nextInt();
+	}
 
 	/**
 	 * Sets up module environment and calls the implemented run function
 	 * of the module.
 	 */
+	@Override
 	public void execute() {
 		setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
     	setUndecorated(true); //disable bordering
@@ -109,6 +139,7 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * TODO should this be a private function, to discourage its use be 
 	 * module devs?
 	 */
+	@Override
 	public void finishExecution() {
 		moduleHelper.finishExecution();
 	}
@@ -122,6 +153,7 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 		super.dispose();
 		finishExecution();
 	}
+
 	
 	/**
 	 * Any class that implements AWTModule will implement this with their own game

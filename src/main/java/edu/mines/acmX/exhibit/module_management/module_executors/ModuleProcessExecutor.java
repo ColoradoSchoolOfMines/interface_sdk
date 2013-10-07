@@ -39,10 +39,6 @@ public class ModuleProcessExecutor extends ModuleExecutor {
 			Process p = build.start();
 			final BufferedReader reader = new BufferedReader(
 					new InputStreamReader(p.getInputStream()));
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					p.getOutputStream()));
-
-			Writer commandReader = new PrintWriter(System.out);
 			new Thread() {
 				public void run() {
 					String line;
@@ -60,7 +56,6 @@ public class ModuleProcessExecutor extends ModuleExecutor {
 			}.start();
 
 			p.waitFor();
-			commandReader.close();
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
