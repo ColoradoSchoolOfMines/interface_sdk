@@ -49,7 +49,6 @@ module_repositories=(
 
 # create directory structure
 mkdir -p "$exhibit_dir/development/modules"
-mkdir -p "$exhibit_dir/production/modules"
 
 if [[ "$repos" == "true" ]];
 then
@@ -86,3 +85,6 @@ wget "https://raw.github.com/ColoradoSchoolOfMines/interface_sdk/master/src/main
 cd "$exhibit_dir/development/modules"
 wget "https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release/edu/mines/acmX/exhibit/modules/home_screen/0.0.1/home_screen-0.0.1.jar"
 wget "https://s3-us-west-2.amazonaws.com/acmx.mines.edu/release/com/austindiviness/cltest/CLIModuleLauncher/1.0/CLIModuleLauncher-1.0.jar"
+
+# create an identical folder for production
+cp -r "${exhibit_dir}/development" "${exhibit_dir}/production"
