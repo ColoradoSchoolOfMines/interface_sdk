@@ -68,7 +68,7 @@ public class ModuleHelperTest {
 
 
 		ModuleHelper mod = new ModuleHelper();
-		assertTrue(mod.setNextModuleToLoad(nextToLoad));
+		assertTrue(mod.setNextModule(nextToLoad));
 		assertEquals(nextToLoad, m.getNextModuleName());
 	}
 
