@@ -213,15 +213,6 @@ public class ModuleManagerTest {
 		return a;
 	}
 
-    private ModuleMetaData createEmptySdkTestModuleMetaData(String pckName, String minSDK, String tgtSDK){
-        Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
-        Map<String, DependencyType> moduleDepA = new HashMap<String, DependencyType>();
-        ModuleMetaData a = new ModuleMetaData(pckName, "sdkTest", minSDK,
-                tgtSDK, "icon.png", "Title" + "sdkTest", "Andrew", "0.1",
-                inputTypes, moduleDepA, false);
-        return a;
-    }
-
 	@Test
 	public void testCheckModuleDependencies() throws ManifestLoadException,
 			ModuleLoadException, HardwareManagerManifestException,
@@ -243,25 +234,6 @@ public class ModuleManagerTest {
 		assertTrue(m.getModuleMetaDataMap().get(a.getPackageName()) == a);
 		assertTrue(m.getModuleMetaDataMap().get(b.getPackageName()) == b);
 	}
-
-    @Test
-    public void testCheckSdkVersion() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
-        ModuleMetaData a = createEmptySdkTestModuleMetaData("com.test1", "2.3.4", "2.3.4");
-        ModuleMetaData b = createEmptySdkTestModuleMetaData("com.test2", "0.0.2", "0.0.2");
-        ModuleMetaData c = createEmptySdkTestModuleMetaData("com.test3", "0.1.2", "0.1.2");
-        ModuleManager m = ModuleManager.getInstance();
-        Map<String, ModuleMetaData> modConfigs = new HashMap<String, ModuleMetaData>();
-        modConfigs.put(a.getPackageName(), a);
-        modConfigs.put(b.getPackageName(), b);
-        modConfigs.put(c.getPackageName(), c);
-        m.setModuleMetaDataMap(modConfigs);
-        m.checkSdkDependency("0.1.2");
-        Map<String, ModuleMetaData> mmap =  m.getModuleMetaDataMap();
-        assertTrue(mmap.size() == 2);
-        assertTrue(mmap.get(a.getPackageName()) == null);
-        assertTrue(mmap.get(b.getPackageName()) == b);
-        assertTrue(mmap.get(c.getPackageName()) == c);
-    }
 
 	@Test
 	public void testCheckModuleDependencyMissing()

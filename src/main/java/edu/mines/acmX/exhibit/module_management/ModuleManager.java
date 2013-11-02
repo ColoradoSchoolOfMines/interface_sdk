@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import edu.mines.acmX.exhibit.Common;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -261,7 +260,7 @@ public class ModuleManager {
 		String path = (new File(metaData.getPathToModules(),
 				data.getJarFileName())).getPath();
 		return ModuleLoader.loadModule(path, data, this.getClass()
-                .getClassLoader());
+				.getClassLoader());
 	}
 
 	/**
@@ -286,51 +285,7 @@ public class ModuleManager {
 		}
 	}
 
-    /**
-     * Ensures that all modules have all dependencies available, including
-     * required modules and input services. This is a shell function because at
-     * one time we were thinking of checking the module's required input types
-     * at this point. The reason this is deferred until later (either when the
-     * module is set to be the next module and/or when the module is loaded is
-     * because the hardware may be plugged in or unplugged inbetween module meta
-     * data loading and when a module is actually loaded.
-     */
-    public void checkDependencies() {
-        // Check for SDK dependency prior to module dependencies to avoid
-        // having to unwind module loads if we discover an SDK mismatch
-        checkSdkDependency(Common.SDK_VERSION);
-        checkModuleDependencies();
-    }
-
-    void checkSdkDependency(String SdkVersion) {
-        for(Map.Entry<String, ModuleMetaData> module : moduleConfigs.entrySet()){
-            if(!moduleHasOkaySdk(module.getValue(), SdkVersion)){
-                logger.warn("Module " + module.getKey() + " expected SDK " + module.getValue().getMinSdkVersion() + " but only had " + SdkVersion);
-                moduleConfigs.remove(module.getKey());
-            }
-        }
-    }
-
-    private boolean moduleHasOkaySdk(ModuleMetaData m, String SdkVersion){
-        String[] moduleVersion = m.getMinSdkVersion().split("\\.");
-        String[] sdkVersion = SdkVersion.split("\\.");
-        if (moduleVersion.length != sdkVersion.length) {
-            return false;
-        }
-        try {
-            for (int i = 0; i < moduleVersion.length; i++) {
-                if (Integer.parseInt(moduleVersion[i]) > Integer.parseInt(sdkVersion[i])) {
-                    return false;
-                }
-            }
-        } catch (NumberFormatException nfe) {
-            logger.warn("SDK Version Parse Error while parsing " + m.getPackageName() + " : " + m.getMinSdkVersion());
-            return false;
-        }
-        return true;
-    }
-
-    /**
+	/**
 	 * This function is used internally for performing its checkDependencies
 	 * operation
 	 * 
@@ -349,6 +304,19 @@ public class ModuleManager {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Ensures that all modules have all dependencies available, including
+	 * required modules and input services. This is a shell function because at
+	 * one time we were thinking of checking the module's required input types
+	 * at this point. The reason this is deferred until later (either when the
+	 * module is set to be the next module and/or when the module is loaded is
+	 * because the hardware may be plugged in or unplugged inbetween module meta
+	 * data loading and when a module is actually loaded.
+	 */
+	public void checkDependencies() {
+		checkModuleDependencies();
 	}
 
 	/**
