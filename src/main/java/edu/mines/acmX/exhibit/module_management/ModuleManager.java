@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import edu.mines.acmX.exhibit.Common;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import edu.mines.acmX.exhibit.Common;
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
@@ -302,14 +302,21 @@ public class ModuleManager {
         checkModuleDependencies();
     }
 
-    void checkSdkDependency(String SdkVersion) {
-        for(Map.Entry<String, ModuleMetaData> module : moduleConfigs.entrySet()){
-            if(!moduleHasOkaySdk(module.getValue(), SdkVersion)){
-                logger.warn("Module " + module.getKey() + " expected SDK " + module.getValue().getMinSdkVersion() + " but only had " + SdkVersion);
-                moduleConfigs.remove(module.getKey());
-            }
-        }
-    }
+	void checkSdkDependency(String SdkVersion) {
+
+		Iterator<Map.Entry<String, ModuleMetaData>> iterator = moduleConfigs
+				.entrySet().iterator();
+
+		while (iterator.hasNext()) {
+			Map.Entry<String, ModuleMetaData> module = iterator.next();
+			if (!moduleHasOkaySdk(module.getValue(), SdkVersion)) {
+				iterator.remove();
+				logger.warn("Module " + module.getKey() + " expected SDK "
+						+ module.getValue().getMinSdkVersion()
+						+ " but only had " + SdkVersion);
+			}
+		}
+	}
 
     private boolean moduleHasOkaySdk(ModuleMetaData m, String SdkVersion){
         String[] moduleVersion = m.getMinSdkVersion().split("\\.");
