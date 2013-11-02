@@ -207,8 +207,8 @@ public class ModuleManagerTest {
 			String className) {
 		Map<String, DependencyType> inputTypes = new HashMap<String, DependencyType>();
 		Map<String, DependencyType> moduleDepA = new HashMap<String, DependencyType>();
-		ModuleMetaData a = new ModuleMetaData(packageName, className, "0.1.2",
-				"0.1.2", "icon.png", "Title" + className, "Andrew", "0.1",
+		ModuleMetaData a = new ModuleMetaData(packageName, className, "2.3",
+				"2.3", "icon.png", "Title" + className, "Andrew", "0.1",
 				inputTypes, moduleDepA, false);
 		return a;
 	}
