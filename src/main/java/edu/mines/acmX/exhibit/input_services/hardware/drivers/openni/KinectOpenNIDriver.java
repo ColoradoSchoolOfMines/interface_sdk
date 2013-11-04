@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.GestureTrackerInterface;
+import edu.mines.acmX.exhibit.stdlib.input_processing.receivers.Gesture;
 import org.OpenNI.ActiveHandEventArgs;
 import org.OpenNI.Context;
 import org.OpenNI.DepthGenerator;
@@ -64,7 +66,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverHelper;
  * 
  */
 public class KinectOpenNIDriver implements DriverInterface,
-		DepthImageInterface, RGBImageInterface, HandTrackerInterface {
+		DepthImageInterface, RGBImageInterface, HandTrackerInterface, GestureTrackerInterface {
 
 	private static Logger log = LogManager.getLogger(KinectOpenNIDriver.class);
 	public static final EventManager evtMgr = EventManager.getInstance();
@@ -97,6 +99,8 @@ public class KinectOpenNIDriver implements DriverInterface,
 
 		depthWidth = 0;
 		depthHeight = 0;
+
+
 	}
 
 	@Override
@@ -129,6 +133,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 		try{
 			gestureGen = GestureGenerator.create(context);
 			gestureGen.addGesture("Wave");
+			gestureGen.addGesture("Click");
 			gestureGen.getGestureRecognizedEvent().addObserver(
 					new GestureRecognized());
 
@@ -198,8 +203,13 @@ public class KinectOpenNIDriver implements DriverInterface,
 				GestureRecognizedEventArgs args) {
 
 			try {
-				handsGen.StartTracking(args.getEndPosition());
-
+				String gestname = args.getGesture();
+				if(gestname.equals("Wave"))
+					handsGen.StartTracking(args.getEndPosition()); // should we always start tracking?
+			    else
+					evtMgr.fireEvent(EventType.GESTURE_RECOGNIZED, new Gesture(args.getGesture(),
+							HandTrackingUtilities.convertOpenNIPoint(depthGen, args.getIdPosition()),
+							HandTrackingUtilities.convertOpenNIPoint(depthGen, args.getEndPosition())));
 			} catch (StatusException e) {
 				e.printStackTrace();
 			}
@@ -374,6 +384,11 @@ public class KinectOpenNIDriver implements DriverInterface,
 	public void registerHandDestroyed(InputReceiver r) {
 		EventManager.getInstance()
 				.registerReceiver(EventType.HAND_DESTROYED, r);
+	}
+
+	public void registerGestureRecognized(InputReceiver r) {
+		EventManager.getInstance()
+				.registerReceiver(EventType.GESTURE_RECOGNIZED, r);
 	}
 
 	public void registerViewportDimension(InputReceiver r) {
