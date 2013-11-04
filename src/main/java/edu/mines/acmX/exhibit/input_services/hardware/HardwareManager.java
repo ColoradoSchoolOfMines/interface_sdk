@@ -302,8 +302,9 @@ public class HardwareManager {
 	 * @throws InvalidConfigurationFileException
 	 *             Thrown if the driver requires a configuration file that was
 	 *             not present on the store.
+	 * @throws BadFunctionalityRequestException 
 	 */
-	public void resetAllDrivers() throws InvalidConfigurationFileException {
+	public void resetAllDrivers() throws InvalidConfigurationFileException, BadFunctionalityRequestException {
 		for (String driverName : deviceDriverCache.keySet()) {
 			DriverInterface driver = deviceDriverCache.get(driverName);
 			driver.destroy();
@@ -341,8 +342,9 @@ public class HardwareManager {
 	 * required does not have an available device supporting it.
 	 * 
 	 * @throws InvalidConfigurationFileException
+	 * @throws BadFunctionalityRequestException 
 	 */
-	public void buildRequiredDevices() throws InvalidConfigurationFileException {
+	public void buildRequiredDevices() throws InvalidConfigurationFileException, BadFunctionalityRequestException {
 
 		Set<String> moduleFunctionalities = currentModuleInputTypes.keySet();
 		for (String moduleFunc : moduleFunctionalities) {
@@ -350,7 +352,11 @@ public class HardwareManager {
 				// Returns device names
 				List<String> supportingDevices = findDeviceDriversSupporting(moduleFunc);
 
-				buildDriverList(supportingDevices);
+				try {
+					buildDriverList(supportingDevices);
+				} catch (BadFunctionalityRequestException e) {
+					throw new BadFunctionalityRequestException("There were no drivers available for: " + moduleFunc );
+				}
 			}
 		}
 	}
@@ -390,10 +396,13 @@ public class HardwareManager {
 	 * 
 	 * TODO Change name of exception thrown to match context more. Something
 	 * like 'DriverLoadException'
+	 * @throws BadFunctionalityRequestException 
 	 */
 	// instantiates and checks the availability from the provided list.
 	private void buildDriverList(List<String> driverNames)
-			throws InvalidConfigurationFileException {
+			throws InvalidConfigurationFileException, BadFunctionalityRequestException {
+		
+		boolean loadedAtLeastOneDriverInList = false;
 		
 		// Driver Name -> Driver paths
 		Map<String, String> driverPaths = metaData.getDevices();
@@ -402,6 +411,7 @@ public class HardwareManager {
 			String path = driverPaths.get(name);
 			// Check if cache already contains this driver
 			if (deviceDriverCache.containsKey(path)) {
+				loadedAtLeastOneDriverInList = true;
 				continue;
 			}
 			try {
@@ -416,6 +426,7 @@ public class HardwareManager {
 					// Cache the driver
 					deviceDriverCache.put(path, iDriver);
 					addDeviceFunctionalities(name);
+					loadedAtLeastOneDriverInList = true;
 				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
@@ -432,6 +443,9 @@ public class HardwareManager {
 			} catch (InvocationTargetException e) {
 				throw new InvalidConfigurationFileException(e.getMessage());
 			}
+		}
+		if(!loadedAtLeastOneDriverInList) {
+			throw new BadFunctionalityRequestException("No driver driver in list loaded");
 		}
 	}
 
@@ -557,6 +571,7 @@ public class HardwareManager {
 			InvalidConfigurationFileException {
 		
 		List<String> drivers = getDevices(functionality);
+		// TODO check into get(0) -> underflow exception possible?
 		return inflateDriver(drivers.get(0), functionality);
 	}
 	

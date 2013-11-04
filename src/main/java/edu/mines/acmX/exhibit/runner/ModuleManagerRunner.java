@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.Common;
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
@@ -92,6 +93,9 @@ public class ModuleManagerRunner {
 			e.printStackTrace();
 		} catch (InvalidConfigurationFileException e) {
 			logger.fatal(e.getMessage());
+			e.printStackTrace();
+		} catch (BadFunctionalityRequestException e) {
+			logger.fatal("Default module depends on unavailable functionality");
 			e.printStackTrace();
 		}
 

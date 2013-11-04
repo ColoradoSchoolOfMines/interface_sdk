@@ -174,44 +174,29 @@ public class HardwareManagerTest {
 		hm.getDevices("BAD_FUNCTIONALITY_REQUEST");
 	}
 	
-	@Test(expected=InvalidConfigurationFileException.class)
-	public void testNoDriverConfigFile() 
-			throws HardwareManagerManifestException, 
-			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
-		
-		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
+	@Test(expected = BadFunctionalityRequestException.class)
+	public void testNoDriverConfigFileForKinectOpenniDriver()
+			throws HardwareManagerManifestException,
+			InvalidConfigurationFileException,
+			BadDeviceFunctionalityRequestException,
+			BadFunctionalityRequestException, UnknownDriverRequest {
+
+		HardwareManager.setManifestFilepath(BASE_FILE
+				+ "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
-		
+
 		Map<String, String> configStore = new HashMap<String, String>();
+		// under normal circumstances this would be called
+		// configStore.put("kinectopenni", "BAD_XML");
+		// hm.setConfigurationFileStore(configStore);
 		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
 		mmd.put("depth", DependencyType.REQUIRED);
 		hm.setRunningModulePermissions(mmd);
 		hm.setConfigurationFileStore(configStore);
 		hm.buildRequiredDevices();
 		
-	}
-	
-	@Test(expected=InvalidConfigurationFileException.class)
-	public void testValidDriverConfigStore() 			
-			throws HardwareManagerManifestException, 
-			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
-		log.info("testValidDriverConfigStore");
-				
-		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
-		HardwareManager hm = HardwareManager.getInstance();
-
-		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
-		mmd.put("depth", DependencyType.REQUIRED);
-		hm.setRunningModulePermissions(mmd);
-		
-		hm.resetAllDrivers();
-		
-		Map<String, String> configStore = new HashMap<String, String>();
-		configStore.put("kinectopenni", "BAD_XML");
-		hm.setConfigurationFileStore(configStore);
-		
-		
-		hm.resetAllDrivers();		
+		// expect this to throw
+		hm.getInitialDriver("depth");
 	}
 	
 	@Test
