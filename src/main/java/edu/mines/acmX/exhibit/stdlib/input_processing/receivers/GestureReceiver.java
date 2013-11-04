@@ -2,7 +2,6 @@ package edu.mines.acmX.exhibit.stdlib.input_processing.receivers;
 
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
-import org.OpenNI.GestureRecognizedEventArgs;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,13 +11,13 @@ import org.OpenNI.GestureRecognizedEventArgs;
  */
 public abstract class GestureReceiver implements InputReceiver {
 
-	public abstract void GestureRecognized(GestureRecognizedEventArgs data);
+	public abstract void GestureRecognized(Gesture data);
 
 	@Override
 	public void receiveInput(EventType type, Object data) {
 	      switch(type){
 		      case GESTURE_RECOGNIZED:
-			      GestureRecognized((GestureRecognizedEventArgs)data);
+			      GestureRecognized((Gesture)data);
 			      break;
 		      default:
 			      break;
