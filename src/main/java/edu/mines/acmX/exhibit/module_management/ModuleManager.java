@@ -23,6 +23,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Iterator;
@@ -426,6 +427,11 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	}
 
+	@Override
+	public Map<String, String> getConfigurations() {
+		return metaData.getConfigFiles();
+	}
+
 	/**
 	 * Main run loop of the ModuleManager. Each loops sets the next module to
 	 * the default module specified, then runs the current module's init
@@ -777,4 +783,6 @@ public class ModuleManager implements ModuleManagerRemote {
 	public int nextInt() throws InputMismatchException, NoSuchElementException {
 		return in.nextInt();
 	}
+
+
 }

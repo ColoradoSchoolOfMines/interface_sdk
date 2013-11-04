@@ -22,6 +22,7 @@ import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
@@ -115,6 +116,11 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	@Override
 	public int nextInt() throws RemoteException {
 		return moduleHelper.nextInt();
+	}
+	
+	@Override
+	public Map<String, String> getConfigurations() throws RemoteException {
+		return moduleHelper.getConfigurations();
 	}
 
 	/**

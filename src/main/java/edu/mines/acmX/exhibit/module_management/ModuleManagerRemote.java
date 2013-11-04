@@ -3,6 +3,7 @@ package edu.mines.acmX.exhibit.module_management;
 import java.io.InputStream;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
@@ -51,8 +52,6 @@ public interface ModuleManagerRemote extends Remote, ScannerInterface {
 
 	public InputStream loadResourceFromModule(String jarResourcePath)
 			throws RemoteException, ManifestLoadException, ModuleLoadException;
-
-	public String getHardwareManagerManifestFilepath() throws RemoteException;
 
 	public Map<String,String> getConfigurations() throws RemoteException;
 

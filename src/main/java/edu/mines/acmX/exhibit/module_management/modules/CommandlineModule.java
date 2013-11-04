@@ -20,6 +20,7 @@ package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
@@ -143,6 +144,11 @@ public abstract class CommandlineModule implements ModuleInterface {
 		return module.nextInt();
 	}
     
+	@Override
+	public Map<String, String> getConfigurations() throws RemoteException {
+		return module.getConfigurations();
+	}
+	
     /**
      * This function should be overridden to provide the desired functionality
      * in your own CommandlineModule.  You can do whatever you like in this

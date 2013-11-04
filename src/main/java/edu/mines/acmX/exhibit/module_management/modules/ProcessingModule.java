@@ -36,6 +36,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
@@ -153,6 +154,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	@Override
 	public int nextInt() throws RemoteException {
 		return module.nextInt();
+	}
+	
+	@Override
+	public Map<String, String> getConfigurations() throws RemoteException {
+		return module.getConfigurations();
 	}
 	
     /**

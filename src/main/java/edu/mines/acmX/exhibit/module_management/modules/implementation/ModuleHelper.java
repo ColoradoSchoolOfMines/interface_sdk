@@ -21,6 +21,7 @@ package edu.mines.acmX.exhibit.module_management.modules.implementation;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 
@@ -232,7 +233,9 @@ public class ModuleHelper implements ModuleInterface {
 		return getManager().nextInt();
 	}
 
-	// TODO
-	// Communicate with ModuleManager to get: Config store
+	@Override
+	public Map<String, String> getConfigurations() throws RemoteException {
+		return getManager().getConfigurations();
+	}
 
 }
