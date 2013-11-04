@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
-import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
@@ -174,44 +174,83 @@ public class HardwareManagerTest {
 		hm.getDevices("BAD_FUNCTIONALITY_REQUEST");
 	}
 	
-	@Test(expected=InvalidConfigurationFileException.class)
-	public void testNoDriverConfigFile() 
-			throws HardwareManagerManifestException, 
-			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
-		
-		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
+	@Test(expected = BadFunctionalityRequestException.class)
+	public void testNoDriverConfigFileForKinectOpenniDriver()
+			throws HardwareManagerManifestException,
+			InvalidConfigurationFileException,
+			BadDeviceFunctionalityRequestException,
+			BadFunctionalityRequestException, UnknownDriverRequest {
+
+		HardwareManager.setManifestFilepath(BASE_FILE
+				+ "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
-		
+
 		Map<String, String> configStore = new HashMap<String, String>();
+		// under normal circumstances this would be called
+		// configStore.put("kinectopenni", "BAD_XML");
+		// hm.setConfigurationFileStore(configStore);
 		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
 		mmd.put("depth", DependencyType.REQUIRED);
 		hm.setRunningModulePermissions(mmd);
 		hm.setConfigurationFileStore(configStore);
 		hm.buildRequiredDevices();
 		
+		// expect this to throw
+		hm.getInitialDriver("depth");
 	}
 	
-	@Test(expected=InvalidConfigurationFileException.class)
-	public void testValidDriverConfigStore() 			
-			throws HardwareManagerManifestException, 
-			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
-		log.info("testValidDriverConfigStore");
-				
+	@Test
+	public void testValidDriverCache()
+			throws HardwareManagerManifestException, BadDeviceFunctionalityRequestException,
+			InvalidConfigurationFileException, BadFunctionalityRequestException {
+		log.info("testValidDriverConfigFile");
+		
 		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
 		HardwareManager hm = HardwareManager.getInstance();
 
 		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
-		mmd.put("depth", DependencyType.REQUIRED);
 		hm.setRunningModulePermissions(mmd);
-		
 		hm.resetAllDrivers();
 		
+		mmd.put("depth", DependencyType.REQUIRED);
+		hm.setRunningModulePermissions(mmd);
+
 		Map<String, String> configStore = new HashMap<String, String>();
-		configStore.put("kinectopenni", "BAD_XML");
+		configStore.put("kinectopenni", "openni_config.xml");
+		
 		hm.setConfigurationFileStore(configStore);
+		hm.resetAllDrivers();
 		
+		assertTrue(hm.getNumberofDriversInCache() == 1);
+	}
+	
+	@Test
+	public void testOptionalFunctionalityGetsLoadedAtRuntime()
+			throws HardwareManagerManifestException,
+			InvalidConfigurationFileException,
+			BadFunctionalityRequestException {
 		
-		hm.resetAllDrivers();		
+		log.info("testOptionalFunctionalityGetsLoadedAtRuntime");
+		
+		HardwareManager.setManifestFilepath(BASE_FILE + "GoodCompleteManifest.xml");
+		HardwareManager hm = HardwareManager.getInstance();
+
+		Map<String, DependencyType> mmd = new HashMap<String, DependencyType>();
+		hm.setRunningModulePermissions(mmd);
+		hm.resetAllDrivers();
+		
+		mmd.put("depth", DependencyType.OPTIONAL);
+		hm.setRunningModulePermissions(mmd);
+
+		Map<String, String> configStore = new HashMap<String, String>();
+		configStore.put("kinectopenni", "src/test/resources/openni_config.xml");
+		
+		hm.setConfigurationFileStore(configStore);
+		hm.resetAllDrivers();
+		
+		assertTrue(hm.getNumberofDriversInCache() == 0);
+		List<String> devices = hm.getDevices("depth");
+		assertTrue(hm.getNumberofDriversInCache() == 1);
 	}
 	
 }

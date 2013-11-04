@@ -11,6 +11,8 @@
 			interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface" />
 		<supports name="handtracking"
 			interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface" />
+        <supports name="gesturetracking"
+                  interface="edu.mines.acmX.exhibit.input_services.hardware.devicedata.GestureTrackerInterface" />
 	</functionalities>
 
 	<!--
@@ -22,6 +24,12 @@
 			<provides name="rgbimage" />
 			<provides name="depth" />
 			<provides name="handtracking" />
+            <provides name="gesturetracking" />
+		</device>
+		<device name="kinectopenni2"
+						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2.KinectOpenNI2Driver">
+			<provides name="rgbimage" />
+			<provides name="depth" />
 		</device>
 	</devices>
 

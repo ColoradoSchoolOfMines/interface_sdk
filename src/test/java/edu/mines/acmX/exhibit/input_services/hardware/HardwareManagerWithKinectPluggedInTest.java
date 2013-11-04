@@ -18,7 +18,7 @@
  */
 package edu.mines.acmX.exhibit.input_services.hardware;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
-import edu.mines.acmX.exhibit.input_services.openni.OpenNIContextSingleton;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 

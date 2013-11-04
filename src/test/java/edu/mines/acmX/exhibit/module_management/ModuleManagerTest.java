@@ -35,8 +35,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
@@ -731,8 +733,8 @@ public class ModuleManagerTest {
 		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
 	}
 	
-	@Test(expected=InvalidConfigurationFileException.class)
-	public void testResetDriversFailsForDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidConfigurationFileException {
+	@Test(expected=BadFunctionalityRequestException.class)
+	public void testResetDriversFailsForDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidConfigurationFileException, BadFunctionalityRequestException, UnknownDriverRequest {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		HardwareManager.setManifestFilepath("hardware_manager_manifest.xml");
@@ -751,14 +753,15 @@ public class ModuleManagerTest {
 		
 		Map<String, String> configStore = new HashMap<String, String>();
 		
-		HardwareManager.getInstance().setConfigurationFileStore(configStore);
+		HardwareManager hm = HardwareManager.getInstance();
+		hm.setConfigurationFileStore(configStore);
 		try {
 			Method setupPreRT = ModuleManager.class.getDeclaredMethod("setupPreRuntime");
 			setupPreRT.setAccessible(true);
 			setupPreRT.invoke(m);
 		} catch (InvocationTargetException e) {
-			if (e.getCause() instanceof InvalidConfigurationFileException) {
-				throw (InvalidConfigurationFileException) e.getCause();
+			if (e.getCause() instanceof BadFunctionalityRequestException) {
+				throw (BadFunctionalityRequestException) e.getCause();
 			} else {
 				throw e;
 			}

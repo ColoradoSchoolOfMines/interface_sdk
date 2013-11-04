@@ -16,10 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.mines.acmX.exhibit.input_services.hardware;
 
-public class OpenNIConfigurationException extends Exception {
-	public OpenNIConfigurationException(String msg) {
-		super(msg);
+package edu.mines.acmX.exhibit.input_services.hardware.drivers;
+
+/**
+ * Abstract common functionality across drivers
+ *
+ * @author Matt Wesemann
+ */
+public class DriverHelper {
+    private DriverHelper(){}
+
+	static public void checkLoaded(DriverInterface driver){
+		if(!driver.loaded()) {
+			throw new NotLoadedException("You must call load() before calling this function.");
+		}
 	}
 }

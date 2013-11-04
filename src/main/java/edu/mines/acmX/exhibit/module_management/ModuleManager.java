@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
@@ -446,10 +447,11 @@ public class ModuleManager {
 	 * @throws InvalidConfigurationFileException
 	 * @throws BadDeviceFunctionalityRequestException
 	 * @throws ModuleLoadException
+	 * @throws BadFunctionalityRequestException 
 	 * 
 	 */
 	public void run() throws InvalidConfigurationFileException,
-			BadDeviceFunctionalityRequestException, ModuleLoadException {
+			BadDeviceFunctionalityRequestException, ModuleLoadException, BadFunctionalityRequestException {
 		while (true) {
 			// create a new Module Executor
 			setupPreRuntime();
@@ -459,7 +461,7 @@ public class ModuleManager {
 	}
 
 	private void setupPreRuntime() throws InvalidConfigurationFileException,
-			BadDeviceFunctionalityRequestException, ModuleLoadException {
+			BadDeviceFunctionalityRequestException, ModuleLoadException, BadFunctionalityRequestException {
 
 		if (loadDefault) {
 			preModuleRuntime(defaultModuleMetaData);
@@ -482,6 +484,11 @@ public class ModuleManager {
 						+ "] depends on unavailable functionality");
 				logger.warn("Loading default module");
 				preModuleRuntime(defaultModuleMetaData);
+			} catch (BadFunctionalityRequestException e) {
+				logger.error("Module [" + nextModuleMetaData.getPackageName()
+						+ "] depends on unavailable functionality");
+				logger.warn("Loading default module");
+				preModuleRuntime(defaultModuleMetaData);
 			}
 		}
 
@@ -494,7 +501,7 @@ public class ModuleManager {
 
 	private void preModuleRuntime(ModuleMetaData mmd)
 			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
-			InvalidConfigurationFileException {
+			InvalidConfigurationFileException, BadFunctionalityRequestException {
 		
 		this.moduleExecutor = new ModuleSimpleExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
