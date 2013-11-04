@@ -52,4 +52,8 @@ public interface ModuleManagerRemote extends Remote, ScannerInterface {
 	public InputStream loadResourceFromModule(String jarResourcePath)
 			throws RemoteException, ManifestLoadException, ModuleLoadException;
 
+	public String getHardwareManagerManifestFilepath() throws RemoteException;
+
+	public Map<String,String> getConfigurations() throws RemoteException;
+
 }
