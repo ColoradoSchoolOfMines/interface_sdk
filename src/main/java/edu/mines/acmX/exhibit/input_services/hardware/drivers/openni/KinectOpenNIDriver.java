@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.GestureTrackerInterface;
+import edu.mines.acmX.exhibit.stdlib.input_processing.receivers.Gesture;
 import org.OpenNI.ActiveHandEventArgs;
 import org.OpenNI.Context;
 import org.OpenNI.DepthGenerator;
@@ -206,7 +207,9 @@ public class KinectOpenNIDriver implements DriverInterface,
 				if(gestname.equals("Wave"))
 					handsGen.StartTracking(args.getEndPosition()); // should we always start tracking?
 			    else
-					evtMgr.fireEvent(EventType.GESTURE_RECOGNIZED, args);
+					evtMgr.fireEvent(EventType.GESTURE_RECOGNIZED, new Gesture(args.getGesture(),
+							HandTrackingUtilities.convertOpenNIPoint(depthGen, args.getIdPosition()),
+							HandTrackingUtilities.convertOpenNIPoint(depthGen, args.getEndPosition())));
 			} catch (StatusException e) {
 				e.printStackTrace();
 			}
