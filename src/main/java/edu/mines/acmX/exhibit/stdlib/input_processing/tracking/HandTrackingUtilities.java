@@ -23,6 +23,8 @@ import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 
 import edu.mines.acmX.exhibit.stdlib.graphics.Coordinate3D;
+import org.openni.CoordinateConverter;
+import org.openni.VideoStream;
 
 public class HandTrackingUtilities {
 	
@@ -47,6 +49,15 @@ public class HandTrackingUtilities {
 		}
 		
 		return ret;
+	}
+
+	public static Coordinate3D convertNiTePoint(VideoStream depthStream, float x, float y, float z){
+
+		org.openni.Point3D<Float> convertedPoint = CoordinateConverter.convertDepthToWorld(depthStream, x, y, z);
+
+		return new Coordinate3D(convertedPoint.getX(),
+				convertedPoint.getY(),
+				convertedPoint.getZ());
 	}
 	
 	/**

@@ -21,7 +21,7 @@ package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2;
 
 import java.awt.Dimension;
 
-import com.primesense.nite.NiTE;
+import com.primesense.nite.*;
 import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
@@ -31,6 +31,8 @@ import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterfa
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverHelper;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
+import edu.mines.acmX.exhibit.stdlib.input_processing.receivers.Gesture;
+import edu.mines.acmX.exhibit.stdlib.input_processing.tracking.HandTrackingUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,8 +44,6 @@ import org.openni.OpenNI;
 import org.openni.VideoStream;
 import org.openni.VideoFrameRef;
 import org.openni.SensorType;
-
-import com.primesense.nite.HandTracker;
 
 /**
  * Kinect driver that provides depth and rgb image functionality. Uses the
@@ -105,6 +105,10 @@ public class KinectOpenNI2Driver implements DriverInterface,
 			throw new DriverException("No connected devices");
 
 		tracker = HandTracker.create();
+		tracker.startGestureDetection(GestureType.CLICK);
+		tracker.startGestureDetection(GestureType.WAVE);
+
+		tracker.addNewFrameListener(new FrameTracker());
 
 		colorStream = VideoStream.create(device, SensorType.COLOR);
 		colorStream.start();
@@ -172,31 +176,61 @@ public class KinectOpenNI2Driver implements DriverInterface,
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	class FrameTracker implements HandTracker.NewFrameListener {
+		HandTrackerFrameRef lastFrame;
+		@Override
+		public void onNewFrame(HandTracker tracker) {
+			if (lastFrame != null) {
+				lastFrame.release();
+				lastFrame = null;
+			}
+
+			lastFrame = tracker.readFrame();
+
+			// check if any gesture detected
+			for (GestureData gesture : lastFrame.getGestures()) {
+				if (gesture.isComplete()) {
+					if(gesture.getType() == GestureType.WAVE){
+						// start hand tracking
+						tracker.startHandTracking(gesture.getCurrentPosition());
+					}
+
+					Point3D<Float> point = gesture.getCurrentPosition();
+					evtMgr.fireEvent(EventType.GESTURE_RECOGNIZED, new Gesture(gesture.toString(),
+							HandTrackingUtilities.convertNiTePoint(depthStream, point.getX(), point.getY(), point.getZ()),
+							HandTrackingUtilities.convertNiTePoint(depthStream, point.getX(), point.getY(), point.getZ())));
+
+				}
+			}
+
+		}
+	}
+
 	@Override
 	public int getHandTrackingWidth() {
 		DriverHelper.checkLoaded(this);
-		return 0;  //To change body of implemented methods use File | Settings | File Templates.
+		return 0;
 	}
 
 	@Override
 	public int getHandTrackingHeight() {
 		DriverHelper.checkLoaded(this);
-		return 0;  //To change body of implemented methods use File | Settings | File Templates.
+		return 0;
 	}
 
 	@Override
 	public void registerHandCreated(InputReceiver r) {
-		//To change body of implemented methods use File | Settings | File Templates.
+
 	}
 
 	@Override
 	public void registerHandUpdated(InputReceiver r) {
-		//To change body of implemented methods use File | Settings | File Templates.
+
 	}
 
 	@Override
 	public void registerHandDestroyed(InputReceiver r) {
-		//To change body of implemented methods use File | Settings | File Templates.
+
 	}
 
 	@Override
