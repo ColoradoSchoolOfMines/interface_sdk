@@ -20,12 +20,15 @@
 package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2;
 
 import java.awt.Dimension;
+
+import com.primesense.nite.NiTE;
 import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverHelper;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +42,8 @@ import org.openni.OpenNI;
 import org.openni.VideoStream;
 import org.openni.VideoFrameRef;
 import org.openni.SensorType;
+
+import com.primesense.nite.HandTracker;
 
 /**
  * Kinect driver that provides depth and rgb image functionality. Uses the
@@ -63,6 +68,7 @@ public class KinectOpenNI2Driver implements DriverInterface,
 	private Device device;
 	private VideoStream colorStream;
 	private VideoStream depthStream;
+	private HandTracker tracker;
 
 	public KinectOpenNI2Driver() {
 		loaded = false;
@@ -83,7 +89,7 @@ public class KinectOpenNI2Driver implements DriverInterface,
 	}
 
 	@Override
-	public void load() {
+	public void load() throws DriverException {
 		if(loaded)
 			destroy(); // reset driver
 
@@ -91,9 +97,14 @@ public class KinectOpenNI2Driver implements DriverInterface,
 		if(!init){
 			init = true;
 			OpenNI.initialize();
+			NiTE.initialize();
 		}
 
 		device = Device.open();
+		if(device == null)
+			throw new DriverException("No connected devices");
+
+		tracker = HandTracker.create();
 
 		colorStream = VideoStream.create(device, SensorType.COLOR);
 		colorStream.start();
