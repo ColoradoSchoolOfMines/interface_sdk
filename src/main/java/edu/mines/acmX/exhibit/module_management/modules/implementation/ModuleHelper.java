@@ -121,37 +121,12 @@ public class ModuleHelper implements ModuleInterface {
 	 */
 	@Override
 	public boolean setNextModule(String moduleName) {
-
 		try {
 			return getManager().setNextModule(moduleName);
 		} catch (RemoteException e) {
 			// TODO throw instead of catch
 			return false;
 		}
-		// } catch (ManifestLoadException e) {
-		// // This should never happen because ModuleManager is already past
-		// // the point
-		// // of throwing errors when a default module cannot be loaded
-		// log.error("ManifestLoadException thrown to ModuleHelper");
-		// } catch (ModuleLoadException e) {
-		// // This should never happen because ModuleManager is already past
-		// // the point
-		// // of throwing errors when a default module cannot be loaded
-		// log.error("ModuleLoadException thrown to ModuleHelper");
-		// } catch (HardwareManagerManifestException e) {
-		// log.error("HardwareManagerManifestException thrown to ModuleHelper");
-		// e.printStackTrace();
-		// } catch (BadDeviceFunctionalityRequestException e) {
-		// // This should never happen because module manager already went
-		// // through this logic for the default module when the module manager
-		// // was first initiated. As such this exception is being thrown from
-		// // getting an instance of module manager and the assumption is that
-		// // the module manager was initiated previously. This also applies
-		// // for the above HardwareManagerManifestException
-		// log.error("BadDeviceFunctionalityRequest thrown to ModuleHelper");
-		// e.printStackTrace();
-		// }
-
 	}
 
 	@Override
@@ -192,8 +167,7 @@ public class ModuleHelper implements ModuleInterface {
 
 	@Override
 	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return getManager().getDefaultModuleMetaData();
 	}
 
 	@Override
