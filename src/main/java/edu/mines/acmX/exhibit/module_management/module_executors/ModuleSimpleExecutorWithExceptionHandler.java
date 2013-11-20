@@ -18,56 +18,35 @@
  */
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
-import java.rmi.RemoteException;
-import java.util.concurrent.CountDownLatch;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoader;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class ModuleSimpleExecutor extends ModuleExecutor {
+import java.rmi.RemoteException;
 
-	static Logger logger = LogManager.getLogger(ModuleSimpleExecutor.class.getName());
-	private ModuleInterface moduleToRun;
-	
-	public ModuleSimpleExecutor(String fullyQualifiedModuleName, String jarPath) throws ModuleLoadException {
+public class ModuleSimpleExecutorWithExceptionHandler extends ModuleSimpleExecutor {
+
+	static Logger logger = LogManager.getLogger(ModuleSimpleExecutorWithExceptionHandler.class.getName());
+
+	public ModuleSimpleExecutorWithExceptionHandler( String fullyQualifiedModuleName, String jarPath ) throws ModuleLoadException {
 		super(fullyQualifiedModuleName, jarPath);
-		this.moduleToRun = loadModuleFromMetaData(fullyQualifiedModuleName, jarPath);
 	}
-	
+
 	@Override
 	public void run() {
 		Thread.setDefaultUncaughtExceptionHandler( new ExceptionHandler() );
-		// TODO
-		logger.debug("Running module");
-
-		try {
-			moduleToRun.execute();
-		} catch ( RemoteException e ) {
-			logger.error( "Could not communicate with the mothership" );
-			return;
-		}
-
+		super.run();
 	}
-	
-	private ModuleInterface loadModuleFromMetaData(
-			String fullyQualifiedModuleName, String jarPath)
-			throws ModuleLoadException {
-		return ModuleLoader.loadModule(jarPath, fullyQualifiedModuleName, this
-				.getClass().getClassLoader());
 
-	}
-	
 	/**
 	 * Will run a single module
-	 * 
+	 *
 	 * Arg 1: fully qualified classname of module
 	 * Arg 2: Path to Module Jar
-	 * @throws ModuleLoadException 
-	 * @throws ModuleRuntimeException 
+	 * @throws edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException
+	 * @throws edu.mines.acmX.exhibit.module_management.module_executors.ModuleRuntimeException
 	 */
 	public static void main(String[] args) throws ModuleLoadException, ModuleRuntimeException {
 		// TODO arg checking
@@ -75,7 +54,7 @@ public class ModuleSimpleExecutor extends ModuleExecutor {
 	}
 	
 	public static void main(String fullyQualifiedModuleName, String jarPath) throws ModuleLoadException, ModuleRuntimeException {
-		ModuleExecutor executor = new ModuleSimpleExecutor(fullyQualifiedModuleName, jarPath);
+		ModuleExecutor executor = new ModuleSimpleExecutorWithExceptionHandler(fullyQualifiedModuleName, jarPath);
 		executor.run();
 	}
 
