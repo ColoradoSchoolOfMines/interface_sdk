@@ -481,7 +481,7 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	private void preModuleRuntime(ModuleMetaData mmd) throws ModuleLoadException {
 
-		this.moduleExecutor = new ModuleSimpleExecutor(mmd.getPackageName()
+		this.moduleExecutor = new ModuleProcessExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
 				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
 		setCurrentModule(mmd);

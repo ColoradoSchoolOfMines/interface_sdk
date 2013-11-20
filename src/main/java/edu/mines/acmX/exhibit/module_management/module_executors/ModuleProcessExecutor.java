@@ -22,6 +22,8 @@ import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 public class ModuleProcessExecutor extends ModuleExecutor {
 	
 	private static String MAIN_EXECUTOR = "edu.mines.acmX.exhibit.module_management.module_executors.ModuleSimpleExecutor";
+
+	private static boolean DEBUG = true;
 	
 	static Logger logger = LogManager.getLogger(ModuleProcessExecutor.class.getName());
 
@@ -72,6 +74,9 @@ public class ModuleProcessExecutor extends ModuleExecutor {
 	private String[] getProcessArguments() {
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("java");
+		if(DEBUG) {
+			args.add("-agentlib:jdwp=transport=dt_socket,address=8032,server=y,suspend=y");
+		}
 		args.add("-cp");
 		args.add(getClassPathArg());
 		args.add(MAIN_EXECUTOR);
