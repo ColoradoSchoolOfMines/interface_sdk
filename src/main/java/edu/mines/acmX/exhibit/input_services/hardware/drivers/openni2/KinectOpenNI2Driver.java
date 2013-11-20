@@ -31,6 +31,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterfa
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverHelper;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverInterface;
+import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
 import edu.mines.acmX.exhibit.stdlib.input_processing.receivers.Gesture;
 import edu.mines.acmX.exhibit.stdlib.input_processing.tracking.HandTrackingUtilities;
 import org.apache.logging.log4j.LogManager;
@@ -166,6 +167,10 @@ public class KinectOpenNI2Driver implements DriverInterface,
 			colorStream = null;
 			depthStream = null;
 			device = null;
+
+			NiTE.shutdown();
+			OpenNI.shutdown();
+
 			loaded = false;
 		}
 	}
@@ -173,9 +178,10 @@ public class KinectOpenNI2Driver implements DriverInterface,
 	@Override
 	public void updateDriver() {
 		DriverHelper.checkLoaded(this);
-		//To change body of implemented methods use File | Settings | File Templates.
+
 	}
 
+	// handles gestures and hand tracking
 	class FrameTracker implements HandTracker.NewFrameListener {
 		HandTrackerFrameRef lastFrame;
 		@Override
@@ -197,12 +203,30 @@ public class KinectOpenNI2Driver implements DriverInterface,
 
 					Point3D<Float> point = gesture.getCurrentPosition();
 					evtMgr.fireEvent(EventType.GESTURE_RECOGNIZED, new Gesture(gesture.toString(),
-							HandTrackingUtilities.convertNiTePoint(depthStream, point.getX(), point.getY(), point.getZ()),
-							HandTrackingUtilities.convertNiTePoint(depthStream, point.getX(), point.getY(), point.getZ())));
+							HandTrackingUtilities.convertNiTePoint(depthStream, point),
+							HandTrackingUtilities.convertNiTePoint(depthStream, point)));
 
 				}
 			}
 
+			for(HandData hand : lastFrame.getHands()) {
+				if(hand.isNew()){
+					HandPosition pos = new HandPosition(hand.getId(),
+							HandTrackingUtilities.convertNiTePoint(depthStream,
+									hand.getPosition()));
+					evtMgr.fireEvent(EventType.HAND_CREATED, pos);
+				} else if(hand.isLost()){
+					HandPosition pos = new HandPosition(hand.getId(),
+							HandTrackingUtilities.convertNiTePoint(depthStream,
+									hand.getPosition()));
+					evtMgr.fireEvent(EventType.HAND_DESTROYED, pos);
+				}  else if(hand.isTracking()){
+					HandPosition pos = new HandPosition(hand.getId(),
+							HandTrackingUtilities.convertNiTePoint(depthStream,
+									hand.getPosition()));
+					evtMgr.fireEvent(EventType.HAND_UPDATED, pos);
+				}
+			}
 		}
 	}
 
@@ -220,17 +244,17 @@ public class KinectOpenNI2Driver implements DriverInterface,
 
 	@Override
 	public void registerHandCreated(InputReceiver r) {
-
+		EventManager.getInstance().registerReceiver(EventType.HAND_CREATED, r);
 	}
 
 	@Override
 	public void registerHandUpdated(InputReceiver r) {
-
+		EventManager.getInstance().registerReceiver(EventType.HAND_UPDATED, r);
 	}
 
 	@Override
 	public void registerHandDestroyed(InputReceiver r) {
-
+		EventManager.getInstance().registerReceiver(EventType.HAND_DESTROYED, r);
 	}
 
 	@Override

@@ -59,6 +59,16 @@ public class HandTrackingUtilities {
 				convertedPoint.getY(),
 				convertedPoint.getZ());
 	}
+
+	public static Coordinate3D convertNiTePoint(VideoStream depthStream, com.primesense.nite.Point3D<java.lang.Float> point){
+
+		org.openni.Point3D<Float> convertedPoint = CoordinateConverter.
+				convertDepthToWorld(depthStream, point.getX(), point.getY(), point.getZ());
+
+		return new Coordinate3D(convertedPoint.getX(),
+				convertedPoint.getY(),
+				convertedPoint.getZ());
+	}
 	
 	/**
 	 * Scales a given hand coordinate to fill the user frame, and zooms the sensitive area of
