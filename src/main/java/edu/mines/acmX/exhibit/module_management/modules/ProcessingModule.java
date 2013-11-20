@@ -58,7 +58,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * uses a ModuleHelper so that it can extend PApplet while keeping the 
 	 * functionality of a Module.
 	 */
-    private final ModuleHelper moduleHelper;
+    private final ModuleHelper module;
     
     private Frame frame;
     
@@ -66,7 +66,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     
     public ProcessingModule() {
         super();
-        moduleHelper = new ModuleHelper();
+        module = new ModuleHelper();
         frame = new Frame();
     }
 
@@ -77,7 +77,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * @param	moduleName	Package name of next module to load
 	 */
     public boolean setNextModuleToLoad( String moduleName ) {
-        return moduleHelper.setNextModuleToLoad( moduleName );
+        return module.setNextModuleToLoad( moduleName );
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      *
      */
     public void init(CountDownLatch waitForModule) {
-    	moduleHelper.init(waitForModule);
+    	module.init(waitForModule);
     }
 
     /**
@@ -101,27 +101,27 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      */
     
     public void finishExecution(){
-    	moduleHelper.finishExecution();
+    	module.finishExecution();
     }
     
     public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
-    	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
+    	return module.loadResourceFromModule(jarResourcePath, m);
 	}
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
-		return moduleHelper.loadResourceFromModule(jarResourcePath);
+		return module.loadResourceFromModule(jarResourcePath);
 	}
 	
 	public ModuleMetaData getModuleMetaData(String packageName) {
-		return moduleHelper.getModuleMetaData(packageName);
+		return module.getModuleMetaData(packageName);
 	}
 	
 	public String[] getAllAvailableModules() {
-		return moduleHelper.getAllAvailableModules();
+		return module.getAllAvailableModules();
 	}
 	
 	public String getCurrentModulePackageName() {
-        return moduleHelper.getCurrentModulePackageName();
+        return module.getCurrentModulePackageName();
     }
 	
     /**
@@ -174,7 +174,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
         }
 		name = IMAGES_LOCATION + name;
 		try {
-			InputStream stream = moduleHelper.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
+			InputStream stream = module.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
 			//InputStream stream = module.loadResourceFromModule(name);
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
@@ -190,7 +190,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 
 		InputStream stream;
 		try {
-			stream = moduleHelper.loadResourceFromModule(name, m);
+			stream = module.loadResourceFromModule(name, m);
 			if (stream == null ) {
 				log.debug("Could not load the image for the given resource");
 				return null;

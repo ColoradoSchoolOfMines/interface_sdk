@@ -37,11 +37,11 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * allows CommandlineModule to mimic multiple inheritence by 
 	 * using delegation to wrap ModuleHelper's function in its own
 	 */
-    private final ModuleHelper moduleHelper;
+    private final ModuleHelper module;
 
     public CommandlineModule() {
         super();
-        moduleHelper = new ModuleHelper();
+        module = new ModuleHelper();
     }
 
 	/**
@@ -52,7 +52,7 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * @return				true if loaded, false otherwise
 	 */
     public boolean setNextModuleToLoad( String moduleName ) {
-        return moduleHelper.setNextModuleToLoad( moduleName );
+        return module.setNextModuleToLoad( moduleName );
     }
 
 
@@ -64,7 +64,7 @@ public abstract class CommandlineModule implements ModuleInterface {
      * @param   waitformodule   @see ModuleHelper.java
      */
     public final void init(CountDownLatch waitForModule) {
-    	moduleHelper.init(waitForModule);
+    	module.init(waitForModule);
     }
 
     /**
@@ -85,27 +85,27 @@ public abstract class CommandlineModule implements ModuleInterface {
      * @param   waitformodule   @see ModuleHelper.java
      */
     public final void finishExecution() {
-    	moduleHelper.finishExecution();
+    	module.finishExecution();
     }
     
     public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
-    	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
+    	return module.loadResourceFromModule(jarResourcePath, m);
 	}
 
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
-		return moduleHelper.loadResourceFromModule(jarResourcePath);
+		return module.loadResourceFromModule(jarResourcePath);
 	}
 	
 	public ModuleMetaData getModuleMetaData(String packageName) {
-		return moduleHelper.getModuleMetaData(packageName);
+		return module.getModuleMetaData(packageName);
 	}
 	
 	public String[] getAllAvailableModules() {
-		return moduleHelper.getAllAvailableModules();
+		return module.getAllAvailableModules();
 	}
 	
 	public String getCurrentModulePackageName() {
-        return moduleHelper.getCurrentModulePackageName();
+        return module.getCurrentModulePackageName();
     }
     
     /**
