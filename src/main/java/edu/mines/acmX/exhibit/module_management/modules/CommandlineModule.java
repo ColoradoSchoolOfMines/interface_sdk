@@ -46,11 +46,11 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * allows CommandlineModule to mimic multiple inheritence by 
 	 * using delegation to wrap ModuleHelper's function in its own
 	 */
-    private final ModuleInterface module;
+    private final ModuleInterface moduleHelper;
 
     public CommandlineModule() {
         super();
-        module = new ModuleRMIHelper();
+        moduleHelper = new ModuleRMIHelper();
     }
 
 	/**
@@ -59,15 +59,15 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * @param	moduleName	Package name of next Module to load
 	 *
 	 * @return				true if loaded, false otherwise
-	 * @throws RemoteException 
+	 * @throws RemoteException
 	 */
     @Override
     public boolean setNextModule( String moduleName ) throws RemoteException {
-		return module.setNextModule(moduleName);
+		return moduleHelper.setNextModule(moduleName);
 	}
 
 
-    /** 
+    /**
      * wrapper function for modulehelper's init function
      *
      * @see ModuleHelper
@@ -76,7 +76,7 @@ public abstract class CommandlineModule implements ModuleInterface {
      */
     @Override
     public final void init(CountDownLatch waitForModule) throws RemoteException {
-    	module.init(waitForModule);
+		moduleHelper.init( waitForModule );
     }
 
     /**
@@ -90,7 +90,7 @@ public abstract class CommandlineModule implements ModuleInterface {
     	this.finishExecution();
     }
 
-    /** 
+    /**
      * wrapper function for modulehelper's finishExecution function
      *
      * @see ModuleHelper
@@ -98,66 +98,66 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 */
     @Override
     public final void finishExecution() throws RemoteException {
-    	module.finishExecution();
+		moduleHelper.finishExecution();
     }
-    
+
     @Override
     public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
-    	return module.loadResourceFromModule(jarResourcePath, m);
+		return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
     @Override
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
-		return module.loadResourceFromModule(jarResourcePath);
+		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
-	
+
     @Override
 	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
-		return module.getModuleMetaData(packageName);
+		return moduleHelper.getModuleMetaData(packageName);
 	}
-	
+
     @Override
 	public String[] getAllAvailableModules() throws RemoteException {
-		return module.getAllAvailableModules();
+		return moduleHelper.getAllAvailableModules();
 	}
-	
+
     @Override
 	public String getCurrentModulePackageName() throws RemoteException {
-        return module.getCurrentModulePackageName();
+        return moduleHelper.getCurrentModulePackageName();
     }
 
 	@Override
 	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
-		return module.getDefaultModuleMetaData();
+		return moduleHelper.getDefaultModuleMetaData();
 	}
 
 	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) throws RemoteException, ManifestLoadException,
 			ModuleLoadException {
-		return module.loadResourceFromModule(jarResourcePath, packageName);
+		return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
 	}
 
 	@Override
 	public String next() throws RemoteException {
-		return module.next();
+		return moduleHelper.next();
 	}
 
 	@Override
 	public int nextInt() throws RemoteException {
-		return module.nextInt();
+		return moduleHelper.nextInt();
 	}
-    
+
 	@Override
 	public Map<String, String> getConfigurations() throws RemoteException {
-		return module.getConfigurations();
+		return moduleHelper.getConfigurations();
 	}
 
 	@Override
 	public DeviceDataInterface getInitialDriver( String functionality )
 			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
 				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
-		return module.getInitialDriver( functionality );
+		return moduleHelper.getInitialDriver( functionality );
 	}
 
     /**

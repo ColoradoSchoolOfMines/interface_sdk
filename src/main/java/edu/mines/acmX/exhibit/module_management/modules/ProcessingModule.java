@@ -66,7 +66,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * uses a ModuleHelper so that it can extend PApplet while keeping the 
 	 * functionality of a Module.
 	 */
-    private final ModuleInterface module;
+    private final ModuleInterface moduleHelper;
     
     private Frame frame;
     
@@ -74,7 +74,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     
     public ProcessingModule() {
         super();
-        module = new ModuleRMIHelper();
+        moduleHelper = new ModuleRMIHelper();
         frame = new Frame();
     }
 
@@ -82,12 +82,12 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * Delegation method, wraps ModuleHelper's setNextModuleToLoad function
 	 * in its own method.
 	 *
-	 * @param	moduleName	Package name of next module to load
+	 * @param	moduleName	Package name of next moduleHelper to load
 	 * @throws RemoteException 
 	 */
     @Override
     public boolean setNextModule( String moduleName ) throws RemoteException {
-        return module.setNextModule( moduleName );
+        return moduleHelper.setNextModule( moduleName );
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      */
     @Override
     public void init(CountDownLatch waitForModule) throws RemoteException {
-    	module.init(waitForModule);
+		moduleHelper.init( waitForModule );
     }
 
     /**
@@ -112,66 +112,66 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      */
     
     public void finishExecution() throws RemoteException {
-    	module.finishExecution();
+		moduleHelper.finishExecution();
     }
     
     @Override
     public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
-    	return module.loadResourceFromModule(jarResourcePath, m);
+		return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
     @Override
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
-		return module.loadResourceFromModule(jarResourcePath);
+		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
 	
     @Override
 	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
-		return module.getModuleMetaData(packageName);
+		return moduleHelper.getModuleMetaData(packageName);
 	}
 	
     @Override
 	public String[] getAllAvailableModules() throws RemoteException {
-		return module.getAllAvailableModules();
+		return moduleHelper.getAllAvailableModules();
 	}
 	
     @Override
 	public String getCurrentModulePackageName() throws RemoteException {
-        return module.getCurrentModulePackageName();
+        return moduleHelper.getCurrentModulePackageName();
     }
     
 	@Override
 	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
-		return module.getDefaultModuleMetaData();
+		return moduleHelper.getDefaultModuleMetaData();
 	}
 
 	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) throws RemoteException, ManifestLoadException,
 			ModuleLoadException {
-		return module.loadResourceFromModule(jarResourcePath, packageName);
+		return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
 	}
 
 	@Override
 	public String next() throws RemoteException {
-		return module.next();
+		return moduleHelper.next();
 	}
 
 	@Override
 	public int nextInt() throws RemoteException {
-		return module.nextInt();
+		return moduleHelper.nextInt();
 	}
 	
 	@Override
 	public Map<String, String> getConfigurations() throws RemoteException {
-		return module.getConfigurations();
+		return moduleHelper.getConfigurations();
 	}
 
 	@Override
 	public DeviceDataInterface getInitialDriver( String functionality )
 			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
 				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
-		return module.getInitialDriver( functionality );
+		return moduleHelper.getInitialDriver( functionality );
 	}
 
     /**
@@ -190,7 +190,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
         frame.addWindowListener( new WindowAdapter() {
             public void windowClosing( WindowEvent e ) {
-                exit(); //exit the specific module when the window is closed, not ModuleManager
+                exit(); //exit the specific moduleHelper when the window is closed, not ModuleManager
             }
         });
         
@@ -229,8 +229,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
         }
 		name = IMAGES_LOCATION + name;
 		try {
-			InputStream stream = module.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
-			//InputStream stream = module.loadResourceFromModule(name);
+			InputStream stream = moduleHelper.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
+			//InputStream stream = moduleHelper.loadResourceFromModule(name);
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
 		} catch (Exception e) {
@@ -245,7 +245,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 
 		InputStream stream;
 		try {
-			stream = module.loadResourceFromModule(name, m);
+			stream = moduleHelper.loadResourceFromModule(name, m);
 			if (stream == null ) {
 				log.debug("Could not load the image for the given resource");
 				return null;
