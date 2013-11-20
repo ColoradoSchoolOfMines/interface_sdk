@@ -50,7 +50,7 @@ public class ModuleManagerRunner {
 	
 	public static final String RMI_SERVER_NAME = "ModuleManager";
 	
-	public static final int RMI_REGISTRY_PORT = 1099;
+	public static final int RMI_REGISTRY_PORT = 10123;
 
 	/**
 	 * Main function for the ModuleManager framework. Creates an instance of
@@ -96,17 +96,6 @@ public class ModuleManagerRunner {
 		} catch (ModuleLoadException e) {
 			logger.fatal("Could not load the default module");
 			e.printStackTrace();
-		} catch (HardwareManagerManifestException e) {
-			logger.fatal("Could not load the manfiest for the Hardware Manager");
-			e.printStackTrace();
-		} catch (BadDeviceFunctionalityRequestException e) {
-			logger.fatal("Default module depends on unknown device functionalities");
-			e.printStackTrace();
-		} catch (InvalidConfigurationFileException e) {
-			logger.fatal(e.getMessage());
-			e.printStackTrace();
-		} catch (BadFunctionalityRequestException e) {
-			logger.fatal("Default module depends on unavailable functionality");
 		} catch (RemoteException e) {
 			logger.fatal("Could not create RMI server: " + e.getMessage());
 			e.printStackTrace();

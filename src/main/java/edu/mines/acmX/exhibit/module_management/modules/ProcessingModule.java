@@ -41,6 +41,12 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
 
+import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -68,7 +74,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     
     public ProcessingModule() {
         super();
-        module = new ModuleHelper();
+        module = new ModuleRMIHelper();
         frame = new Frame();
     }
 
@@ -87,13 +93,13 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     /**
      * This function is just a wrapper for ModuleHelper's init function
      *
-     * @see		ModuleHelper.java
+     * @see		ModuleHelper
      *
      * @param   waitForModule   @see ModuleHelper.java
      *
      */
     @Override
-    public void init(CountDownLatch waitForModule) {
+    public void init(CountDownLatch waitForModule) throws RemoteException {
     	module.init(waitForModule);
     }
 
@@ -101,11 +107,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      * This function is just a wrapper for ModuleHelper's finishExecution
      * function
      *
-     * @see	ModuleHelper.java
+     * @see	ModuleHelper
      *
      */
     
-    public void finishExecution(){
+    public void finishExecution() throws RemoteException {
     	module.finishExecution();
     }
     
@@ -160,7 +166,14 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	public Map<String, String> getConfigurations() throws RemoteException {
 		return module.getConfigurations();
 	}
-	
+
+	@Override
+	public DeviceDataInterface getInitialDriver( String functionality )
+			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
+				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
+		return module.getInitialDriver( functionality );
+	}
+
     /**
      * This function does the dirty work for creating a new Processing window.
      * This will call Processing's init() function which does further Processing
@@ -199,8 +212,12 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     public void exit() {
     	super.dispose();
     	frame.dispose();
-    	this.finishExecution();
-    }
+		try {
+			this.finishExecution();
+		} catch ( RemoteException e ) {
+			e.printStackTrace();
+		}
+	}
     
 	// TODO: check if buffered image supports same image types asProcessing
 	// loadImage function

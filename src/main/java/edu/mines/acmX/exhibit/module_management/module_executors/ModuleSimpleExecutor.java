@@ -18,6 +18,7 @@
  */
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
+import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,8 +45,13 @@ public class ModuleSimpleExecutor extends ModuleExecutor {
 
 		CountDownLatch waitForModule = new CountDownLatch(1);
 
-		moduleToRun.init(waitForModule);
-		moduleToRun.execute();
+		try {
+			moduleToRun.init(waitForModule);
+			moduleToRun.execute();
+		} catch ( RemoteException e ) {
+			logger.error("Could not communicate with the mothership");
+			return;
+		}
 
 		try {
 			waitForModule.await();

@@ -23,6 +23,11 @@ import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
@@ -65,12 +70,12 @@ public abstract class CommandlineModule implements ModuleInterface {
     /** 
      * wrapper function for modulehelper's init function
      *
-     * @see ModuleHelper.java
+     * @see ModuleHelper
      *
-     * @param   waitformodule   @see ModuleHelper.java
+     * @param   waitForModule   @see ModuleHelper.java
      */
     @Override
-    public final void init(CountDownLatch waitForModule) {
+    public final void init(CountDownLatch waitForModule) throws RemoteException {
     	module.init(waitForModule);
     }
 
@@ -80,7 +85,7 @@ public abstract class CommandlineModule implements ModuleInterface {
      * implement its own loop inside its implementation for run if so desired.
      */
     @Override
-    public final void execute() {
+    public final void execute() throws RemoteException {
     	this.run();
     	this.finishExecution();
     }
@@ -88,12 +93,11 @@ public abstract class CommandlineModule implements ModuleInterface {
     /** 
      * wrapper function for modulehelper's finishExecution function
      *
-     * @see ModuleHelper.java
+     * @see ModuleHelper
      *
-     * @param   waitformodule   @see ModuleHelper.java
-     */
+	 */
     @Override
-    public final void finishExecution() {
+    public final void finishExecution() throws RemoteException {
     	module.finishExecution();
     }
     
@@ -148,7 +152,14 @@ public abstract class CommandlineModule implements ModuleInterface {
 	public Map<String, String> getConfigurations() throws RemoteException {
 		return module.getConfigurations();
 	}
-	
+
+	@Override
+	public DeviceDataInterface getInitialDriver( String functionality )
+			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
+				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
+		return module.getInitialDriver( functionality );
+	}
+
     /**
      * This function should be overridden to provide the desired functionality
      * in your own CommandlineModule.  You can do whatever you like in this

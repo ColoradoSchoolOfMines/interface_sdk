@@ -25,10 +25,16 @@ import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 
 /**
  * Abstract module for AWT projects. Used to create modules that want to
@@ -47,7 +53,7 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 
 	public AWTModule() {
 		super();
-		moduleHelper = new ModuleHelper();
+		moduleHelper = new ModuleRMIHelper();
 	}
 
 	/**
@@ -67,7 +73,7 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * Calls moduleHelper.init().
 	 */
 	@Override
-	public void init(CountDownLatch waitForModule) {
+	public void init(CountDownLatch waitForModule) throws RemoteException {
 		moduleHelper.init(waitForModule);
 	}
 	
@@ -123,6 +129,13 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 		return moduleHelper.getConfigurations();
 	}
 
+	@Override
+	public DeviceDataInterface getInitialDriver( String functionality )
+			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
+				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
+		return moduleHelper.getInitialDriver( functionality );
+	}
+
 	/**
 	 * Sets up module environment and calls the implemented run function
 	 * of the module.
@@ -146,7 +159,7 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * module devs?
 	 */
 	@Override
-	public void finishExecution() {
+	public void finishExecution() throws RemoteException {
 		moduleHelper.finishExecution();
 	}
 	
@@ -157,7 +170,11 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	@Override
 	public void dispose() {
 		super.dispose();
-		finishExecution();
+		try {
+			finishExecution();
+		} catch ( RemoteException e ) {
+			e.printStackTrace();
+		}
 	}
 
 	

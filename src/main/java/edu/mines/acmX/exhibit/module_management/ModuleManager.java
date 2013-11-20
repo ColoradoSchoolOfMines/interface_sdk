@@ -31,14 +31,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import edu.mines.acmX.exhibit.module_management.module_executors.ModuleSimpleExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
-import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
-import edu.mines.acmX.exhibit.input_services.hardware.HardwareManager;
-import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
-import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoader;
@@ -78,9 +74,6 @@ public class ModuleManager implements ModuleManagerRemote {
 	 */
 	private static volatile ModuleManager instance = null;
 
-	// instance of hw manager
-	private static HardwareManager hardwareInstance = null;
-
 	// config variables
 	private static ModuleManagerMetaData metaData;
 
@@ -113,9 +106,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	// metaData = new ModuleManagerMetaData(defaultModule, pathToModules);
 	// }
 
-	private ModuleManager() throws ManifestLoadException, ModuleLoadException,
-			HardwareManagerManifestException,
-			BadDeviceFunctionalityRequestException {
+	private ModuleManager() throws ManifestLoadException, ModuleLoadException {
 		if (metaData == null) {
 			logger.fatal("ModuleManager must be configured before you can create an instance");
 			throw new ManifestLoadException(
@@ -132,15 +123,6 @@ public class ModuleManager implements ModuleManagerRemote {
 		
 		in = new Scanner(System.in);
 
-		try {
-			HardwareManager.setManifestFilepath(HardwareManager.DEFAULT_MANIFEST_PATH);
-			hardwareInstance = HardwareManager.getInstance();
-			hardwareInstance.setConfigurationFileStore(metaData
-					.getConfigFiles());
-			hardwareInstance.checkPermissions(defaultModuleMetaData.getInputTypes());
-		} catch (HardwareManagerManifestException e) {
-			throw e;
-		}
 		loadDefault = true;
 	}
 
@@ -169,12 +151,9 @@ public class ModuleManager implements ModuleManagerRemote {
 	 * @throws ManifestLoadException
 	 *             When the ModuleManager configuration is incorrect
 	 * @throws ModuleLoadException
-	 * @throws HardwareManagerManifestException
-	 * @throws BadDeviceFunctionalityRequestException
 	 */
 	public static ModuleManager getInstance() throws ManifestLoadException,
-			ModuleLoadException, HardwareManagerManifestException,
-			BadDeviceFunctionalityRequestException {
+			ModuleLoadException {
 		/*
 		 * Now this is a bit tricky here. Please dont change this unless you are
 		 * well read up on threading.
@@ -321,7 +300,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	 * one time we were thinking of checking the module's required input types
 	 * at this point. The reason this is deferred until later (either when the
 	 * module is set to be the next module and/or when the module is loaded is
-	 * because the hardware may be plugged in or unplugged inbetween module meta
+	 * because the hardware may be plugged in or unplugged in between module meta
 	 * data loading and when a module is actually loaded.
 	 */
 	public void checkDependencies() {
@@ -457,14 +436,11 @@ public class ModuleManager implements ModuleManagerRemote {
 	 * document manifest stuff changes to the metaData general integration
 	 * aspect
 	 * 
-	 * @throws InvalidConfigurationFileException
-	 * @throws BadDeviceFunctionalityRequestException
 	 * @throws ModuleLoadException
-	 * @throws BadFunctionalityRequestException 
-	 * 
+	 *
 	 */
-	public void run() throws InvalidConfigurationFileException,
-			BadDeviceFunctionalityRequestException, ModuleLoadException, BadFunctionalityRequestException {
+	public void run() throws
+			ModuleLoadException {
 		while (true) {
 			// create a new Module Executor
 			setupPreRuntime();
@@ -479,8 +455,8 @@ public class ModuleManager implements ModuleManagerRemote {
 		}
 	}
 
-	private void setupPreRuntime() throws InvalidConfigurationFileException,
-			BadDeviceFunctionalityRequestException, ModuleLoadException, BadFunctionalityRequestException {
+	private void setupPreRuntime() throws
+			ModuleLoadException {
 
 		if (loadDefault) {
 			preModuleRuntime(defaultModuleMetaData);
@@ -493,21 +469,6 @@ public class ModuleManager implements ModuleManagerRemote {
 						+ "] could not be loaded");
 				logger.warn("Loading default module");
 				preModuleRuntime(defaultModuleMetaData);
-			} catch (BadDeviceFunctionalityRequestException e) {
-				logger.error("Module [" + nextModuleMetaData.getPackageName()
-						+ "] depends on unknown functionality");
-				logger.warn("Loading default module");
-				preModuleRuntime(defaultModuleMetaData);
-			} catch (InvalidConfigurationFileException e) {
-				logger.error("Module [" + nextModuleMetaData.getPackageName()
-						+ "] depends on unavailable functionality");
-				logger.warn("Loading default module");
-				preModuleRuntime(defaultModuleMetaData);
-			} catch (BadFunctionalityRequestException e) {
-				logger.error("Module [" + nextModuleMetaData.getPackageName()
-						+ "] depends on unavailable functionality");
-				logger.warn("Loading default module");
-				preModuleRuntime(defaultModuleMetaData);
 			}
 		}
 
@@ -518,19 +479,12 @@ public class ModuleManager implements ModuleManagerRemote {
 		loadDefault = true;
 	}
 
-	private void preModuleRuntime(ModuleMetaData mmd)
-			throws BadDeviceFunctionalityRequestException, ModuleLoadException,
-			InvalidConfigurationFileException, BadFunctionalityRequestException {
-		
-		this.moduleExecutor = new ModuleProcessExecutor(mmd.getPackageName()
+	private void preModuleRuntime(ModuleMetaData mmd) throws ModuleLoadException {
+
+		this.moduleExecutor = new ModuleSimpleExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
 				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
 		setCurrentModule(mmd);
-		hardwareInstance.checkPermissions(mmd.getInputTypes());
-		hardwareInstance.setRunningModulePermissions(mmd.getInputTypes());
-		logger.debug("Sending this stuff to hw instance: "
-				+ mmd.getInputTypes());
-		hardwareInstance.resetAllDrivers();
 		logger.info("Loaded module " + mmd.getPackageName());
 	}
 
@@ -598,20 +552,11 @@ public class ModuleManager implements ModuleManagerRemote {
 				throw new ModuleLoadException(
 						"Metadata for the requested module is not available");
 			}
-			logger.debug("The requested input types are: "
-					+ nextModuleMetaData.getInputTypes());
-			hardwareInstance.checkPermissions(nextModuleMetaData
-					.getInputTypes());
 			loadDefault = false;
 			return true;
 		} catch (ModuleLoadException e) {
 			logger.debug("The next module could not be loaded because there is no module meta data available.");
 			loadDefault = true; // dont necessarily need since it wasnt changed.
-			return false;
-		} catch (BadDeviceFunctionalityRequestException e) {
-			logger.debug("The hardware manager does not have functionality for the requested module");
-			// Hardware functionality was not known
-			loadDefault = true; // dont necessarily need since it wanst changed
 			return false;
 		}
 	}
@@ -657,11 +602,14 @@ public class ModuleManager implements ModuleManagerRemote {
 	@Override
 	public ModuleMetaData getModuleMetaData(String packageName) {
 		ModuleMetaData toReturn = moduleConfigs.get(packageName);
-		if (currentModuleMetaData.getOptionalAll()
-				|| currentModuleMetaData.getModuleDependencies().containsKey(
-						packageName)) {
+		if (
+			currentModuleMetaData.getOptionalAll() ||
+			currentModuleMetaData.getModuleDependencies().containsKey(packageName) ||
+			currentModuleMetaData.getPackageName().equals(packageName) // allow module to get its own information
+		) {
 			return toReturn;
 		}
+		// TODO throw exception instead
 		return null;
 
 	}
@@ -734,14 +682,6 @@ public class ModuleManager implements ModuleManagerRemote {
 	private ModuleManager(
 			String notUsedExceptToDifferentiateBetweenTheActualCTor) {
 
-	}
-
-	public static void createHardwareInstance() {
-		try {
-			hardwareInstance = HardwareManager.getInstance();
-		} catch (HardwareManagerManifestException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public String getNextModuleName() {

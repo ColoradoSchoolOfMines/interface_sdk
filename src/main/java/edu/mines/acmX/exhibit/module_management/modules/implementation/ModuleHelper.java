@@ -25,11 +25,13 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 
+import edu.mines.acmX.exhibit.input_services.hardware.*;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
+import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
-import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
@@ -89,16 +91,31 @@ public class ModuleHelper implements ModuleInterface {
 			String msg = "Could not get instance of ModuleManager in ModuleHelper";
 			log.fatal(msg);
 			throw new ModuleManagerCommunicationException();
-		} catch (HardwareManagerManifestException e) {
-			String msg = "Could not get instance of ModuleManager in ModuleHelper";
-			log.fatal(msg);
-			throw new ModuleManagerCommunicationException();
-		} catch (BadDeviceFunctionalityRequestException e) {
-			String msg = "Could not get instance of ModuleManager in ModuleHelper";
-			log.fatal(msg);
-			throw new ModuleManagerCommunicationException();
 		}
 
+	}
+
+	protected HardwareManagerRemote getHardware() throws HardwareManagerCommunicationException,
+			ModuleManagerCommunicationException, BadDeviceFunctionalityRequestException,
+			InvalidConfigurationFileException, BadFunctionalityRequestException {
+		try {
+			HardwareManager hm = HardwareManager.getInstance();
+			Map<String,DependencyType> requestedInputs;
+			try {
+				hm.setConfigurationFileStore(getConfigurations());
+				ModuleMetaData self = getModuleMetaData(getCurrentModulePackageName());
+				requestedInputs = self.getInputTypes();
+			} catch (RemoteException e) {
+				throw new ModuleManagerCommunicationException();
+			}
+			hm.checkPermissions(requestedInputs);
+			hm.setRunningModulePermissions(requestedInputs);
+			hm.resetAllDrivers();
+
+			return hm;
+		} catch (HardwareManagerManifestException e) {
+			throw new HardwareManagerCommunicationException();
+		}
 	}
 
 	// just a slim layer for interfacing with a modulemanager and will return a
@@ -238,4 +255,10 @@ public class ModuleHelper implements ModuleInterface {
 		return getManager().getConfigurations();
 	}
 
+	@Override
+	public DeviceDataInterface getInitialDriver(String functionality) throws RemoteException,
+			BadFunctionalityRequestException, UnknownDriverRequest, InvalidConfigurationFileException,
+			BadDeviceFunctionalityRequestException {
+		return getHardware().getInitialDriver(functionality);
+	}
 }

@@ -18,7 +18,7 @@ public class ModuleRMIHelper extends ModuleHelper {
 	protected ModuleManagerRemote getManager() throws ModuleManagerCommunicationException {
 		Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry("localhost");
+			registry = LocateRegistry.getRegistry("localhost", ModuleManagerRunner.RMI_REGISTRY_PORT);
 			ModuleManagerRemote obj = (ModuleManagerRemote) registry.lookup(ModuleManagerRunner.RMI_SERVER_NAME);
 			log.debug("Got an instance of ModuleManager via RMI?");
 			return obj;

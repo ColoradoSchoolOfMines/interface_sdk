@@ -18,8 +18,10 @@
  */
 package edu.mines.acmX.exhibit.module_management.modules;
 
+import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
+import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerRemote;
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
 
@@ -46,12 +48,12 @@ import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
  * @author Andrew DeMaria
  * @author Austin Diviness
  */
-public interface ModuleInterface extends ModuleManagerRemote {
+public interface ModuleInterface extends ModuleManagerRemote, HardwareManagerRemote {
 
-	public void init(CountDownLatch waitForModule);
+	public void init(CountDownLatch waitForModule) throws RemoteException;
 
-	public void execute();
+	public void execute() throws RemoteException;
 
-	public void finishExecution();
+	public void finishExecution() throws RemoteException;
 
 }
