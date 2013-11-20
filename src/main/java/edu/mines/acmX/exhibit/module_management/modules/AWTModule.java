@@ -69,14 +69,6 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
         return moduleHelper.setNextModule( moduleName );
 	}
 
-	/**
-	 * Calls moduleHelper.init().
-	 */
-	@Override
-	public void init(CountDownLatch waitForModule) throws RemoteException {
-		moduleHelper.init(waitForModule);
-	}
-	
 	@Override
     public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
     	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
@@ -154,27 +146,12 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	}
 
 	/**
-	 * Calls moduleHelper.finishExecution().
-	 * TODO should this be a private function, to discourage its use be 
-	 * module devs?
-	 */
-	@Override
-	public void finishExecution() throws RemoteException {
-		moduleHelper.finishExecution();
-	}
-	
-	/**
 	 * Overrides the Frame dispose method to clean up the module how 
 	 * we want.
 	 */
 	@Override
 	public void dispose() {
 		super.dispose();
-		try {
-			finishExecution();
-		} catch ( RemoteException e ) {
-			e.printStackTrace();
-		}
 	}
 
 	

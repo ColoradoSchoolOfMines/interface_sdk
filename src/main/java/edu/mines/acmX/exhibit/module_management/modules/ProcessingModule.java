@@ -90,31 +90,6 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
         return moduleHelper.setNextModule( moduleName );
     }
 
-    /**
-     * This function is just a wrapper for ModuleHelper's init function
-     *
-     * @see		ModuleHelper
-     *
-     * @param   waitForModule   @see ModuleHelper.java
-     *
-     */
-    @Override
-    public void init(CountDownLatch waitForModule) throws RemoteException {
-		moduleHelper.init( waitForModule );
-    }
-
-    /**
-     * This function is just a wrapper for ModuleHelper's finishExecution
-     * function
-     *
-     * @see	ModuleHelper
-     *
-     */
-    
-    public void finishExecution() throws RemoteException {
-		moduleHelper.finishExecution();
-    }
-    
     @Override
     public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath, m);
@@ -212,11 +187,6 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     public void exit() {
     	super.dispose();
     	frame.dispose();
-		try {
-			this.finishExecution();
-		} catch ( RemoteException e ) {
-			e.printStackTrace();
-		}
 	}
     
 	// TODO: check if buffered image supports same image types asProcessing

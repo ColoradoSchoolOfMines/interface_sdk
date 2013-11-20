@@ -55,7 +55,7 @@ public class ModuleHelperTest {
 			ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.createEmptyInstance();
 		ModuleManager m = ModuleManager.getInstance();
-		m.createHardwareInstance();
+		//m.createHardwareInstance();
 		ModuleMetaData before = new ModuleMetaData(null, null, null, null, null, null, null, null, null, null, true);
 		m.setCurrentModuleMetaData(before);
 		Map<String, ModuleMetaData> meta = new HashMap<String, ModuleMetaData>();

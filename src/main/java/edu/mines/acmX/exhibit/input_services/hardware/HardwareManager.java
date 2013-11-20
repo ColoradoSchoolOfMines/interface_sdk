@@ -548,7 +548,7 @@ public class HardwareManager implements HardwareManagerRemote {
 				// we enter this block is if dependency was required AND not in
 				// our cache.
 				throw new BadFunctionalityRequestException(
-						"Bad functionality requested");
+						"Bad functionality [" + functionality + "] requested");
 			}
 		}
 		// Return our list 

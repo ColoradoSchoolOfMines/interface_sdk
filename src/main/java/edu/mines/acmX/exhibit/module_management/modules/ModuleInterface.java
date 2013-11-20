@@ -50,10 +50,6 @@ import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
  */
 public interface ModuleInterface extends ModuleManagerRemote, HardwareManagerRemote {
 
-	public void init(CountDownLatch waitForModule) throws RemoteException;
-
 	public void execute() throws RemoteException;
-
-	public void finishExecution() throws RemoteException;
 
 }

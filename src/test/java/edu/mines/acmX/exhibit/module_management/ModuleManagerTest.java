@@ -380,7 +380,7 @@ public class ModuleManagerTest {
 		modConfigs.put(a.getPackageName(), a);
 		modConfigs.put(b.getPackageName(), b);
 
-		m.createHardwareInstance();
+		//m.createHardwareInstance();
 		
 		m.setModuleMetaDataMap(modConfigs);
 		m.setCurrentModuleMetaData(a.getPackageName());

@@ -68,18 +68,6 @@ public abstract class CommandlineModule implements ModuleInterface {
 
 
     /**
-     * wrapper function for modulehelper's init function
-     *
-     * @see ModuleHelper
-     *
-     * @param   waitForModule   @see ModuleHelper.java
-     */
-    @Override
-    public final void init(CountDownLatch waitForModule) throws RemoteException {
-		moduleHelper.init( waitForModule );
-    }
-
-    /**
      * This function calls the child classes run method and then finishes
      * execution. The idea is that the implementing CommandlineModule will
      * implement its own loop inside its implementation for run if so desired.
@@ -87,18 +75,6 @@ public abstract class CommandlineModule implements ModuleInterface {
     @Override
     public final void execute() throws RemoteException {
     	this.run();
-    	this.finishExecution();
-    }
-
-    /**
-     * wrapper function for modulehelper's finishExecution function
-     *
-     * @see ModuleHelper
-     *
-	 */
-    @Override
-    public final void finishExecution() throws RemoteException {
-		moduleHelper.finishExecution();
     }
 
     @Override

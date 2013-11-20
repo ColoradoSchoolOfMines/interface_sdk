@@ -65,15 +65,6 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 public class ModuleHelper implements ModuleInterface {
 
 	private static Logger log = LogManager.getLogger(ModuleHelper.class);
-	/**
-	 * The CountDownLatch is used by the ModuleManager to block it from
-	 * continuing executing commands, as some modules may spawn a new thread.
-	 * The CountDownLatch will block until it receives enough 'countdown'
-	 * signals to release the latch. In this case, it is set to one. this needs
-	 * to be counted down before the module exits, or else the ModuleManager
-	 * will be unable to continue.
-	 */
-	protected CountDownLatch countDownWhenDone;
 
 	public ModuleHelper() {
 		// no op
@@ -192,30 +183,6 @@ public class ModuleHelper implements ModuleInterface {
 	@Override
 	public String getCurrentModulePackageName() throws RemoteException {
 		return getManager().getCurrentModulePackageName();
-	}
-
-	/**
-	 * Performs all initialization tasks. Currently, it only sets the CountDown
-	 * latch created by the ModuleManger as a member variable.
-	 * 
-	 * @param waitForModule
-	 *            The CountDownLatch that needs to be counted down on when the
-	 *            module is ready to exit.
-	 */
-	@Override
-	public void init(CountDownLatch waitForModule) {
-		this.countDownWhenDone = waitForModule;
-	}
-
-	/**
-	 * Finishes up any execution of the module. This function counts down on the
-	 * CountDownLatch that is blocking ModuleManager. After this is called,
-	 * ModuleManager should be able to continue to use its run loop.
-	 */
-	@Override
-	public void finishExecution() {
-		log.debug("Releasing latch");
-		this.countDownWhenDone.countDown();
 	}
 
 	@Override
