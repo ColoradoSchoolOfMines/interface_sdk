@@ -54,9 +54,7 @@ import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
-import processing.core.PApplet;
-import processing.core.PConstants;
-import processing.core.PImage;
+import processing.core.*;
 
 public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
@@ -143,6 +141,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	}
 
 	@Override
+	public String getPathToModules() throws RemoteException {
+		return moduleHelper.getPathToModules();
+	}
+
+	@Override
 	public DeviceDataInterface getInitialDriver( String functionality )
 			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
 				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
@@ -199,7 +202,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
         }
 		name = IMAGES_LOCATION + name;
 		try {
-			InputStream stream = moduleHelper.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
+			InputStream stream = loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
 			//InputStream stream = moduleHelper.loadResourceFromModule(name);
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);

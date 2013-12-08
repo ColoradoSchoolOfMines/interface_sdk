@@ -18,12 +18,16 @@
  */
 package edu.mines.acmX.exhibit.module_management.modules;
 
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerRemote;
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
+import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 /**
  * Interface that all Modules must implement in some way or another. Contains
@@ -52,4 +56,14 @@ public interface ModuleInterface extends ModuleManagerRemote, HardwareManagerRem
 
 	public void execute() throws RemoteException;
 
+	public InputStream loadResourceFromModule( String jarResourcePath,
+											   String packageName )
+			throws RemoteException, ManifestLoadException, ModuleLoadException;
+
+	public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData md )
+			throws RemoteException, ManifestLoadException,
+				   ModuleLoadException;
+
+	public InputStream loadResourceFromModule( String jarResourcePath )
+			throws RemoteException, ManifestLoadException, ModuleLoadException;
 }

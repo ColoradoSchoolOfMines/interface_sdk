@@ -122,6 +122,11 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	}
 
 	@Override
+	public String getPathToModules() throws RemoteException {
+		return moduleHelper.getPathToModules();
+	}
+
+	@Override
 	public DeviceDataInterface getInitialDriver( String functionality )
 			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
 				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {

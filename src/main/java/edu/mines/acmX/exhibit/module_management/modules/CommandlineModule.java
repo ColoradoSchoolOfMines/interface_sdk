@@ -108,6 +108,11 @@ public abstract class CommandlineModule implements ModuleInterface {
 	}
 
 	@Override
+	public String getPathToModules() throws RemoteException {
+		return moduleHelper.getPathToModules();
+	}
+
+	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			String packageName) throws RemoteException, ManifestLoadException,
 			ModuleLoadException {

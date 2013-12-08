@@ -411,6 +411,11 @@ public class ModuleManager implements ModuleManagerRemote {
 		return metaData.getConfigFiles();
 	}
 
+	@Override
+	public String getPathToModules() throws RemoteException {
+		return metaData.getPathToModules();
+	}
+
 	/**
 	 * Main run loop of the ModuleManager. Each loops sets the next module to
 	 * the default module specified, then runs the current module's init
@@ -559,36 +564,6 @@ public class ModuleManager implements ModuleManagerRemote {
 			loadDefault = true; // dont necessarily need since it wasnt changed.
 			return false;
 		}
-	}
-
-	@Override
-	public InputStream loadResourceFromModule(String jarResourcePath,
-			String packageName) {
-		ModuleMetaData data = moduleConfigs.get(packageName);
-		logger.debug("We will now load from the ModuleLoader" );
-		try {
-			return ModuleLoader.loadResource(metaData.getPathToModules() + "/"
-					+ data.getJarFileName(), data, this.getClass()
-					.getClassLoader(), jarResourcePath);
-		} catch (MalformedURLException e) {
-			logger.warn("Could not load the  given resource do to a malormed path");
-			return null;
-		} catch (ModuleLoadException e) {
-			logger.warn("Could not load the given resource because the Modules jar could not be loaded");
-			return null;
-		}
-	}
-	
-	@Override
-	public InputStream loadResourceFromModule(String jarResourcePath,
-			ModuleMetaData md) {
-		return loadResourceFromModule(jarResourcePath, md.getPackageName());
-	}
-
-	@Override
-	public InputStream loadResourceFromModule(String jarResourcePath) {
-		return loadResourceFromModule(jarResourcePath,
-				currentModuleMetaData.getPackageName());
 	}
 
 	/**

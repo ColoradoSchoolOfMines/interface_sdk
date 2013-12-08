@@ -19,6 +19,7 @@
 package edu.mines.acmX.exhibit.module_management.modules.implementation;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.InputMismatchException;
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import edu.mines.acmX.exhibit.input_services.hardware.*;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoader;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -133,21 +135,38 @@ public class ModuleHelper implements ModuleInterface {
 	public InputStream loadResourceFromModule(String jarResourcePath,
 			ModuleMetaData m) throws ManifestLoadException,
 			ModuleLoadException, RemoteException {
-		return getManager().loadResourceFromModule(jarResourcePath,
-				m.getPackageName());
-
+		log.debug("We will now load resource from the ModuleLoader" );
+		try {
+			return ModuleLoader.loadResource( getManager().getPathToModules() + "/"
+					+ m.getJarFileName(), m, this.getClass()
+					.getClassLoader(), jarResourcePath );
+		} catch (MalformedURLException e) {
+			log.warn("Could not load the  given resource do to a malormed path");
+			return null;
+		} catch (ModuleLoadException e) {
+			log.warn("Could not load the given resource because the Modules jar could not be loaded");
+			return null;
+		}
 
 	}
 
 	@Override
 	public InputStream loadResourceFromModule(String jarResourcePath)
 			throws ManifestLoadException, ModuleLoadException, RemoteException {
-		return getManager().loadResourceFromModule(jarResourcePath);
+		return loadResourceFromModule( jarResourcePath, getManager().getCurrentModulePackageName());
+	}
+
+	@Override
+	public InputStream loadResourceFromModule( String jarResourcePath, String packageName )
+			throws RemoteException, ManifestLoadException, ModuleLoadException {
+
+		return loadResourceFromModule( jarResourcePath, getManager().getModuleMetaData( packageName ) );
+
 	}
 
 	@Override
 	public ModuleMetaData getModuleMetaData(String packageName) throws ModuleManagerCommunicationException, RemoteException {
-		return getManager().getModuleMetaData(packageName);
+		return getManager().getModuleMetaData( packageName );
 	}
 
 	@Override
@@ -171,16 +190,6 @@ public class ModuleHelper implements ModuleInterface {
 	}
 
 	@Override
-	public InputStream loadResourceFromModule(String jarResourcePath,
-			String packageName) throws RemoteException, ManifestLoadException,
-			ModuleLoadException {
-
-		return getManager()
-				.loadResourceFromModule(jarResourcePath, packageName);
-
-	}
-
-	@Override
 	public String next() throws RemoteException {
 		return getManager().next();
 
@@ -194,6 +203,11 @@ public class ModuleHelper implements ModuleInterface {
 	@Override
 	public Map<String, String> getConfigurations() throws RemoteException {
 		return getManager().getConfigurations();
+	}
+
+	@Override
+	public String getPathToModules() throws RemoteException {
+		return getManager().getPathToModules();
 	}
 
 	@Override

@@ -44,15 +44,8 @@ public interface ModuleManagerRemote extends Remote, ScannerInterface {
 	public ModuleMetaData getModuleMetaData(String packageName)
 			throws RemoteException;
 
-	public InputStream loadResourceFromModule(String jarResourcePath,
-			String packageName) throws RemoteException, ManifestLoadException, ModuleLoadException;
-	
-	public InputStream loadResourceFromModule(String jarResourcePath,
-			ModuleMetaData md) throws RemoteException, ManifestLoadException, ModuleLoadException;
-
-	public InputStream loadResourceFromModule(String jarResourcePath)
-			throws RemoteException, ManifestLoadException, ModuleLoadException;
-
 	public Map<String,String> getConfigurations() throws RemoteException;
+
+	public String getPathToModules() throws RemoteException;
 
 }
