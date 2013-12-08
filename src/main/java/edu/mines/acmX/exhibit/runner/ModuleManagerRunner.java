@@ -18,6 +18,11 @@
  */
 package edu.mines.acmX.exhibit.runner;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -35,12 +40,17 @@ import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestExc
 import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerManifestException;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.ModuleManager;
+import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 
 public class ModuleManagerRunner {
 
 	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
+	
+	public static final String RMI_SERVER_NAME = "ModuleManager";
+	
+	public static final int RMI_REGISTRY_PORT = 10123;
 
 	/**
 	 * Main function for the ModuleManager framework. Creates an instance of
@@ -72,6 +82,7 @@ public class ModuleManagerRunner {
 				}
 				ModuleManager m;
 				m = ModuleManager.getInstance();
+				publicizeRmiInterface(m, RMI_REGISTRY_PORT);
 				m.run();
 			}
 
@@ -85,20 +96,18 @@ public class ModuleManagerRunner {
 		} catch (ModuleLoadException e) {
 			logger.fatal("Could not load the default module");
 			e.printStackTrace();
-		} catch (HardwareManagerManifestException e) {
-			logger.fatal("Could not load the manfiest for the Hardware Manager");
-			e.printStackTrace();
-		} catch (BadDeviceFunctionalityRequestException e) {
-			logger.fatal("Default module depends on unknown device functionalities");
-			e.printStackTrace();
-		} catch (InvalidConfigurationFileException e) {
-			logger.fatal(e.getMessage());
-			e.printStackTrace();
-		} catch (BadFunctionalityRequestException e) {
-			logger.fatal("Default module depends on unavailable functionality");
+		} catch (RemoteException e) {
+			logger.fatal("Could not create RMI server: " + e.getMessage());
 			e.printStackTrace();
 		}
 
+	}
+	
+	private static void publicizeRmiInterface(ModuleManager m, int registry_port ) throws RemoteException {
+		ModuleManagerRemote remote = (ModuleManagerRemote) UnicastRemoteObject.exportObject(m,0);
+		Registry reg = LocateRegistry.createRegistry(registry_port);
+		logger.info("java RMI registry created.");
+		reg.rebind(RMI_SERVER_NAME, remote);
 	}
 
 	private static void printHelp(Options opts) {
@@ -125,6 +134,7 @@ public class ModuleManagerRunner {
 		return options;
 	}
 
+	@SuppressWarnings("static-access")
 	private static Option optionsUsingManifest() {
 		return OptionBuilder
 				.withLongOpt("manifest")

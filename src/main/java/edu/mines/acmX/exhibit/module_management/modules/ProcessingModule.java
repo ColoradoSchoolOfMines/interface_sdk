@@ -35,20 +35,26 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
 
+import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
-
-import processing.core.PApplet;
-import processing.core.PConstants;
-import processing.core.PImage;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
+import processing.core.*;
 
 public abstract class ProcessingModule extends PApplet implements ModuleInterface {
 
@@ -58,7 +64,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * uses a ModuleHelper so that it can extend PApplet while keeping the 
 	 * functionality of a Module.
 	 */
-    private final ModuleHelper moduleHelper;
+    private final ModuleInterface moduleHelper;
     
     private Frame frame;
     
@@ -66,7 +72,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     
     public ProcessingModule() {
         super();
-        moduleHelper = new ModuleHelper();
+        moduleHelper = new ModuleRMIHelper();
         frame = new Frame();
     }
 
@@ -74,56 +80,78 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * Delegation method, wraps ModuleHelper's setNextModuleToLoad function
 	 * in its own method.
 	 *
-	 * @param	moduleName	Package name of next module to load
+	 * @param	moduleName	Package name of next moduleHelper to load
+	 * @throws RemoteException 
 	 */
-    public boolean setNextModuleToLoad( String moduleName ) {
-        return moduleHelper.setNextModuleToLoad( moduleName );
+    @Override
+    public boolean setNextModule( String moduleName ) throws RemoteException {
+        return moduleHelper.setNextModule( moduleName );
     }
 
-    /**
-     * This function is just a wrapper for ModuleHelper's init function
-     *
-     * @see		ModuleHelper.java
-     *
-     * @param   waitForModule   @see ModuleHelper.java
-     *
-     */
-    public void init(CountDownLatch waitForModule) {
-    	moduleHelper.init(waitForModule);
-    }
-
-    /**
-     * This function is just a wrapper for ModuleHelper's finishExecution
-     * function
-     *
-     * @see	ModuleHelper.java
-     *
-     */
-    
-    public void finishExecution(){
-    	moduleHelper.finishExecution();
-    }
-    
-    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
-    	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
+    @Override
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
+		return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
-	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+    @Override
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
 	
-	public ModuleMetaData getModuleMetaData(String packageName) {
+    @Override
+	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
 		return moduleHelper.getModuleMetaData(packageName);
 	}
 	
-	public String[] getAllAvailableModules() {
+    @Override
+	public String[] getAllAvailableModules() throws RemoteException {
 		return moduleHelper.getAllAvailableModules();
 	}
 	
-	public String getCurrentModulePackageName() {
+    @Override
+	public String getCurrentModulePackageName() throws RemoteException {
         return moduleHelper.getCurrentModulePackageName();
     }
+    
+	@Override
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
+		return moduleHelper.getDefaultModuleMetaData();
+	}
+
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			String packageName) throws RemoteException, ManifestLoadException,
+			ModuleLoadException {
+		return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	@Override
+	public String next() throws RemoteException {
+		return moduleHelper.next();
+	}
+
+	@Override
+	public int nextInt() throws RemoteException {
+		return moduleHelper.nextInt();
+	}
 	
+	@Override
+	public Map<String, String> getConfigurations() throws RemoteException {
+		return moduleHelper.getConfigurations();
+	}
+
+	@Override
+	public String getPathToModules() throws RemoteException {
+		return moduleHelper.getPathToModules();
+	}
+
+	@Override
+	public DeviceDataInterface getInitialDriver( String functionality )
+			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
+				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
+		return moduleHelper.getInitialDriver( functionality );
+	}
+
     /**
      * This function does the dirty work for creating a new Processing window.
      * This will call Processing's init() function which does further Processing
@@ -132,6 +160,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      *
      * TODO try to run PApplet without creating a new frame.
      */
+    @Override
     public void execute(){
     	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
     	frame.setUndecorated(true); //disable bordering
@@ -139,7 +168,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
         frame.addWindowListener( new WindowAdapter() {
             public void windowClosing( WindowEvent e ) {
-                exit(); //exit the specific module when the window is closed, not ModuleManager
+                exit(); //exit the specific moduleHelper when the window is closed, not ModuleManager
             }
         });
         
@@ -161,8 +190,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     public void exit() {
     	super.dispose();
     	frame.dispose();
-    	this.finishExecution();
-    }
+	}
     
 	// TODO: check if buffered image supports same image types asProcessing
 	// loadImage function
@@ -174,8 +202,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
         }
 		name = IMAGES_LOCATION + name;
 		try {
-			InputStream stream = moduleHelper.loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
-			//InputStream stream = module.loadResourceFromModule(name);
+			InputStream stream = loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
+			//InputStream stream = moduleHelper.loadResourceFromModule(name);
 			BufferedImage buf = ImageIO.read(stream);
 			return buffImagetoPImage(buf);
 		} catch (Exception e) {
@@ -219,6 +247,8 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		bimg.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
 		return img;
 	}
+
+
 
 
 

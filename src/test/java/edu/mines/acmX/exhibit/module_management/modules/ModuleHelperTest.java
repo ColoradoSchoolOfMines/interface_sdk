@@ -33,7 +33,7 @@ import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
-import edu.mines.acmX.exhibit.module_management.modules.ModuleHelper;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
 
 /**
  * Unit test for ModuleHelper.
@@ -55,7 +55,7 @@ public class ModuleHelperTest {
 			ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.createEmptyInstance();
 		ModuleManager m = ModuleManager.getInstance();
-		m.createHardwareInstance();
+		//m.createHardwareInstance();
 		ModuleMetaData before = new ModuleMetaData(null, null, null, null, null, null, null, null, null, null, true);
 		m.setCurrentModuleMetaData(before);
 		Map<String, ModuleMetaData> meta = new HashMap<String, ModuleMetaData>();
@@ -68,7 +68,7 @@ public class ModuleHelperTest {
 
 
 		ModuleHelper mod = new ModuleHelper();
-		assertTrue(mod.setNextModuleToLoad(nextToLoad));
+		assertTrue(mod.setNextModule(nextToLoad));
 		assertEquals(nextToLoad, m.getNextModuleName());
 	}
 
