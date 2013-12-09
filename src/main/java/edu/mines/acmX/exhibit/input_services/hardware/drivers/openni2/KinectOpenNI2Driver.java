@@ -22,6 +22,7 @@ package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2;
 import java.awt.Dimension;
 
 import com.primesense.nite.*;
+import com.primesense.nite.Point3D;
 import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
@@ -39,12 +40,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.List;
 
-import org.openni.Device;
-import org.openni.OpenNI;
-import org.openni.VideoStream;
-import org.openni.VideoFrameRef;
-import org.openni.SensorType;
+import org.openni.*;
 
 /**
  * Kinect driver that provides depth and rgb image functionality. Uses the
@@ -95,13 +93,19 @@ public class KinectOpenNI2Driver implements DriverInterface,
 			destroy(); // reset driver
 
 		loaded = true;
+
 		if(!init){
 			init = true;
 			OpenNI.initialize();
 			NiTE.initialize();
 		}
 
-		device = Device.open();
+		List<DeviceInfo> devicesInfo = OpenNI.enumerateDevices();
+		if (devicesInfo.size() == 0) {
+			throw new DriverException("No connected devices");
+		}
+
+		device = Device.open(devicesInfo.get(0).getUri());
 		if(device == null)
 			throw new DriverException("No connected devices");
 

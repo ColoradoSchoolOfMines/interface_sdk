@@ -30,6 +30,7 @@
 						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2.KinectOpenNI2Driver">
 			<provides name="rgbimage" />
 			<provides name="depth" />
+            <provides name="handtracking" />
 		</device>
 	</devices>
 
