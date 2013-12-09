@@ -68,7 +68,7 @@ public class ModuleHelper implements ModuleInterface {
 
 	private static Logger log = LogManager.getLogger(ModuleHelper.class);
 
-    private boolean hardwareFirstRun = false;
+    private boolean hardwareFirstRun = true;
 
 	public ModuleHelper() {
 		// no op
@@ -107,7 +107,7 @@ public class ModuleHelper implements ModuleInterface {
                 hm.checkPermissions(requestedInputs);
                 hm.setRunningModulePermissions(requestedInputs);
                 hm.resetAllDrivers();
-                hardwareFirstRun = true;
+                hardwareFirstRun = false;
             }
 			return hm;
 		} catch (HardwareManagerManifestException e) {
