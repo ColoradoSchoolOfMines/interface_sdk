@@ -68,6 +68,8 @@ public class ModuleHelper implements ModuleInterface {
 
 	private static Logger log = LogManager.getLogger(ModuleHelper.class);
 
+    private boolean hardwareFirstRun = false;
+
 	public ModuleHelper() {
 		// no op
 	}
@@ -93,18 +95,20 @@ public class ModuleHelper implements ModuleInterface {
 			InvalidConfigurationFileException, BadFunctionalityRequestException {
 		try {
 			HardwareManager hm = HardwareManager.getInstance();
-			Map<String,DependencyType> requestedInputs;
-			try {
-				hm.setConfigurationFileStore(getConfigurations());
-				ModuleMetaData self = getModuleMetaData(getCurrentModulePackageName());
-				requestedInputs = self.getInputTypes();
-			} catch (RemoteException e) {
-				throw new ModuleManagerCommunicationException();
-			}
-			hm.checkPermissions(requestedInputs);
-			hm.setRunningModulePermissions(requestedInputs);
-			hm.resetAllDrivers();
-
+            if( hardwareFirstRun ) {
+                Map<String,DependencyType> requestedInputs;
+                try {
+                    hm.setConfigurationFileStore(getConfigurations());
+                    ModuleMetaData self = getModuleMetaData(getCurrentModulePackageName());
+                    requestedInputs = self.getInputTypes();
+                } catch (RemoteException e) {
+                    throw new ModuleManagerCommunicationException();
+                }
+                hm.checkPermissions(requestedInputs);
+                hm.setRunningModulePermissions(requestedInputs);
+                hm.resetAllDrivers();
+                hardwareFirstRun = true;
+            }
 			return hm;
 		} catch (HardwareManagerManifestException e) {
 			throw new HardwareManagerCommunicationException();
