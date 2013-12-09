@@ -19,38 +19,51 @@
 package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
+import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerRemote;
+import edu.mines.acmX.exhibit.module_management.ModuleManager;
+import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
 
 /**
- * Interface that all Modules must implement in some way or another.
- * Contains the functions that are needed to properly interact with
- * Module Manager.
- *
- * @author	Andrew DeMaria
- * @author	Austin Diviness
+ * Interface that all Modules must implement in some way or another. Contains
+ * the functions that are needed to properly interact with Module Manager.
+ * 
+ * Design note: Extending {@link ModuleManagerRemote} makes it so that we can guarantee
+ * that modules have the full breadth of communications available from the
+ * {@link ModuleManager}. We dont use this class directly because methods such as
+ * {@link #init(CountDownLatch)} and {@link #execute()} are outside of the scope
+ * of {@link ModuleManager} communication but are necessary for module lifetime
+ * management.
+ * 
+ * WARNING
+ * 
+ * Please be careful modifying this interface as the module delegators (
+ * {@link ProcessingModule}, {@link CommandlineModule}, etc) are vulnerable to
+ * not stopping java from compiling successfully even though a new method has
+ * been added to one of the interfaces. So, if you modify any of the interfaces
+ * relevant to the module delegators, please check to make sure that you have
+ * added the proper method to EACH of the delegators
+ * 
+ * @author Andrew DeMaria
+ * @author Austin Diviness
  */
-public interface ModuleInterface {
+public interface ModuleInterface extends ModuleManagerRemote, HardwareManagerRemote {
 
-    public boolean setNextModuleToLoad( String moduleName );
+	public void execute() throws RemoteException;
 
-	public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException;
+	public InputStream loadResourceFromModule( String jarResourcePath,
+											   String packageName )
+			throws RemoteException, ManifestLoadException, ModuleLoadException;
 
-	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException;
-	
-	public ModuleMetaData getModuleMetaData(String packageName);
-	
-	public String[] getAllAvailableModules();
+	public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData md )
+			throws RemoteException, ManifestLoadException,
+				   ModuleLoadException;
 
-	public void init(CountDownLatch waitForModule);
-	
-	public void execute();
-	
-	public void finishExecution();
-
+	public InputStream loadResourceFromModule( String jarResourcePath )
+			throws RemoteException, ManifestLoadException, ModuleLoadException;
 }
-
-

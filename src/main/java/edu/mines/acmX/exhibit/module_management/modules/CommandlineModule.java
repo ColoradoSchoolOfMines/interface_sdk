@@ -19,11 +19,20 @@
 package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.io.InputStream;
+import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 
 /**
  * Non graphical versions of Module should extend from this.
@@ -37,11 +46,11 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * allows CommandlineModule to mimic multiple inheritence by 
 	 * using delegation to wrap ModuleHelper's function in its own
 	 */
-    private final ModuleHelper moduleHelper;
+    private final ModuleInterface moduleHelper;
 
     public CommandlineModule() {
         super();
-        moduleHelper = new ModuleHelper();
+        moduleHelper = new ModuleRMIHelper();
     }
 
 	/**
@@ -50,64 +59,88 @@ public abstract class CommandlineModule implements ModuleInterface {
 	 * @param	moduleName	Package name of next Module to load
 	 *
 	 * @return				true if loaded, false otherwise
+	 * @throws RemoteException
 	 */
-    public boolean setNextModuleToLoad( String moduleName ) {
-        return moduleHelper.setNextModuleToLoad( moduleName );
-    }
+    @Override
+    public boolean setNextModule( String moduleName ) throws RemoteException {
+		return moduleHelper.setNextModule(moduleName);
+	}
 
-
-    /** 
-     * wrapper function for modulehelper's init function
-     *
-     * @see ModuleHelper.java
-     *
-     * @param   waitformodule   @see ModuleHelper.java
-     */
-    public final void init(CountDownLatch waitForModule) {
-    	moduleHelper.init(waitForModule);
-    }
 
     /**
      * This function calls the child classes run method and then finishes
      * execution. The idea is that the implementing CommandlineModule will
      * implement its own loop inside its implementation for run if so desired.
      */
-    public final void execute() {
+    @Override
+    public final void execute() throws RemoteException {
     	this.run();
-    	this.finishExecution();
     }
 
-    /** 
-     * wrapper function for modulehelper's finishExecution function
-     *
-     * @see ModuleHelper.java
-     *
-     * @param   waitformodule   @see ModuleHelper.java
-     */
-    public final void finishExecution() {
-    	moduleHelper.finishExecution();
-    }
-    
-    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
-    	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
+    @Override
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
+		return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
-	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+    @Override
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
-	
-	public ModuleMetaData getModuleMetaData(String packageName) {
+
+    @Override
+	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
 		return moduleHelper.getModuleMetaData(packageName);
 	}
-	
-	public String[] getAllAvailableModules() {
+
+    @Override
+	public String[] getAllAvailableModules() throws RemoteException {
 		return moduleHelper.getAllAvailableModules();
 	}
-	
-	public String getCurrentModulePackageName() {
+
+    @Override
+	public String getCurrentModulePackageName() throws RemoteException {
         return moduleHelper.getCurrentModulePackageName();
     }
-    
+
+	@Override
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
+		return moduleHelper.getDefaultModuleMetaData();
+	}
+
+	@Override
+	public String getPathToModules() throws RemoteException {
+		return moduleHelper.getPathToModules();
+	}
+
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			String packageName) throws RemoteException, ManifestLoadException,
+			ModuleLoadException {
+		return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	@Override
+	public String next() throws RemoteException {
+		return moduleHelper.next();
+	}
+
+	@Override
+	public int nextInt() throws RemoteException {
+		return moduleHelper.nextInt();
+	}
+
+	@Override
+	public Map<String, String> getConfigurations() throws RemoteException {
+		return moduleHelper.getConfigurations();
+	}
+
+	@Override
+	public DeviceDataInterface getInitialDriver( String functionality )
+			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
+				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
+		return moduleHelper.getInitialDriver( functionality );
+	}
+
     /**
      * This function should be overridden to provide the desired functionality
      * in your own CommandlineModule.  You can do whatever you like in this

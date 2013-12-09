@@ -72,7 +72,7 @@ import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
  * 
  */
 
-public class HardwareManager {
+public class HardwareManager implements HardwareManagerRemote {
 
 	private static final Logger log = LogManager
 			.getLogger(HardwareManager.class);
@@ -548,7 +548,7 @@ public class HardwareManager {
 				// we enter this block is if dependency was required AND not in
 				// our cache.
 				throw new BadFunctionalityRequestException(
-						"Bad functionality requested");
+						"Bad functionality [" + functionality + "] requested");
 			}
 		}
 		// Return our list 
@@ -566,6 +566,7 @@ public class HardwareManager {
 	 * @throws UnknownDriverRequest
 	 * @throws InvalidConfigurationFileException 
 	 */
+	@Override
 	public DeviceDataInterface getInitialDriver(String functionality)
 			throws BadFunctionalityRequestException, UnknownDriverRequest,
 			InvalidConfigurationFileException {
