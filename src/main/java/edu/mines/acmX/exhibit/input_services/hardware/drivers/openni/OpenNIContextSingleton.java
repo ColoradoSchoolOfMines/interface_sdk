@@ -18,10 +18,10 @@
  */
 package edu.mines.acmX.exhibit.input_services.hardware.drivers.openni;
 
-import org.OpenNI.Context;
-import org.OpenNI.GeneralException;
-import org.OpenNI.OutArg;
-import org.OpenNI.ScriptNode;
+import org.openni.Context;
+import org.openni.GeneralException;
+import org.openni.OutArg;
+import org.openni.ScriptNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
