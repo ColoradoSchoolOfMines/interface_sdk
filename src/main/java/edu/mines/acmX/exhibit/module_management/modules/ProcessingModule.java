@@ -177,21 +177,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     	frame.setVisible(true);
         super.init();
     }
-    
-    /**
-     * This function overrides the Processing default exit() function.  The
-     * reasons for doing so is that Processing will call a System.exit() which
-     * will shutdown both the ModuleManager and Module.  Since we do not want
-     * this we explicitly call the dispose function to clean up any resources
-     * and then call finishExecution to allow ModuleManager to take over.
-     *
-     */
-    @Override
-    public void exit() {
-    	super.dispose();
-    	frame.dispose();
-	}
-    
+
 	// TODO: check if buffered image supports same image types asProcessing
 	// loadImage function
 	@Override
