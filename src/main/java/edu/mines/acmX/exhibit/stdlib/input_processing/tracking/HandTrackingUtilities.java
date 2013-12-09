@@ -18,9 +18,9 @@
  */
 package edu.mines.acmX.exhibit.stdlib.input_processing.tracking;
 
-import org.openni.DepthGenerator;
-import org.openni.Point3D;
-import org.openni.StatusException;
+import org.OpenNI.DepthGenerator;
+import org.OpenNI.Point3D;
+import org.OpenNI.StatusException;
 
 import edu.mines.acmX.exhibit.stdlib.graphics.Coordinate3D;
 

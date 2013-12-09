@@ -24,21 +24,21 @@ import java.nio.ShortBuffer;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.GestureTrackerInterface;
 import edu.mines.acmX.exhibit.stdlib.input_processing.receivers.Gesture;
-import org.openni.ActiveHandEventArgs;
-import org.openni.Context;
-import org.openni.DepthGenerator;
-import org.openni.DepthMap;
-import org.openni.DepthMetaData;
-import org.openni.GeneralException;
-import org.openni.GestureGenerator;
-import org.openni.GestureRecognizedEventArgs;
-import org.openni.HandsGenerator;
-import org.openni.IObservable;
-import org.openni.IObserver;
-import org.openni.ImageGenerator;
-import org.openni.ImageMetaData;
-import org.openni.InactiveHandEventArgs;
-import org.openni.StatusException;
+import org.OpenNI.ActiveHandEventArgs;
+import org.OpenNI.Context;
+import org.OpenNI.DepthGenerator;
+import org.OpenNI.DepthMap;
+import org.OpenNI.DepthMetaData;
+import org.OpenNI.GeneralException;
+import org.OpenNI.GestureGenerator;
+import org.OpenNI.GestureRecognizedEventArgs;
+import org.OpenNI.HandsGenerator;
+import org.OpenNI.IObservable;
+import org.OpenNI.IObserver;
+import org.OpenNI.ImageGenerator;
+import org.OpenNI.ImageMetaData;
+import org.OpenNI.InactiveHandEventArgs;
+import org.OpenNI.StatusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -114,22 +114,19 @@ public class KinectOpenNIDriver implements DriverInterface,
 			HardwareManager hm = HardwareManager.getInstance();
 			String canName = KinectOpenNIDriver.class.getCanonicalName();
 			if (!hm.hasConfigFile(canName)) {
-				log.error("Could not find openni1.5 config file");
 				throw new InvalidConfigurationFileException("Missing " +
 						canName +
 						" config file");
 			}
-			OpenNIContextSingleton.setConfigurationFile( hm.getConfigFile( canName ) );
+			OpenNIContextSingleton.setConfigurationFile(hm.getConfigFile(canName));
 			context = OpenNIContextSingleton.getContext();
 		} catch (HardwareManagerManifestException e) {
 			// We should never be here, and it should be caught by the
 			// ModuleManager
 			log.error("HardwareManager Manifest Exception");
 		} catch (OpenNIConfigurationException e){
-			log.error("OpenNI1.5 config file was invalid");
 			throw new InvalidConfigurationFileException("Invalid OpenNI configuration file.");
 		}  catch (GeneralException e){
-			log.error("Openni1.5 threw a general exception when trying to create a context");
 			throw new DriverException("Exception in OpenNI");
 		}
 
@@ -163,7 +160,6 @@ public class KinectOpenNIDriver implements DriverInterface,
 					new Dimension(depthWidth, depthHeight));
 
 		} catch (GeneralException e){
-			log.error("Openni threw a general exception when getting data");
 			throw new DriverException("Exception in OpenNI");
 		}
 	}

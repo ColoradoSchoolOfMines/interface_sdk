@@ -36,7 +36,7 @@ public class Coordinate3D {
 		this.Z = z;
 	}
 	
-	public Coordinate3D(org.openni.Point3D point) {
+	public Coordinate3D(org.OpenNI.Point3D point) {
 		this(point.getX(), point.getY(), point.getZ());
 	}
 	

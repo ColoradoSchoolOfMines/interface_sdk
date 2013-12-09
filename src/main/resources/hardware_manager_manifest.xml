@@ -26,6 +26,11 @@
 			<provides name="handtracking" />
             <provides name="gesturetracking" />
 		</device>
+		<device name="kinectopenni2"
+						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2.KinectOpenNI2Driver">
+			<provides name="rgbimage" />
+			<provides name="depth" />
+		</device>
 	</devices>
 
 </manifest>
