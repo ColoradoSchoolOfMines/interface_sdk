@@ -16,29 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.mines.acmX.exhibit.module_management.modules;
+package edu.mines.acmX.exhibit.module_management;
 
 import java.io.InputStream;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.concurrent.CountDownLatch;
+import java.util.Map;
 
-import edu.mines.acmX.exhibit.input_services.hardware.HardwareManagerRemote;
-import edu.mines.acmX.exhibit.module_management.ModuleManager;
-import edu.mines.acmX.exhibit.module_management.ModuleManagerRemote;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.CommandlineModule;
+import edu.mines.acmX.exhibit.module_management.modules.ProcessingModule;
 
 /**
- * Interface that all Modules must implement in some way or another. Contains
- * the functions that are needed to properly interact with Module Manager.
+ * The ModuleManagerRemote class defines the interaction between ModuleManager
+ * and its modules. This interface will be used to define the stub for Remote
+ * Method Invocation (RMI).
  * 
- * Design note: Extending {@link ModuleManagerRemote} makes it so that we can guarantee
- * that modules have the full breadth of communications available from the
- * {@link ModuleManager}. We dont use this class directly because methods such as
- * {@link #init(CountDownLatch)} and {@link #execute()} are outside of the scope
- * of {@link ModuleManager} communication but are necessary for module lifetime
- * management.
+ * Note the ScannerInterface was added to make it possible to delegate actions
+ * with System.in to the ModuleManager so that we can execute in separate
+ * processes (see CLIModuleLauncher (cltest))
  * 
  * WARNING
  * 
@@ -49,21 +47,23 @@ import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
  * relevant to the module delegators, please check to make sure that you have
  * added the proper method to EACH of the delegators
  * 
- * @author Andrew DeMaria
- * @author Austin Diviness
+ * @author andrew
+ * 
  */
-public interface ModuleInterface extends ModuleManagerRemote, HardwareManagerRemote {
+public interface ModuleManagerRemote extends Remote, ScannerInterface {
+	public boolean setNextModule(String name) throws RemoteException;
 
-	public void execute() throws RemoteException;
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException;
 
-	public InputStream loadResourceFromModule( String jarResourcePath,
-											   String packageName )
-			throws RemoteException, ManifestLoadException, ModuleLoadException;
+	public String[] getAllAvailableModules() throws RemoteException;
 
-	public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData md )
-			throws RemoteException, ManifestLoadException,
-				   ModuleLoadException;
+	public String getCurrentModulePackageName() throws RemoteException;
 
-	public InputStream loadResourceFromModule( String jarResourcePath )
-			throws RemoteException, ManifestLoadException, ModuleLoadException;
+	public ModuleMetaData getModuleMetaData(String packageName)
+			throws RemoteException;
+
+	public Map<String,String> getConfigurations() throws RemoteException;
+
+	public String getPathToModules() throws RemoteException;
+
 }

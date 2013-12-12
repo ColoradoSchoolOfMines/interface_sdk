@@ -18,27 +18,27 @@
  */
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
-public abstract class ModuleExecutor {
+/**
+ * Created with IntelliJ IDEA.
+ * User: andrew
+ * Date: 11/20/13
+ * Time: 12:30 PM
+ */
+public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+	static Logger logger = LogManager.getLogger( ExceptionHandler.class.getName() );
 
-	static Logger logger = LogManager.getLogger(ModuleExecutor.class.getName());
-
-	protected String moduleParentDirectory;
-	protected ModuleMetaData moduleData;
-	protected String fullyQualifiedModuleName;
-	protected String jarPath;
-	
-	public ModuleExecutor(String fullyQualifiedModuleName, String jarPath) {
-		this.fullyQualifiedModuleName = fullyQualifiedModuleName;
-		this.jarPath = jarPath;
+	@Override
+	public void uncaughtException( Thread t, Throwable e ) {
+		logger.warn("Exception caught: " + ExceptionUtils.getStackTrace( e ));
+		logger.info("Exiting");
+		System.exit(1);
 	}
-
-	public abstract void run() throws ModuleRuntimeException;
-
 }
-
-

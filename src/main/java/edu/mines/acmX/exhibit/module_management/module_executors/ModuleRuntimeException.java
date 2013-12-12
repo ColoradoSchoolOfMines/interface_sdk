@@ -18,27 +18,27 @@
  */
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+public class ModuleRuntimeException extends Exception {
 
-import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
-
-public abstract class ModuleExecutor {
-
-	static Logger logger = LogManager.getLogger(ModuleExecutor.class.getName());
-
-	protected String moduleParentDirectory;
-	protected ModuleMetaData moduleData;
-	protected String fullyQualifiedModuleName;
-	protected String jarPath;
-	
-	public ModuleExecutor(String fullyQualifiedModuleName, String jarPath) {
-		this.fullyQualifiedModuleName = fullyQualifiedModuleName;
-		this.jarPath = jarPath;
+	public ModuleRuntimeException() {
+		
 	}
 
-	public abstract void run() throws ModuleRuntimeException;
+	public ModuleRuntimeException(String message) {
+		super(message);
+	}
+
+	public ModuleRuntimeException(Throwable cause) {
+		super(cause);
+	}
+
+	public ModuleRuntimeException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ModuleRuntimeException(String message, Throwable cause,
+			boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
 
 }
-
-

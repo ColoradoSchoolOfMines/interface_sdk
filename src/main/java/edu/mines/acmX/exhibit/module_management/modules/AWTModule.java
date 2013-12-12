@@ -20,14 +20,21 @@ package edu.mines.acmX.exhibit.module_management.modules;
 
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.InputStream;
+import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import edu.mines.acmX.exhibit.input_services.hardware.BadDeviceFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestException;
+import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
 import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleHelper;
+import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 
 /**
  * Abstract module for AWT projects. Used to create modules that want to
@@ -42,11 +49,11 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	/**
 	 * Delegation object used by AWTModule to implement ModuleInterface
 	 */
-	private final ModuleHelper moduleHelper;
+	private final ModuleInterface moduleHelper;
 
 	public AWTModule() {
 		super();
-		moduleHelper = new ModuleHelper();
+		moduleHelper = new ModuleRMIHelper();
 	}
 
 	/**
@@ -55,42 +62,82 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	 * @param	moduleName	Package name of next module to load
 	 *
 	 * @return				true if next module can load, false otherwise
+	 * @throws RemoteException 
 	 */
-	public boolean setNextModuleToLoad(String moduleName) {
-        return moduleHelper.setNextModuleToLoad( moduleName );
+	@Override
+	public boolean setNextModule(String moduleName) throws RemoteException {
+        return moduleHelper.setNextModule( moduleName );
 	}
 
-	/**
-	 * Calls moduleHelper.init().
-	 */
-	public void init(CountDownLatch waitForModule) {
-		moduleHelper.init(waitForModule);
-	}
-	
-    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException {
+	@Override
+    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
     	return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
-	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException {
+	@Override
+	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
 	
-	public ModuleMetaData getModuleMetaData(String packageName) {
+	@Override
+	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
 		return moduleHelper.getModuleMetaData(packageName);
 	}
 	
-	public String[] getAllAvailableModules() {
+	@Override
+	public String[] getAllAvailableModules() throws RemoteException {
 		return moduleHelper.getAllAvailableModules();
 	}
 	
-	public String getCurrentModulePackageName() {
+	@Override
+	public String getCurrentModulePackageName() throws RemoteException {
         return moduleHelper.getCurrentModulePackageName();
     }
+
+	@Override
+	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
+		return moduleHelper.getDefaultModuleMetaData();
+	}
+
+	@Override
+	public InputStream loadResourceFromModule(String jarResourcePath,
+			String packageName) throws RemoteException, ManifestLoadException,
+			ModuleLoadException {
+		return moduleHelper.loadResourceFromModule(jarResourcePath, packageName);
+	}
+
+	@Override
+	public String next() throws RemoteException {
+		return moduleHelper.next();
+	}
+
+	@Override
+	public int nextInt() throws RemoteException {
+		return moduleHelper.nextInt();
+	}
+	
+	@Override
+	public Map<String, String> getConfigurations() throws RemoteException {
+		return moduleHelper.getConfigurations();
+	}
+
+	@Override
+	public String getPathToModules() throws RemoteException {
+		return moduleHelper.getPathToModules();
+	}
+
+	@Override
+	public DeviceDataInterface getInitialDriver( String functionality )
+			throws RemoteException, BadFunctionalityRequestException, UnknownDriverRequest,
+				   InvalidConfigurationFileException, BadDeviceFunctionalityRequestException {
+		return moduleHelper.getInitialDriver( functionality );
+	}
 
 	/**
 	 * Sets up module environment and calls the implemented run function
 	 * of the module.
 	 */
+	@Override
 	public void execute() {
 		setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
     	setUndecorated(true); //disable bordering
@@ -104,23 +151,14 @@ public abstract class AWTModule extends Frame implements ModuleInterface {
 	}
 
 	/**
-	 * Calls moduleHelper.finishExecution().
-	 * TODO should this be a private function, to discourage its use be 
-	 * module devs?
-	 */
-	public void finishExecution() {
-		moduleHelper.finishExecution();
-	}
-	
-	/**
 	 * Overrides the Frame dispose method to clean up the module how 
 	 * we want.
 	 */
 	@Override
 	public void dispose() {
 		super.dispose();
-		finishExecution();
 	}
+
 	
 	/**
 	 * Any class that implements AWTModule will implement this with their own game

@@ -16,29 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with the InterfaceSDK.  If not, see <http://www.gnu.org/licenses/>.
  */
-package edu.mines.acmX.exhibit.module_management.module_executors;
+package edu.mines.acmX.exhibit.input_services.hardware;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
 
-import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
+import java.rmi.RemoteException;
 
-public abstract class ModuleExecutor {
-
-	static Logger logger = LogManager.getLogger(ModuleExecutor.class.getName());
-
-	protected String moduleParentDirectory;
-	protected ModuleMetaData moduleData;
-	protected String fullyQualifiedModuleName;
-	protected String jarPath;
-	
-	public ModuleExecutor(String fullyQualifiedModuleName, String jarPath) {
-		this.fullyQualifiedModuleName = fullyQualifiedModuleName;
-		this.jarPath = jarPath;
-	}
-
-	public abstract void run() throws ModuleRuntimeException;
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: andrew
+ * Date: 11/19/13
+ * Time: 10:29 PM
+ */
+public interface HardwareManagerRemote {
+	public DeviceDataInterface getInitialDriver(String functionality) throws RemoteException,
+			BadFunctionalityRequestException, UnknownDriverRequest,
+			InvalidConfigurationFileException, BadDeviceFunctionalityRequestException;
 }
-
-

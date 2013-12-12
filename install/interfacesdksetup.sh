@@ -41,9 +41,10 @@ interfaceSDKdirname="interfaceSDK"
 interfacesdk_repo="https://github.com/ColoradoSchoolOfMines/interface_sdk.git" 
 module_repositories=(
 "https://github.com/ColoradoSchoolOfMines/home_screen_module"
-"https://github.com/TheCrownedFox/fractalModule.git"
-"https://github.com/TheCrownedFox/CLIModuleLauncher.git"
-"https://github.com/TheCrownedFox/brickBreaker.git"
+"https://github.com/ColoradoSchoolOfMines/fractalModule.git"
+"https://github.com/ColoradoSchoolOfMines/CLIModuleLauncher.git"
+"https://github.com/ColoradoSchoolOfMines/brickBreaker.git"
+"https://github.com/ColoradoSchoolOfMines/bugSquash.git"
 "https://github.com/ColoradoSchoolOfMines/Pong.git"
 "https://github.com/ColoradoSchoolOfMines/simple_module.git")
 
