@@ -66,13 +66,13 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 */
     private final ModuleInterface moduleHelper;
     
-    private Frame frame;
+    public Frame frame;
     
     public static String IMAGES_LOCATION = "images/";
     
     public ProcessingModule() {
         super();
-        moduleHelper = new ModuleRMIHelper();
+        moduleHelper = new ModuleHelper();
         frame = new Frame();
     }
 
