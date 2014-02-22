@@ -6,6 +6,12 @@ import processing.core.PApplet;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Stack;
 
 public class ModuleFrameExecutor extends ModuleExecutor{
@@ -13,6 +19,19 @@ public class ModuleFrameExecutor extends ModuleExecutor{
 
     public ModuleFrameExecutor(String fullyQualifiedModuleName, String jarPath) {
         super(fullyQualifiedModuleName, jarPath);
+        try{
+        Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+        method.setAccessible(true);
+        method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{new File(jarPath).toURI().toURL()});
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

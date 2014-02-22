@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleSimpleExecutor;
+import edu.mines.acmX.exhibit.module_management.module_executors.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,9 +44,6 @@ import edu.mines.acmX.exhibit.module_management.metas.CheckType;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleExecutor;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleProcessExecutor;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleRuntimeException;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
@@ -486,7 +483,7 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	private void preModuleRuntime(ModuleMetaData mmd) throws ModuleLoadException {
 
-		this.moduleExecutor = new ModuleProcessExecutor(mmd.getPackageName()
+		this.moduleExecutor = new ModuleFrameExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
 				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
 		setCurrentModule(mmd);
