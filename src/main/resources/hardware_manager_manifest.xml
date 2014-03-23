@@ -19,18 +19,25 @@
 		Devices dictates the functionalities that each device can provide.
 	-->
 	<devices>
-		<device name="kinectopenni"
-						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni.KinectOpenNIDriver">
-			<provides name="rgbimage" />
-			<provides name="depth" />
-			<provides name="handtracking" />
-            <provides name="gesturetracking" />
-		</device>
-		<device name="kinectopenni2"
-						driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2.KinectOpenNI2Driver">
-			<provides name="rgbimage" />
-			<provides name="depth" />
-		</device>
+		<!--<device name="kinectopenni"-->
+						<!--driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni.KinectOpenNIDriver">-->
+			<!--<provides name="rgbimage" />-->
+			<!--<provides name="depth" />-->
+			<!--<provides name="handtracking" />-->
+            <!--<provides name="gesturetracking" />-->
+		<!--</device>-->
+		<!--<device name="kinectopenni2"-->
+						<!--driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.openni2.KinectOpenNI2Driver">-->
+			<!--<provides name="rgbimage" />-->
+			<!--<provides name="depth" />-->
+            <!--<provides name="handtracking" />-->
+		<!--</device>-->
+        <device name="microsoftsdk"
+                driver="edu.mines.acmX.exhibit.input_services.hardware.drivers.MicrosoftSDK.KinectSDKDriver">
+            <provides name="rgbimage" />
+            <provides name="depth" />
+            <provides name="handtracking" />
+        </device>
 	</devices>
 
 </manifest>
