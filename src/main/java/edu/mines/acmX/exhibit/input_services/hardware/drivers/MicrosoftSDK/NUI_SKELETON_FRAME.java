@@ -9,12 +9,12 @@ import java.util.List;
 
 public class NUI_SKELETON_FRAME extends Structure {
 
-	LARGE_INTEGER liTimeStamp;
-	DWORD dwFrameNumber;
-	DWORD dwFlags;
-	Vector4 vFloorClipPlane;
-	Vector4 vNormalToGravity;
-	NUI_SKELETON_DATA[] SkeletonData = new NUI_SKELETON_DATA[6];
+	public LARGE_INTEGER liTimeStamp;
+	public DWORD dwFrameNumber;
+	public DWORD dwFlags;
+	public Vector4 vFloorClipPlane;
+	public Vector4 vNormalToGravity;
+	public NUI_SKELETON_DATA[] SkeletonData = new NUI_SKELETON_DATA[6];
 
 	@Override
 	protected List getFieldOrder() {

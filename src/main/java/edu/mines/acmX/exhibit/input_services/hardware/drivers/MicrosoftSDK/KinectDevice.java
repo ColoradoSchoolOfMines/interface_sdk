@@ -173,9 +173,11 @@ public class KinectDevice extends Unknown {
 				HRESULT.class);
 	}
 
-	// 20
-	//public abstract  HRESULT NuiTransformSmooth(NUI_SKELETON_FRAME *pSkeletonFrame,
-	//                                            NUI_TRANSFORM_SMOOTH_PARAMETERS *pSmoothingParams);
+	public HRESULT NuiTransformSmooth(NUI_SKELETON_FRAME pSkeletonFrame, NUI_TRANSFORM_SMOOTH_PARAMETERS pSmoothingParams){
+		return (HRESULT) this._invokeNativeObject(20,
+				new Object[] { this.getPointer(), pSkeletonFrame, pSmoothingParams},
+				HRESULT.class);
+	}
 
 	//21
 	//public abstract HRESULT NuiGetAudioSource(INuiAudioBeam **ppDmo);
@@ -219,11 +221,15 @@ public class KinectDevice extends Unknown {
 	//public abstract  HRESULT NuiGetCoordinateMapper(INuiCoordinateMapper **pMapping);
 
 	//29
-//	public abstract  HRESULT NuiImageFrameGetDepthImagePixelFrameTexture(
-//            HANDLE hStream,
-//            NUI_IMAGE_FRAME *pImageFrame,
-//            BOOLByReference pNearMode,
-//            INuiFrameTexture **ppFrameTexture);
+	public HRESULT NuiImageFrameGetDepthImagePixelFrameTexture(
+            HANDLE hStream,
+            NUI_IMAGE_FRAME pImageFrame,
+            BOOLByReference pNearMode,
+            INuiFrameTexture.ByReference ppFrameTexture){
+		return (HRESULT) this._invokeNativeObject(29,
+				new Object[] { this.getPointer(), hStream, pImageFrame, pNearMode, ppFrameTexture },
+				HRESULT.class);
+	}
 
 	// 30
 	//public abstract  HRESULT NuiGetColorCameraSettings(INuiColorCameraSettings **pCameraSettings);

@@ -2,6 +2,7 @@ package edu.mines.acmX.exhibit.input_services.hardware.drivers.MicrosoftSDK;
 
 import com.sun.jna.platform.win32.COM.COMException;
 import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
 import com.sun.jna.platform.win32.WinDef.*;
 import com.sun.jna.platform.win32.WinNT.*;
 import com.sun.jna.ptr.IntByReference;
@@ -20,8 +21,6 @@ import java.nio.ShortBuffer;
 
 import static com.sun.jna.platform.win32.W32Errors.FAILED;
 
-//import static com.sun.jna.platform.win32.COM.COMUtils.FAILED;
-
 /**
  * Kinect driver that provides depth and rgb image functionality. Uses
  * Microsoft's SDK for communication to the kinect device.
@@ -33,16 +32,29 @@ import static com.sun.jna.platform.win32.W32Errors.FAILED;
 public class KinectSDKDriver implements DriverInterface,
 		DepthImageInterface, RGBImageInterface, HandTrackerInterface {
 
-	public static final EventManager evtMgr = EventManager.getInstance();
 	private boolean loaded;
+
 	private KinectDevice device;
 	private HANDLE colorStream;
+	private HANDLE depthStream;
 	private HANDLE nextColorImageFrame;
+	private HANDLE nextDepthImageFrame;
+	private HANDLE nextSkeletonFrame;
+	private HANDLE nextInteractionFrame;
+	private INuiInteractionStream interactionStream;
+	private INuiInteractionClient interactionClient;
 
 	public KinectSDKDriver(){
 	    loaded = false;
 		device = null;
 		colorStream = null;
+		depthStream = null;
+		nextColorImageFrame = null;
+		nextDepthImageFrame = null;
+		nextSkeletonFrame = null;
+		nextInteractionFrame = null;
+		interactionStream = null;
+		interactionClient = null;
 	}
 
 	@Override
@@ -51,6 +63,7 @@ public class KinectSDKDriver implements DriverInterface,
 			try{
 				load();
 			} catch (Throwable t){
+				// logger do something
 				return false;
 			}
 		}
@@ -60,12 +73,53 @@ public class KinectSDKDriver implements DriverInterface,
 	@Override
 	public void destroy() {
 		if(loaded){
-			if(device != null){
-				device.NuiShutdown();
-				device.Release();
+			if(interactionStream != null){
+				interactionStream.Disable();
+				interactionStream.Release();
+				interactionStream = null;
 			}
 
-			device = null;
+			if(interactionClient != null){
+				interactionClient.Release();
+				interactionClient = null;
+			}
+
+			if(colorStream != null){
+				Kernel32.INSTANCE.CloseHandle(colorStream);
+				colorStream = null;
+			}
+
+			if(depthStream != null){
+				Kernel32.INSTANCE.CloseHandle(depthStream);
+				depthStream = null;
+			}
+
+			if(nextColorImageFrame != null){
+				Kernel32.INSTANCE.CloseHandle(nextColorImageFrame);
+				nextColorImageFrame = null;
+			}
+
+			if(nextDepthImageFrame != null){
+				Kernel32.INSTANCE.CloseHandle(nextDepthImageFrame);
+				nextDepthImageFrame = null;
+			}
+
+			if(nextSkeletonFrame != null){
+				Kernel32.INSTANCE.CloseHandle(nextSkeletonFrame);
+				nextSkeletonFrame = null;
+			}
+
+			if(nextInteractionFrame != null){
+				Kernel32.INSTANCE.CloseHandle(nextInteractionFrame);
+				nextInteractionFrame = null;
+			}
+
+			if(device != null){
+				checkRC(device.NuiSkeletonTrackingDisable());
+				device.NuiShutdown();
+				device.Release();
+				device = null;
+			}
 
 			loaded = false;
 		}
@@ -89,12 +143,17 @@ public class KinectSDKDriver implements DriverInterface,
 
 		checkRC(KinectLibrary.INSTANCE.NuiCreateSensorByIndex(0, newDevice));
 		device = newDevice.getDevice();
-		checkRC(device.NuiInitialize(new DWORD(KinectLibrary.NUI_INITIALIZE_FLAG_USES_COLOR)));
-		//checkRC(device.NuiCameraElevationSetAngle(new LONG(20)));
+		checkRC(device.NuiInitialize(new DWORD(KinectLibrary.NUI_INITIALIZE_FLAG_USES_COLOR |
+										KinectLibrary.NUI_INITIALIZE_FLAG_USES_SKELETON |
+										KinectLibrary.NUI_INITIALIZE_FLAG_USES_DEPTH)));
+
+
+		nextColorImageFrame = Kernel32.INSTANCE.CreateEvent(null, true, false, null);
+		nextDepthImageFrame = Kernel32.INSTANCE.CreateEvent(null, true, false, null);
+		nextSkeletonFrame = Kernel32.INSTANCE.CreateEvent(null, true, false, null);
+		nextInteractionFrame = Kernel32.INSTANCE.CreateEvent(null, true, false, null);
 
 		HANDLEByReference handle= new HANDLEByReference();
-		nextColorImageFrame = Kernel32.INSTANCE.CreateEvent(null, true, false, null);
-
 		checkRC(device.NuiImageStreamOpen(new JnaEnumWrapper<>(NUI_IMAGE_TYPE.NUI_IMAGE_TYPE_COLOR),
 				new JnaEnumWrapper<>(NUI_IMAGE_RESOLUTION.NUI_IMAGE_RESOLUTION_640x480),
 				new DWORD(0),
@@ -103,6 +162,25 @@ public class KinectSDKDriver implements DriverInterface,
 				handle));
 
 		colorStream = handle.getValue();
+
+		checkRC(device.NuiImageStreamOpen(new JnaEnumWrapper<>(NUI_IMAGE_TYPE.NUI_IMAGE_TYPE_DEPTH),
+				new JnaEnumWrapper<>(NUI_IMAGE_RESOLUTION.NUI_IMAGE_RESOLUTION_640x480),
+				new DWORD(0),
+				new DWORD(2),
+				nextDepthImageFrame,
+				handle));
+
+		depthStream = handle.getValue();
+
+		checkRC(device.NuiSkeletonTrackingEnable(nextSkeletonFrame, new DWORD(0)));
+
+		interactionClient = new INuiInteractionClient();
+
+		INuiInteractionStream.ByReference newStream = new INuiInteractionStream.ByReference();
+		checkRC(KinectToolkitLibrary.INSTANCE.NuiCreateInteractionStream(device, interactionClient, newStream));
+		interactionStream = newStream.getStream();
+
+		checkRC(interactionStream.Enable(nextInteractionFrame));
 	}
 
 	@Override
@@ -110,19 +188,92 @@ public class KinectSDKDriver implements DriverInterface,
 		return loaded;
 	}
 
+	private void processSkeleton(){
+		NUI_SKELETON_FRAME skeletonFrame = new NUI_SKELETON_FRAME();
+		checkRC(device.NuiSkeletonGetNextFrame(new DWORD(Kernel32.INFINITE), skeletonFrame));
+
+		checkRC(device.NuiTransformSmooth(skeletonFrame, null));
+
+		Vector4 vect = new Vector4();
+		checkRC(device.NuiAccelerometerGetCurrentReading(vect));
+
+		checkRC(interactionStream.ProcessSkeleton(new UINT(skeletonFrame.SkeletonData.length),
+				skeletonFrame.SkeletonData,
+				vect, skeletonFrame.liTimeStamp.getValue()));
+	}
+
+	private void processDepth(){
+		NUI_IMAGE_FRAME imageFrame = new NUI_IMAGE_FRAME();
+		checkRC(device.NuiImageStreamGetNextFrame(depthStream, new DWORD(0), imageFrame));
+
+		BOOLByReference isNearMode = new BOOLByReference();
+		INuiFrameTexture.ByReference newTexture = new INuiFrameTexture.ByReference();
+
+		checkRC(device.NuiImageFrameGetDepthImagePixelFrameTexture(depthStream, imageFrame, isNearMode, newTexture));
+
+		INuiFrameTexture frameTexture = newTexture.getTexture();
+
+		NUI_LOCKED_RECT lockedRect = new NUI_LOCKED_RECT();
+		checkRC(frameTexture.LockRect(new UINT(0), lockedRect, null, new DWORD(0)));
+
+		if(lockedRect.Pitch == 0)
+			throw new RuntimeException("Kinect didn't give us data");
+
+		byte[] bytes = lockedRect.getBytes();
+		checkRC(frameTexture.UnlockRect(0));
+
+		checkRC(interactionStream.ProcessDepth(new UINT(bytes.length), bytes, imageFrame.liTimeStamp.getValue()));
+
+		frameTexture.Release();
+		checkRC(device.NuiImageStreamReleaseFrame(depthStream, imageFrame));
+	}
+
+	private void processInteraction(){
+		NUI_INTERACTION_FRAME interactionFrame = new NUI_INTERACTION_FRAME();
+		checkRC(interactionStream.GetNextFrame(new DWORD(0), interactionFrame));
+
+		for(NUI_USER_INFO info : interactionFrame.UserInfos){
+
+			if(info.HandPointerInfos[0].State.intValue() != 0){
+				int i = 0;
+			}
+
+
+			if(info.SkeletonTrackingId.intValue() != 0){
+				 int i = 0;
+			}
+		}
+	}
+
+	// wait for new data for all streams
+	// also look for new hands for hand tracking
+	// TODO move onto its own thread
 	@Override
 	public void updateDriver() {
-		Kernel32.INSTANCE.WaitForSingleObject(nextColorImageFrame, Kernel32.INFINITE);
+		HANDLE[] handles = {nextSkeletonFrame, nextDepthImageFrame, nextInteractionFrame};
+
+		Kernel32.INSTANCE.WaitForMultipleObjects(handles.length, handles, false, Kernel32.INFINITE);
+
+		if(WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextSkeletonFrame, 0))
+			processSkeleton();
+
+		if(WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextDepthImageFrame, 0))
+			processDepth();
+
+		if(WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextInteractionFrame, 0))
+			processInteraction();
 	}
 
+	// bugbug
 	@Override
 	public int getHandTrackingWidth() {
-		return 0;
+		return 640;
 	}
 
+	// bugbug
 	@Override
 	public int getHandTrackingHeight() {
-		return 0;
+		return 480;
 	}
 
 	@Override
@@ -142,6 +293,7 @@ public class KinectSDKDriver implements DriverInterface,
 
 	@Override
 	public ByteBuffer getVisualData() {
+		Kernel32.INSTANCE.WaitForSingleObject(nextColorImageFrame, Kernel32.INFINITE);
 		NUI_IMAGE_FRAME imageFrame = new NUI_IMAGE_FRAME();
 		checkRC(device.NuiImageStreamGetNextFrame(colorStream, new DWORD(0), imageFrame));
 		NUI_LOCKED_RECT lockedRect = new NUI_LOCKED_RECT();
@@ -176,14 +328,16 @@ public class KinectSDKDriver implements DriverInterface,
 		return null;
 	}
 
+	// bugbug
 	@Override
 	public int getDepthImageWidth() {
-		return 0;
+		return 640;
 	}
 
+	// bugbug
 	@Override
 	public int getDepthImageHeight() {
-		return 0;
+		return 480;
 	}
 
 	public static void checkRC(HRESULT hr) {
