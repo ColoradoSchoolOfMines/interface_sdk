@@ -4,7 +4,7 @@ import com.sun.jna.*;
 import java.lang.reflect.ParameterizedType;
 
 public class JnaEnumWrapper<T extends JnaEnum<T>> implements NativeMapped {
-	public JnaEnum value;
+	public T value;
 
 	@SuppressWarnings("unchecked")
 	public Object fromNative(Object nativeValue, FromNativeContext context){

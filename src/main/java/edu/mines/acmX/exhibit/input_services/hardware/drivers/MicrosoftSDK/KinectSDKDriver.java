@@ -18,6 +18,8 @@ import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurati
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.sun.jna.platform.win32.W32Errors.FAILED;
 
@@ -43,6 +45,7 @@ public class KinectSDKDriver implements DriverInterface,
 	private HANDLE nextInteractionFrame;
 	private INuiInteractionStream interactionStream;
 	private INuiInteractionClient interactionClient;
+	private GestureTracker gestureTracker;
 
 	public KinectSDKDriver(){
 	    loaded = false;
@@ -55,6 +58,7 @@ public class KinectSDKDriver implements DriverInterface,
 		nextInteractionFrame = null;
 		interactionStream = null;
 		interactionClient = null;
+		gestureTracker = new GestureTracker();
 	}
 
 	@Override
@@ -192,7 +196,7 @@ public class KinectSDKDriver implements DriverInterface,
 		NUI_SKELETON_FRAME skeletonFrame = new NUI_SKELETON_FRAME();
 		checkRC(device.NuiSkeletonGetNextFrame(new DWORD(Kernel32.INFINITE), skeletonFrame));
 
-		checkRC(device.NuiTransformSmooth(skeletonFrame, null));
+		//checkRC(device.NuiTransformSmooth(skeletonFrame, null));
 
 		Vector4 vect = new Vector4();
 		checkRC(device.NuiAccelerometerGetCurrentReading(vect));
@@ -228,54 +232,33 @@ public class KinectSDKDriver implements DriverInterface,
 		checkRC(device.NuiImageStreamReleaseFrame(depthStream, imageFrame));
 	}
 
-	// odd left, even right
-	int wave = 0;
-	float lastX = 0;
+
 
 	private void processInteraction(){
 		NUI_INTERACTION_FRAME interactionFrame = new NUI_INTERACTION_FRAME();
 		checkRC(interactionStream.GetNextFrame(new DWORD(0), interactionFrame));
+
+		// get a list of all skeletons and hands with information
+		List<Integer> ids = new ArrayList<>();
 
 		for(NUI_USER_INFO info : interactionFrame.UserInfos){
 
 			if(info.HandPointerInfos[0].State.intValue() == 0)
 				continue;
 
-			switch(wave){
-				case 0:
-					if(lastX == 0)
-						lastX = info.HandPointerInfos[0].RawX;
-					else if(Math.abs(info.HandPointerInfos[0].RawX - lastX) > .3) {
-						wave = info.HandPointerInfos[0].RawX > lastX ? 1 : 2;
-						lastX = info.HandPointerInfos[0].RawX;
-						System.out.println("case 0");
-					}
-				case 1:
-					if(info.HandPointerInfos[0].RawX - lastX < -.3){
-						wave++;
-						lastX = info.HandPointerInfos[0].RawX;
-						System.out.println("case 1");
-					}
-					break;
-				case 2:
-					if(info.HandPointerInfos[0].RawX - lastX > .3){
-						wave++;
-						lastX = info.HandPointerInfos[0].RawX;
-						System.out.println("case 2");
-					}
-					break;
-				case 3:
-					if(info.HandPointerInfos[0].RawX - lastX < -.3){
-						wave++;
-						lastX = info.HandPointerInfos[0].RawX;
-						System.out.println("case 3");
-					}
-					break;
-				case 4:
-					System.out.println("case 4");
-					int i = 0;
-					break;
-			}
+			gestureTracker.update(device, interactionFrame.TimeStamp.getValue(),
+					info.HandPointerInfos[0].RawX,
+					info.HandPointerInfos[0].RawY,
+					info.HandPointerInfos[0].RawZ,
+					info.SkeletonTrackingId.intValue(),
+					info.HandPointerInfos[0].HandType.value);
+
+			gestureTracker.update(device, interactionFrame.TimeStamp.getValue(),
+					info.HandPointerInfos[1].RawX,
+					info.HandPointerInfos[1].RawY,
+					info.HandPointerInfos[1].RawZ,
+					info.SkeletonTrackingId.intValue(),
+					info.HandPointerInfos[1].HandType.value);
 
 			System.out.print("Hand 0 x:" + info.HandPointerInfos[0].RawX);
 			System.out.println(", y:" + info.HandPointerInfos[0].RawY);

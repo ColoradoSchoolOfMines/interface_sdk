@@ -74,7 +74,7 @@ public class INuiInteractionClient extends Structure {
 		pInteractionInfo.IsPressTarget = new BOOL(1);
 		pInteractionInfo.PressAttractionPointX = 0;
 		pInteractionInfo.PressAttractionPointY = 0;
-		pInteractionInfo.PressTargetControlId = new DWORD(0);
+		pInteractionInfo.PressTargetControlId = skeletonTrackingId;
 
 		return new HRESULT(0);
 	}

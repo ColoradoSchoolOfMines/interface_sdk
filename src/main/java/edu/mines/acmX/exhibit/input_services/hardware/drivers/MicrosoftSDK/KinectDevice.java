@@ -217,8 +217,11 @@ public class KinectDevice extends Unknown {
 				DWORD.class);
 	}
 
-	//28
-	//public abstract  HRESULT NuiGetCoordinateMapper(INuiCoordinateMapper **pMapping);
+	public HRESULT NuiGetCoordinateMapper(INuiCoordinateMapper.ByReference pMapping){
+		return (HRESULT) this._invokeNativeObject(28,
+				new Object[] { this.getPointer(), pMapping },
+				HRESULT.class);
+	}
 
 	//29
 	public HRESULT NuiImageFrameGetDepthImagePixelFrameTexture(
