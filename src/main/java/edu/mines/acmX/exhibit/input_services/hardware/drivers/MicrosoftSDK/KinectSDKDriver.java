@@ -197,9 +197,9 @@ public class KinectSDKDriver implements DriverInterface,
 		Vector4 vect = new Vector4();
 		checkRC(device.NuiAccelerometerGetCurrentReading(vect));
 
-		checkRC(interactionStream.ProcessSkeleton(new UINT(skeletonFrame.SkeletonData.length),
-				skeletonFrame.SkeletonData,
-				vect, skeletonFrame.liTimeStamp.getValue()));
+		checkRC(interactionStream.ProcessSkeleton(new UINT(6),
+				skeletonFrame.SkeletonData(),
+				vect, skeletonFrame.liTimeStamp().getValue()));
 	}
 
 	private void processDepth(){
@@ -228,20 +228,57 @@ public class KinectSDKDriver implements DriverInterface,
 		checkRC(device.NuiImageStreamReleaseFrame(depthStream, imageFrame));
 	}
 
+	// odd left, even right
+	int wave = 0;
+	float lastX = 0;
+
 	private void processInteraction(){
 		NUI_INTERACTION_FRAME interactionFrame = new NUI_INTERACTION_FRAME();
 		checkRC(interactionStream.GetNextFrame(new DWORD(0), interactionFrame));
 
 		for(NUI_USER_INFO info : interactionFrame.UserInfos){
 
-			if(info.HandPointerInfos[0].State.intValue() != 0){
-				int i = 0;
+			if(info.HandPointerInfos[0].State.intValue() == 0)
+				continue;
+
+			switch(wave){
+				case 0:
+					if(lastX == 0)
+						lastX = info.HandPointerInfos[0].RawX;
+					else if(Math.abs(info.HandPointerInfos[0].RawX - lastX) > .3) {
+						wave = info.HandPointerInfos[0].RawX > lastX ? 1 : 2;
+						lastX = info.HandPointerInfos[0].RawX;
+						System.out.println("case 0");
+					}
+				case 1:
+					if(info.HandPointerInfos[0].RawX - lastX < -.3){
+						wave++;
+						lastX = info.HandPointerInfos[0].RawX;
+						System.out.println("case 1");
+					}
+					break;
+				case 2:
+					if(info.HandPointerInfos[0].RawX - lastX > .3){
+						wave++;
+						lastX = info.HandPointerInfos[0].RawX;
+						System.out.println("case 2");
+					}
+					break;
+				case 3:
+					if(info.HandPointerInfos[0].RawX - lastX < -.3){
+						wave++;
+						lastX = info.HandPointerInfos[0].RawX;
+						System.out.println("case 3");
+					}
+					break;
+				case 4:
+					System.out.println("case 4");
+					int i = 0;
+					break;
 			}
 
-
-			if(info.SkeletonTrackingId.intValue() != 0){
-				 int i = 0;
-			}
+			System.out.print("Hand 0 x:" + info.HandPointerInfos[0].RawX);
+			System.out.println(", y:" + info.HandPointerInfos[0].RawY);
 		}
 	}
 

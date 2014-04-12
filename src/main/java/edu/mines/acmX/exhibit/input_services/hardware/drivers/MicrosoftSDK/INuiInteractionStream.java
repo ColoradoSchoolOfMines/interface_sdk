@@ -93,7 +93,7 @@ public class INuiInteractionStream extends Unknown {
 	/// is different from NUI_SKELETON_COUNT.
 	/// INuiSensor status failure code if NUI sensor associated with stream is no longer connected.
 	/// </returns>
-	public HRESULT ProcessSkeleton(UINT skeletonCount, NUI_SKELETON_DATA[] pSkeletonData, Vector4 pAccelerometerReading, long liTimeStamp){
+	public HRESULT ProcessSkeleton(UINT skeletonCount, Pointer pSkeletonData, Vector4 pAccelerometerReading, long liTimeStamp){
 		return (HRESULT) this._invokeNativeObject(5,
 				new Object[] { this.getPointer(), skeletonCount, pSkeletonData, pAccelerometerReading, liTimeStamp},
 				HRESULT.class);
