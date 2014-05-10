@@ -73,7 +73,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
     public ProcessingModule() {
         super();
         moduleHelper = new ModuleHelper();
-        frame = new Frame();
+//        frame = new Frame();
     }
 
 	/**
@@ -162,19 +162,20 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      */
     @Override
     public void execute(){
-    	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
-    	frame.setUndecorated(true); //disable bordering
-    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
-        frame.addWindowListener( new WindowAdapter() {
-            public void windowClosing( WindowEvent e ) {
-                exit(); //exit the specific moduleHelper when the window is closed, not ModuleManager
-            }
-        });
-        
-        frame.setVisible(true); //get correct screen size for Windows
-    	frame.add(this);
-    	frame.setVisible(true);
+//        frame.dispose(); // Dispose the window to make it undisplayable and be able to change its properties
+//    	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
+//    	frame.setUndecorated(true); //disable bordering
+//    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//    	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
+//        frame.addWindowListener( new WindowAdapter() {
+//            public void windowClosing( WindowEvent e ) {
+//                exit(); //exit the specific moduleHelper when the window is closed, not ModuleManager
+//            }
+//        });
+//
+//        frame.setVisible(true); //get correct screen size for Windows
+//    	frame.add(this);
+//    	frame.setVisible(true);
         super.init();
     }
 

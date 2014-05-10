@@ -147,9 +147,9 @@ public class KinectSDKDriver implements DriverInterface,
 
 		checkRC(KinectLibrary.INSTANCE.NuiCreateSensorByIndex(0, newDevice));
 		device = newDevice.getDevice();
-		checkRC(device.NuiInitialize(new DWORD(KinectLibrary.NUI_INITIALIZE_FLAG_USES_COLOR |
-										KinectLibrary.NUI_INITIALIZE_FLAG_USES_SKELETON |
-										KinectLibrary.NUI_INITIALIZE_FLAG_USES_DEPTH)));
+        checkRC(device.NuiInitialize(new DWORD(KinectLibrary.NUI_INITIALIZE_FLAG_USES_COLOR |
+                KinectLibrary.NUI_INITIALIZE_FLAG_USES_SKELETON |
+                KinectLibrary.NUI_INITIALIZE_FLAG_USES_DEPTH)));
 
 
 		nextColorImageFrame = Kernel32.INSTANCE.CreateEvent(null, true, false, null);
@@ -260,8 +260,8 @@ public class KinectSDKDriver implements DriverInterface,
 					info.SkeletonTrackingId.intValue(),
 					info.HandPointerInfos[1].HandType.value);
 
-			System.out.print("Hand 0 x:" + info.HandPointerInfos[0].RawX);
-			System.out.println(", y:" + info.HandPointerInfos[0].RawY);
+			//System.out.print("Hand 0 x:" + info.HandPointerInfos[0].RawX);
+			//System.out.println(", y:" + info.HandPointerInfos[0].RawY);
 		}
 	}
 

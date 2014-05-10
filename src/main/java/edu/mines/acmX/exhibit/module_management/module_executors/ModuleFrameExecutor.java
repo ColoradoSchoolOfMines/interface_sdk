@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Stack;
+import java.util.concurrent.Semaphore;
 
 public class ModuleFrameExecutor extends ModuleExecutor{
     final private Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
@@ -41,11 +42,17 @@ public class ModuleFrameExecutor extends ModuleExecutor{
             if(!moduleStack.empty()){
                 moduleStack.peek().noLoop();
             }
+            // Disallow more than 6 JFrames on the stack
+            if(moduleStack.size() > 6){
+                return;
+            }
             // Create a new instance of incoming module
             Class modClass = Class.forName(fullyQualifiedModuleName);
             moduleStack.push((ProcessingModule) modClass.newInstance());
             ModuleFrame moduleFrame = new ModuleFrame(moduleStack.peek());
-            moduleStack.peek().frame = moduleFrame;
+            //moduleStack.peek().frame = moduleFrame;
+            final Semaphore executorSemaphore = new Semaphore(1);
+            executorSemaphore.acquire();
             moduleFrame.addWindowListener(new WindowListener() {
                 @Override
                 public void windowOpened(WindowEvent e) {
@@ -60,7 +67,12 @@ public class ModuleFrameExecutor extends ModuleExecutor{
                 @Override
                 public void windowClosed(WindowEvent e) {
                     moduleStack.pop();
-                    moduleStack.peek().loop();
+                    if(!moduleStack.empty()){
+                        moduleStack.peek().loop();
+                    }
+                    if(moduleStack.empty()){
+                        executorSemaphore.release();
+                    }
                 }
 
                 @Override
@@ -84,12 +96,16 @@ public class ModuleFrameExecutor extends ModuleExecutor{
                 }
             });
             moduleStack.peek().execute();
+            executorSemaphore.acquire();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.err.println("Semaphore failed to synchronize executor; abandoning module runtime");
         }
     }
 }

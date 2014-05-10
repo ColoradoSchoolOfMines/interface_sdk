@@ -94,7 +94,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	 */
 	public static void configure(String moduleManifestPath)
 			throws ManifestLoadException {
-		metaData = loadModuleManagerConfig(moduleManifestPath);
+        metaData = loadModuleManagerConfig(moduleManifestPath);
 	}
 
 	// private static void configure(String defaultModule, String pathToModules)
@@ -443,7 +443,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	 */
 	public void run() throws
 			ModuleLoadException {
-		while (true) {
+		//while (true) {
 			// create a new Module Executor
 			setupPreRuntime();
 			try {
@@ -454,7 +454,7 @@ public class ModuleManager implements ModuleManagerRemote {
 				loadDefault = true;
 			}
 			postModuleRuntime();
-		}
+		//}
 	}
 
 	private void setupPreRuntime() throws

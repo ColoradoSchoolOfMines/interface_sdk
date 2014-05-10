@@ -10,9 +10,11 @@ public class ModuleFrame extends JFrame {
     PApplet resident;
 
     public ModuleFrame(PApplet resident){
+        super();
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        setUndecorated(true);
 
-        resident.init();
+        //resident.init();
         resident.frame = this;
         this.resident = resident;
         setVisible(true);
@@ -21,10 +23,11 @@ public class ModuleFrame extends JFrame {
         add(resident, BorderLayout.CENTER);
 
         Insets insets = getInsets();
-        setSize(env.getMaximumWindowBounds().getSize());
+        //setSize(env.getMaximumWindowBounds().getSize());
+        setExtendedState(Frame.MAXIMIZED_BOTH);
         resident.setBounds(insets.left, insets.top, getWidth(), getHeight());
 
-        setLocation(500, 200);
+        //setLocation(500, 200);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 }

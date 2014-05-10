@@ -52,6 +52,7 @@ public class ModuleManagerManifestLoader {
             throws ManifestLoadException {
         try {
             //return load(new FileInputStream(new File(path)));
+            File f = new File(path);
             return load(new FileInputStream(new File(path)));
         } catch (FileNotFoundException e) {
             // TODO logging
