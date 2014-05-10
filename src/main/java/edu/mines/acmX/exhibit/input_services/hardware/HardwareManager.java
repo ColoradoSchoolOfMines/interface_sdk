@@ -355,7 +355,8 @@ public class HardwareManager implements HardwareManagerRemote {
 				try {
 					buildDriverList(supportingDevices);
 				} catch (BadFunctionalityRequestException e) {
-					throw new BadFunctionalityRequestException("There were no drivers available for: " + moduleFunc );
+                    e.printStackTrace();
+                    throw new BadFunctionalityRequestException("There were no drivers available for: " + moduleFunc );
 				}
 			}
 		}

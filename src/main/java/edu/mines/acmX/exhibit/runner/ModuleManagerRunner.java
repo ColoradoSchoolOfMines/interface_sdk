@@ -82,7 +82,7 @@ public class ModuleManagerRunner {
 				}
 				ModuleManager m;
 				m = ModuleManager.getInstance();
-				publicizeRmiInterface(m, RMI_REGISTRY_PORT);
+				//publicizeRmiInterface(m, RMI_REGISTRY_PORT);
 				m.run();
 			}
 
@@ -96,12 +96,9 @@ public class ModuleManagerRunner {
 		} catch (ModuleLoadException e) {
 			logger.fatal("Could not load the default module");
 			e.printStackTrace();
-		} catch (RemoteException e) {
-			logger.fatal("Could not create RMI server: " + e.getMessage());
-			e.printStackTrace();
 		}
 
-	}
+    }
 	
 	private static void publicizeRmiInterface(ModuleManager m, int registry_port ) throws RemoteException {
 		ModuleManagerRemote remote = (ModuleManagerRemote) UnicastRemoteObject.exportObject(m,0);
