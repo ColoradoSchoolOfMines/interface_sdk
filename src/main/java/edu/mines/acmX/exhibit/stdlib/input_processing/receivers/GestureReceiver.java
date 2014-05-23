@@ -32,7 +32,7 @@ public abstract class GestureReceiver implements InputReceiver {
 	public abstract void GestureRecognized(Gesture data);
 
 	@Override
-	public void receiveInput(EventType type, Object data) {
+	public final void receiveInput(EventType type, Object data) {
 	      switch(type){
 		      case GESTURE_RECOGNIZED:
 			      GestureRecognized((Gesture)data);

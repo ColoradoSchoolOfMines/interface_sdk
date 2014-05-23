@@ -571,7 +571,6 @@ public class HardwareManager implements HardwareManagerRemote {
 	public DeviceDataInterface getInitialDriver(String functionality)
 			throws BadFunctionalityRequestException, UnknownDriverRequest,
 			InvalidConfigurationFileException {
-		
 		List<String> drivers = getDevices(functionality);
 		// TODO check into get(0) -> underflow exception possible?
 		return inflateDriver(drivers.get(0), functionality);
@@ -580,5 +579,4 @@ public class HardwareManager implements HardwareManagerRemote {
 	public int getNumberofDriversInCache() {
 		return deviceDriverCache.size();
 	}
-
 }

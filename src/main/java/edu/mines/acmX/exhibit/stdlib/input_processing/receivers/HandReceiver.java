@@ -33,7 +33,7 @@ import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
  * @author Ryan Stauffer
  * @see {@link HandTrackerInterface}
  */
-public class HandReceiver implements InputReceiver {
+public abstract class HandReceiver implements InputReceiver {
 
 	/*
 	 * The three following functions can be overridden to use their event data.
@@ -43,10 +43,10 @@ public class HandReceiver implements InputReceiver {
 	 *    TODO Provide default implementation letting the user know they ought
 	 *    to have registered the event.
 	 */
-	public void handCreated(HandPosition pos) {}
-	public void handUpdated(HandPosition pos) {}
-	public void handDestroyed(int id) {}
-	public void viewportDimensionChange(Dimension dim) {}
+	public abstract void handCreated(HandPosition pos);
+	public abstract void handUpdated(HandPosition pos);
+	public abstract void handDestroyed(int id);
+	public abstract void viewportDimensionChange(Dimension dim);
 	
 	/**
 	 * Provides the implementation details to abstract the received data.

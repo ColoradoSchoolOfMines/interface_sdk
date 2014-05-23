@@ -2,19 +2,20 @@ package edu.mines.acmX.exhibit.input_services.hardware.drivers.MicrosoftSDK;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GestureTracker {
 
 	Map<Integer, Map<NUI_HAND_TYPE, HandGesture>> hands;
 
 	public GestureTracker(){
-		hands = new HashMap<>();
+		hands = new ConcurrentHashMap<>();
 	}
 
 	public void update(KinectDevice device, long timestamp, float x, float y, float z, int id, NUI_HAND_TYPE handType){
 		Map<NUI_HAND_TYPE, HandGesture> user = hands.get(id);
 		if(user == null)
-			hands.put(id, user = new HashMap<>());
+			hands.put(id, user = new ConcurrentHashMap<>());
 
 		HandGesture gest = user.get(handType);
 

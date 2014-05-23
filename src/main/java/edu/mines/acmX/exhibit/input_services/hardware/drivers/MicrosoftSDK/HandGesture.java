@@ -6,6 +6,10 @@ import edu.mines.acmX.exhibit.stdlib.graphics.Coordinate3D;
 import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
 import edu.mines.acmX.exhibit.stdlib.input_processing.tracking.HandTrackingUtilities;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class HandGesture {
 
 	// odd left, even right
@@ -14,6 +18,7 @@ public class HandGesture {
 	private long lastUpdate;
 	private int id;
 	private NUI_HAND_TYPE handType;
+    Timer patience;
 
 	private int handID = 0;
 
@@ -26,6 +31,7 @@ public class HandGesture {
 	public HandGesture(int id, NUI_HAND_TYPE handType){
 		this.id = id;
 		this.handType = handType;
+       // System.out.println("HandGesture " + id + " " + handType + " " + new Throwable().getStackTrace()[1]);
 	}
 
 	public void update(KinectDevice device, long timestamp, float x, float y, float z, int id, NUI_HAND_TYPE handType){
@@ -44,7 +50,8 @@ public class HandGesture {
 			y *= 480;
 
 			HandPosition pos = new HandPosition(handID, new Coordinate3D(x, y, z));
-			EventManager.getInstance().fireEvent(EventType.HAND_CREATED, pos);
+			EventManager.getInstance().fireEvent(EventType.HAND_UPDATED, pos);
+            patience.restart();
 			return;
 		}
 
@@ -98,6 +105,15 @@ public class HandGesture {
 
 				HandPosition pos = new HandPosition(handID = ++currentID, new Coordinate3D(x, y, z));
 				EventManager.getInstance().fireEvent(EventType.HAND_CREATED, pos);
+                //System.out.println(EventType.HAND_CREATED);
+                patience = new Timer(500, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        EventManager.getInstance().fireEvent(EventType.HAND_DESTROYED, handID);
+                        patience.stop();
+                    }
+                });
+                patience.start();
 				break;
 		}
 	}

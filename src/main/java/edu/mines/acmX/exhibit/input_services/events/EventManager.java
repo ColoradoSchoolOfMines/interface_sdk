@@ -96,7 +96,7 @@ public class EventManager {
 		if (eventReceivers.containsKey(type)) {
 			eventReceivers.get(type).add(receiver);
 		} else {
-			List<InputReceiver> listOfReceivers = new ArrayList<InputReceiver>();
+			List<InputReceiver> listOfReceivers = new ArrayList<>();
 			listOfReceivers.add(receiver);
 			eventReceivers.put(type, listOfReceivers);
 		}
@@ -120,10 +120,10 @@ public class EventManager {
 	 */
 	public synchronized void sendEvent() {
 		Event e = events.poll();
+        //System.out.println(e.getName());
 		// Check if anyone is actually listening for this event
 		if (eventReceivers.containsKey(e.getName())) {
 			List<InputReceiver> receivers = eventReceivers.get(e.getName());
-			
 			for (InputReceiver r : receivers) {
 				r.receiveInput(e.getName(), e.getData());
 			}

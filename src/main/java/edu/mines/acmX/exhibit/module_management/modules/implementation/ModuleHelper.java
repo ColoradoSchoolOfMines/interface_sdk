@@ -68,10 +68,10 @@ public class ModuleHelper implements ModuleInterface {
 
 	private static Logger log = LogManager.getLogger(ModuleHelper.class);
 
-    private boolean hardwareFirstRun = true;
+    private static boolean hardwareFirstRun = true;
 
 	public ModuleHelper() {
-		// no op
+        // no-op
 	}
 
 	protected ModuleManagerRemote getManager()
@@ -218,6 +218,7 @@ public class ModuleHelper implements ModuleInterface {
 	public DeviceDataInterface getInitialDriver(String functionality) throws RemoteException,
 			BadFunctionalityRequestException, UnknownDriverRequest, InvalidConfigurationFileException,
 			BadDeviceFunctionalityRequestException {
-		return getHardware().getInitialDriver(functionality);
+        HardwareManagerRemote h = getHardware();
+		return h.getInitialDriver(functionality);
 	}
 }

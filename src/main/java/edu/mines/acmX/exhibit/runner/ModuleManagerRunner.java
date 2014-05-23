@@ -77,7 +77,7 @@ public class ModuleManagerRunner {
 				} else {
 					System.out
 							.println("A Module Manager Manifest is required to run the module manager"
-									+ "Please specify with the --manifest switch");
+									+ "\nPlease specify with the --manifest switch");
 					System.exit(1);
 				}
 				ModuleManager m;
