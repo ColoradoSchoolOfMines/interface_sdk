@@ -28,6 +28,11 @@ public class HandGesture {
 		this.handType = handType;
 	}
 
+	public void destroy(){
+		EventManager.getInstance().fireEvent(EventType.HAND_DESTROYED, handID);
+		handID = id = 0;
+	}
+
 	public void update(KinectDevice device, long timestamp, float x, float y, float z, int id, NUI_HAND_TYPE handType){
 		if(this.id != id || this.handType != handType)
 			return;
@@ -44,7 +49,8 @@ public class HandGesture {
 			y *= 480;
 
 			HandPosition pos = new HandPosition(handID, new Coordinate3D(x, y, z));
-			EventManager.getInstance().fireEvent(EventType.HAND_CREATED, pos);
+			EventManager.getInstance().fireEvent(EventType.HAND_UPDATED, pos);
+
 			return;
 		}
 
