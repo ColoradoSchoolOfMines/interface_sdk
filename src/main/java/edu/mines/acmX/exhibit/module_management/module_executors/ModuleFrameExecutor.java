@@ -18,6 +18,8 @@ import java.util.concurrent.Semaphore;
 public class ModuleFrameExecutor extends ModuleExecutor{
     final private Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
 
+    protected ModuleFrame moduleFrame;
+
     public ModuleFrameExecutor(String fullyQualifiedModuleName, String jarPath) {
         super(fullyQualifiedModuleName, jarPath);
         try{
@@ -49,7 +51,7 @@ public class ModuleFrameExecutor extends ModuleExecutor{
             // Create a new instance of incoming module
             Class modClass = Class.forName(fullyQualifiedModuleName);
             moduleStack.push((ProcessingModule) modClass.newInstance());
-            ModuleFrame moduleFrame = new ModuleFrame(moduleStack.peek());
+            moduleFrame = new ModuleFrame(moduleStack.peek());
             //moduleStack.peek().frame = moduleFrame;
             final Semaphore executorSemaphore = new Semaphore(1);
             executorSemaphore.acquire();
@@ -107,5 +109,10 @@ public class ModuleFrameExecutor extends ModuleExecutor{
             e.printStackTrace();
             System.err.println("Semaphore failed to synchronize executor; abandoning module runtime");
         }
+    }
+
+    public void close() {
+        moduleFrame.setVisible(false);
+        moduleFrame.dispose();
     }
 }

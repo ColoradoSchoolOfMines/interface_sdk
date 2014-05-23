@@ -46,6 +46,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestExc
 import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
+import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +67,7 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 */
     private final ModuleInterface moduleHelper;
     
-    public Frame frame;
+    //public Frame frame;
     
     public static String IMAGES_LOCATION = "images/";
     
@@ -236,6 +237,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	}
 
 
+    @Override
+    public void destroy() {
+        ModuleManager.destroyCurrentModule();
+        super.destroy();
+    }
 
 
 
