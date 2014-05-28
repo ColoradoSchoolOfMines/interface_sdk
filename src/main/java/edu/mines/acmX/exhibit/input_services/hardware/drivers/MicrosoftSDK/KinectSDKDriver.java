@@ -77,6 +77,8 @@ public class KinectSDKDriver implements DriverInterface,
 	@Override
 	public void destroy() {
 		if(loaded){
+			loaded = false;
+
 			if(interactionStream != null){
 				interactionStream.Disable();
 				interactionStream.Release();
@@ -125,7 +127,10 @@ public class KinectSDKDriver implements DriverInterface,
 				device = null;
 			}
 
-			loaded = false;
+			// Remove all receivers connected to this driver
+			EventManager.getInstance().removeReceivers(EventType.HAND_CREATED);
+			EventManager.getInstance().removeReceivers(EventType.HAND_UPDATED);
+			EventManager.getInstance().removeReceivers(EventType.HAND_DESTROYED);
 		}
 	}
 
@@ -147,9 +152,9 @@ public class KinectSDKDriver implements DriverInterface,
 
 		checkRC(KinectLibrary.INSTANCE.NuiCreateSensorByIndex(0, newDevice));
 		device = newDevice.getDevice();
-        checkRC(device.NuiInitialize(new DWORD(KinectLibrary.NUI_INITIALIZE_FLAG_USES_COLOR |
-                KinectLibrary.NUI_INITIALIZE_FLAG_USES_SKELETON |
-                KinectLibrary.NUI_INITIALIZE_FLAG_USES_DEPTH)));
+		checkRC(device.NuiInitialize(new DWORD(KinectLibrary.NUI_INITIALIZE_FLAG_USES_COLOR |
+										KinectLibrary.NUI_INITIALIZE_FLAG_USES_SKELETON |
+										KinectLibrary.NUI_INITIALIZE_FLAG_USES_DEPTH)));
 
 
 		nextColorImageFrame = Kernel32.INSTANCE.CreateEvent(null, true, false, null);
@@ -185,6 +190,7 @@ public class KinectSDKDriver implements DriverInterface,
 		interactionStream = newStream.getStream();
 
 		checkRC(interactionStream.Enable(nextInteractionFrame));
+		new Thread(new BackgroundThread()).start();
 	}
 
 	@Override
@@ -196,7 +202,7 @@ public class KinectSDKDriver implements DriverInterface,
 		NUI_SKELETON_FRAME skeletonFrame = new NUI_SKELETON_FRAME();
 		checkRC(device.NuiSkeletonGetNextFrame(new DWORD(Kernel32.INFINITE), skeletonFrame));
 
-		//checkRC(device.NuiTransformSmooth(skeletonFrame, null));
+		checkRC(device.NuiTransformSmooth(skeletonFrame, new NUI_TRANSFORM_SMOOTH_PARAMETERS()));
 
 		Vector4 vect = new Vector4();
 		checkRC(device.NuiAccelerometerGetCurrentReading(vect));
@@ -232,56 +238,72 @@ public class KinectSDKDriver implements DriverInterface,
 		checkRC(device.NuiImageStreamReleaseFrame(depthStream, imageFrame));
 	}
 
-
-
 	private void processInteraction(){
 		NUI_INTERACTION_FRAME interactionFrame = new NUI_INTERACTION_FRAME();
 		checkRC(interactionStream.GetNextFrame(new DWORD(0), interactionFrame));
 
 		// get a list of all skeletons and hands with information
 		List<Integer> ids = new ArrayList<>();
+		List<NUI_HAND_TYPE> types = new ArrayList<>();
 
 		for(NUI_USER_INFO info : interactionFrame.UserInfos){
 
-			if(info.HandPointerInfos[0].State.intValue() == 0)
-				continue;
+			if(info.HandPointerInfos[0].State.intValue() != 0) {
 
-			gestureTracker.update(device, interactionFrame.TimeStamp.getValue(),
-					info.HandPointerInfos[0].RawX,
-					info.HandPointerInfos[0].RawY,
-					info.HandPointerInfos[0].RawZ,
-					info.SkeletonTrackingId.intValue(),
-					info.HandPointerInfos[0].HandType.value);
+				ids.add(info.SkeletonTrackingId.intValue());
+				types.add(info.HandPointerInfos[0].HandType.value);
 
-			gestureTracker.update(device, interactionFrame.TimeStamp.getValue(),
-					info.HandPointerInfos[1].RawX,
-					info.HandPointerInfos[1].RawY,
-					info.HandPointerInfos[1].RawZ,
-					info.SkeletonTrackingId.intValue(),
-					info.HandPointerInfos[1].HandType.value);
+				gestureTracker.update(device, interactionFrame.TimeStamp.getValue(),
+						info.HandPointerInfos[0].RawX,
+						info.HandPointerInfos[0].RawY,
+						info.HandPointerInfos[0].RawZ,
+						info.SkeletonTrackingId.intValue(),
+						info.HandPointerInfos[0].HandType.value);
+			}
 
-			//System.out.print("Hand 0 x:" + info.HandPointerInfos[0].RawX);
-			//System.out.println(", y:" + info.HandPointerInfos[0].RawY);
+			if(info.HandPointerInfos[1].State.intValue() != 0) {
+
+				ids.add(info.SkeletonTrackingId.intValue());
+				types.add(info.HandPointerInfos[1].HandType.value);
+
+				gestureTracker.update(device, interactionFrame.TimeStamp.getValue(),
+						info.HandPointerInfos[1].RawX,
+						info.HandPointerInfos[1].RawY,
+						info.HandPointerInfos[1].RawZ,
+						info.SkeletonTrackingId.intValue(),
+						info.HandPointerInfos[1].HandType.value);
+
+			}
 		}
+
+		gestureTracker.findDestroyed(ids, types);
 	}
 
 	// wait for new data for all streams
 	// also look for new hands for hand tracking
-	// TODO move onto its own thread
+	class BackgroundThread implements Runnable {
+
+		@Override
+		public void run() {
+			while(loaded) {
+				HANDLE[] handles = {nextSkeletonFrame, nextDepthImageFrame, nextInteractionFrame};
+
+				Kernel32.INSTANCE.WaitForMultipleObjects(handles.length, handles, false, Kernel32.INFINITE);
+
+				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextSkeletonFrame, 0))
+					processSkeleton();
+
+				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextDepthImageFrame, 0))
+					processDepth();
+
+				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextInteractionFrame, 0))
+					processInteraction();
+			}
+		}
+	}
+
 	@Override
 	public void updateDriver() {
-		HANDLE[] handles = {nextSkeletonFrame, nextDepthImageFrame, nextInteractionFrame};
-
-		Kernel32.INSTANCE.WaitForMultipleObjects(handles.length, handles, false, Kernel32.INFINITE);
-
-		if(WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextSkeletonFrame, 0))
-			processSkeleton();
-
-		if(WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextDepthImageFrame, 0))
-			processDepth();
-
-		if(WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextInteractionFrame, 0))
-			processInteraction();
 	}
 
 	// bugbug

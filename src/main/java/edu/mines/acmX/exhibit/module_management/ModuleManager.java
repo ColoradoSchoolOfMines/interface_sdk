@@ -94,7 +94,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	 */
 	public static void configure(String moduleManifestPath)
 			throws ManifestLoadException {
-        metaData = loadModuleManagerConfig(moduleManifestPath);
+		metaData = loadModuleManagerConfig(moduleManifestPath);
 	}
 
 	// private static void configure(String defaultModule, String pathToModules)
@@ -486,6 +486,7 @@ public class ModuleManager implements ModuleManagerRemote {
 		this.moduleExecutor = new ModuleFrameExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
 				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
+        if(mmd == defaultModuleMetaData) ModuleFrameExecutor.clearStack();
 		setCurrentModule(mmd);
 		logger.info("Loaded module " + mmd.getPackageName());
 	}
@@ -586,18 +587,18 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	}
 
-    /**
-     * This function allows for the current running module to get its own
-     * package name.
-     *
-     * TODO integrate this with Module Helper
-     */
+	/**
+	 * This function allows for the current running module to get its own
+	 * package name.
+	 *
+	 * TODO integrate this with Module Helper
+	 */
 	@Override
-    public String getCurrentModulePackageName() {
-        return currentModuleMetaData.getPackageName();
-    }
+	public String getCurrentModulePackageName() {
+		return currentModuleMetaData.getPackageName();
+	}
 
-    @Override
+	@Override
 	public String[] getAllAvailableModules() {
 		if (currentModuleMetaData.getOptionalAll()) {
 			return moduleConfigs.keySet().toArray(new String[0]);
@@ -695,19 +696,4 @@ public class ModuleManager implements ModuleManagerRemote {
 	public int nextInt() throws InputMismatchException, NoSuchElementException {
 		return in.nextInt();
 	}
-
-    public static void destroyCurrentModule() {
-        try {
-            ModuleManager instance = getInstance();
-            if (instance.moduleExecutor instanceof ModuleFrameExecutor) {
-                ModuleFrameExecutor mfe = (ModuleFrameExecutor)instance.moduleExecutor;
-                mfe.close();
-            }
-        } catch(ManifestLoadException e) {
-            e.printStackTrace();
-        } catch(ModuleLoadException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

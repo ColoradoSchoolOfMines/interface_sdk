@@ -7,27 +7,27 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 
 public class ModuleFrame extends JFrame {
-    PApplet resident;
+	PApplet resident;
 
-    public ModuleFrame(PApplet resident){
-        super();
-        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        setUndecorated(true);
+	public ModuleFrame(PApplet resident){
+		super();
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		setUndecorated(true);
 
-        //resident.init();
-        resident.frame = this;
-        this.resident = resident;
-        setVisible(true);
+		//resident.init();
+		resident.frame = this;
+		this.resident = resident;
+		setVisible(true);
 
-        setLayout(new BorderLayout());
-        add(resident, BorderLayout.CENTER);
+		setLayout(new BorderLayout());
+		add(resident, BorderLayout.CENTER);
 
-        Insets insets = getInsets();
-        //setSize(env.getMaximumWindowBounds().getSize());
-        setExtendedState(Frame.MAXIMIZED_BOTH);
-        resident.setBounds(insets.left, insets.top, getWidth(), getHeight());
+		Insets insets = getInsets();
+		//setSize(env.getMaximumWindowBounds().getSize());
+		setExtendedState(Frame.MAXIMIZED_BOTH);
+		resident.setBounds(insets.left, insets.top, getWidth(), getHeight());
 
-        //setLocation(500, 200);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    }
+		//setLocation(500, 200);
+		//setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	}
 }

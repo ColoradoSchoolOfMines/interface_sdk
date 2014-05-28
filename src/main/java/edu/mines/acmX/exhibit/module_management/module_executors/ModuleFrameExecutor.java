@@ -1,5 +1,8 @@
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
+import edu.mines.acmX.exhibit.module_management.ModuleManager;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleFrame;
 import edu.mines.acmX.exhibit.module_management.modules.ProcessingModule;
 import processing.core.PApplet;
@@ -16,103 +19,118 @@ import java.util.Stack;
 import java.util.concurrent.Semaphore;
 
 public class ModuleFrameExecutor extends ModuleExecutor{
-    final private Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
+	static private Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
 
-    protected ModuleFrame moduleFrame;
+	protected ModuleFrame moduleFrame;
 
-    public ModuleFrameExecutor(String fullyQualifiedModuleName, String jarPath) {
-        super(fullyQualifiedModuleName, jarPath);
-        try{
-        Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
-        method.setAccessible(true);
-        method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{new File(jarPath).toURI().toURL()});
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
+	public ModuleFrameExecutor(String fullyQualifiedModuleName, String jarPath) {
+		super(fullyQualifiedModuleName, jarPath);
+		try{
+		    Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+		    method.setAccessible(true);
+		    method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{new File(jarPath).toURI().toURL()});
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void run() throws ModuleRuntimeException {
-        try {
-            // Freeze active module, if any
-            if(!moduleStack.empty()){
-                moduleStack.peek().noLoop();
+	@Override
+	public void run() throws ModuleRuntimeException {
+		try {
+			// Freeze active module, if any
+			if(!moduleStack.empty()){
+				moduleStack.peek().noLoop();
+			}
+			// Disallow more than 6 JFrames on the stack
+			if(moduleStack.size() > 6){
+				return;
+			}
+			// Create a new instance of incoming module
+			Class modClass = Class.forName(fullyQualifiedModuleName);
+			moduleStack.push((ProcessingModule) modClass.newInstance());
+            System.out.println(moduleStack.size() + " " + new Throwable().getStackTrace()[0]);
+            if(moduleStack.peek().frame != null) {
+                moduleStack.peek().frame.setVisible(false);
+                moduleStack.peek().frame.dispose();
             }
-            // Disallow more than 6 JFrames on the stack
-            if(moduleStack.size() > 6){
-                return;
+			moduleFrame = new ModuleFrame(moduleStack.peek());
+            System.out.println(new Throwable().getStackTrace()[0]);
+			//moduleStack.peek().frame = moduleFrame;
+			final Semaphore executorSemaphore = new Semaphore(1);
+			executorSemaphore.acquire();
+			moduleFrame.addWindowListener(new WindowListener() {
+				@Override
+				public void windowOpened(WindowEvent e) {
+					// nop?
+				}
+
+				@Override
+				public void windowClosing(WindowEvent e) {
+					// nop
+				}
+
+				@Override
+				public void windowClosed(WindowEvent e) {
+                    try {
+                        ModuleManager.getInstance().run();
+                    } catch (ManifestLoadException x) {
+                        x.printStackTrace();
+                    } catch (ModuleLoadException x) {
+                        x.printStackTrace();
+                    }
+					if(moduleStack.empty()){
+						executorSemaphore.release();
+					}
+				}
+
+				@Override
+				public void windowIconified(WindowEvent e) {
+					// nop
+				}
+
+				@Override
+				public void windowDeiconified(WindowEvent e) {
+					// nop
+				}
+
+				@Override
+				public void windowActivated(WindowEvent e) {
+					// nop
+				}
+
+				@Override
+				public void windowDeactivated(WindowEvent e) {
+					// nop
+				}
+			});
+			moduleStack.peek().execute();
+			executorSemaphore.acquire();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.err.println("Semaphore failed to synchronize executor; abandoning module runtime");
+		}
+	}
+
+    public static synchronized void clearStack() {
+        while(!moduleStack.empty()) {
+            ModuleFrame mf = (ModuleFrame)moduleStack.peek().frame;
+            if(mf != null) {
+                mf.setVisible(false);
+                mf.dispose();
             }
-            // Create a new instance of incoming module
-            Class modClass = Class.forName(fullyQualifiedModuleName);
-            moduleStack.push((ProcessingModule) modClass.newInstance());
-            moduleFrame = new ModuleFrame(moduleStack.peek());
-            //moduleStack.peek().frame = moduleFrame;
-            final Semaphore executorSemaphore = new Semaphore(1);
-            executorSemaphore.acquire();
-            moduleFrame.addWindowListener(new WindowListener() {
-                @Override
-                public void windowOpened(WindowEvent e) {
-                    // nop?
-                }
-
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    moduleStack.pop();
-                    if(!moduleStack.empty()){
-                        moduleStack.peek().loop();
-                    }
-                    if(moduleStack.empty()){
-                        executorSemaphore.release();
-                    }
-                }
-
-                @Override
-                public void windowIconified(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowActivated(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                    // nop
-                }
-            });
-            moduleStack.peek().execute();
-            executorSemaphore.acquire();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.err.println("Semaphore failed to synchronize executor; abandoning module runtime");
+            moduleStack.pop();
         }
-    }
-
-    public void close() {
-        moduleFrame.setVisible(false);
-        moduleFrame.dispose();
     }
 }

@@ -65,17 +65,17 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * uses a ModuleHelper so that it can extend PApplet while keeping the 
 	 * functionality of a Module.
 	 */
-    private final ModuleInterface moduleHelper;
-    
-    //public Frame frame;
-    
-    public static String IMAGES_LOCATION = "images/";
-    
-    public ProcessingModule() {
-        super();
-        moduleHelper = new ModuleHelper();
+	private final ModuleInterface moduleHelper;
+
+	//public Frame frame;
+
+	public static String IMAGES_LOCATION = "images/";
+
+	public ProcessingModule() {
+		super();
+		moduleHelper = new ModuleHelper();
 //        frame = new Frame();
-    }
+	}
 
 	/**
 	 * Delegation method, wraps ModuleHelper's setNextModuleToLoad function
@@ -84,36 +84,36 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 * @param	moduleName	Package name of next moduleHelper to load
 	 * @throws RemoteException 
 	 */
-    @Override
-    public boolean setNextModule( String moduleName ) throws RemoteException {
-        return moduleHelper.setNextModule( moduleName );
-    }
+	@Override
+	public boolean setNextModule( String moduleName ) throws RemoteException {
+		return moduleHelper.setNextModule( moduleName );
+	}
 
-    @Override
-    public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
+	@Override
+	public InputStream loadResourceFromModule( String jarResourcePath, ModuleMetaData m ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath, m);
 	}
 
-    @Override
+	@Override
 	public InputStream loadResourceFromModule( String jarResourcePath ) throws ManifestLoadException, ModuleLoadException, RemoteException {
 		return moduleHelper.loadResourceFromModule(jarResourcePath);
 	}
 	
-    @Override
+	@Override
 	public ModuleMetaData getModuleMetaData(String packageName) throws RemoteException {
 		return moduleHelper.getModuleMetaData(packageName);
 	}
 	
-    @Override
+	@Override
 	public String[] getAllAvailableModules() throws RemoteException {
 		return moduleHelper.getAllAvailableModules();
 	}
 	
-    @Override
+	@Override
 	public String getCurrentModulePackageName() throws RemoteException {
-        return moduleHelper.getCurrentModulePackageName();
-    }
-    
+		return moduleHelper.getCurrentModulePackageName();
+	}
+
 	@Override
 	public ModuleMetaData getDefaultModuleMetaData() throws RemoteException {
 		return moduleHelper.getDefaultModuleMetaData();
@@ -153,16 +153,16 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		return moduleHelper.getInitialDriver( functionality );
 	}
 
-    /**
-     * This function does the dirty work for creating a new Processing window.
-     * This will call Processing's init() function which does further Processing
-     * specific setup stuff and will finally call this PApplets overridden
-     * setup, draw and update function if they exist
-     *
-     * TODO try to run PApplet without creating a new frame.
-     */
-    @Override
-    public void execute(){
+	/**
+	 * This function does the dirty work for creating a new Processing window.
+	 * This will call Processing's init() function which does further Processing
+	 * specific setup stuff and will finally call this PApplets overridden
+	 * setup, draw and update function if they exist
+	 *
+	 * TODO try to run PApplet without creating a new frame.
+	 */
+	@Override
+	public void execute(){
 //        frame.dispose(); // Dispose the window to make it undisplayable and be able to change its properties
 //    	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
 //    	frame.setUndecorated(true); //disable bordering
@@ -177,17 +177,17 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 //        frame.setVisible(true); //get correct screen size for Windows
 //    	frame.add(this);
 //    	frame.setVisible(true);
-        super.init();
-    }
+		super.init();
+	}
 
 	// TODO: check if buffered image supports same image types asProcessing
 	// loadImage function
 	@Override
 	public PImage loadImage(String name) {
 		//use original function if from an outside resource
-        if (name.startsWith("http://") || name.startsWith("https://")) {
-                return super.loadImage(name);
-        }
+		if (name.startsWith("http://") || name.startsWith("https://")) {
+				return super.loadImage(name);
+		}
 		name = IMAGES_LOCATION + name;
 		try {
 			InputStream stream = loadResourceFromModule(name); //, "edu.mines.acmX.exhibit.modules.home_screen");
@@ -230,21 +230,23 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 
 	}
 
-    private static PImage buffImagetoPImage(BufferedImage bimg) {
+	private static PImage buffImagetoPImage(BufferedImage bimg) {
 		PImage img = new PImage(bimg.getWidth(), bimg.getHeight(), PConstants.ARGB);
 		bimg.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
 		return img;
 	}
 
 
-    @Override
-    public void destroy() {
-        ModuleManager.destroyCurrentModule();
-        super.destroy();
-    }
-
-
-
+	@Override
+	public void destroy() {
+        try {
+            ModuleManager.getInstance().run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		frame.setVisible(false);
+		super.destroy();
+	}
 }
 
 
