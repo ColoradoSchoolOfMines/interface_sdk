@@ -696,5 +696,19 @@ public class ModuleManager implements ModuleManagerRemote {
 		return in.nextInt();
 	}
 
+    public static void destroyCurrentModule() {
+        try {
+            ModuleManager instance = getInstance();
+            if (instance.moduleExecutor instanceof ModuleFrameExecutor) {
+                ModuleFrameExecutor mfe = (ModuleFrameExecutor)instance.moduleExecutor;
+                mfe.close();
+            }
+        } catch(ManifestLoadException e) {
+            e.printStackTrace();
+        } catch(ModuleLoadException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
