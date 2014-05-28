@@ -16,7 +16,9 @@ import java.util.Stack;
 import java.util.concurrent.Semaphore;
 
 public class ModuleFrameExecutor extends ModuleExecutor{
-    final private Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
+    final private static Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
+
+    protected ModuleFrame moduleFrame;
 
     public ModuleFrameExecutor(String fullyQualifiedModuleName, String jarPath) {
         super(fullyQualifiedModuleName, jarPath);
@@ -39,9 +41,9 @@ public class ModuleFrameExecutor extends ModuleExecutor{
     public void run() throws ModuleRuntimeException {
         try {
             // Freeze active module, if any
-            if(!moduleStack.empty()){
-                moduleStack.peek().noLoop();
-            }
+            /*if(!moduleStack.empty()){
+                moduleStack.peek().pause();
+            }*/
             // Disallow more than 6 JFrames on the stack
             if(moduleStack.size() > 6){
                 return;
@@ -49,7 +51,7 @@ public class ModuleFrameExecutor extends ModuleExecutor{
             // Create a new instance of incoming module
             Class modClass = Class.forName(fullyQualifiedModuleName);
             moduleStack.push((ProcessingModule) modClass.newInstance());
-            ModuleFrame moduleFrame = new ModuleFrame(moduleStack.peek());
+            moduleFrame = new ModuleFrame(moduleStack.peek());
             //moduleStack.peek().frame = moduleFrame;
             final Semaphore executorSemaphore = new Semaphore(1);
             executorSemaphore.acquire();
@@ -68,7 +70,7 @@ public class ModuleFrameExecutor extends ModuleExecutor{
                 public void windowClosed(WindowEvent e) {
                     moduleStack.pop();
                     if(!moduleStack.empty()){
-                        moduleStack.peek().loop();
+                        moduleStack.peek().execute();
                     }
                     if(moduleStack.empty()){
                         executorSemaphore.release();
@@ -108,4 +110,10 @@ public class ModuleFrameExecutor extends ModuleExecutor{
             System.err.println("Semaphore failed to synchronize executor; abandoning module runtime");
         }
     }
+
+    public void close() {
+        moduleFrame.setVisible(false);
+        moduleFrame.dispose();
+    }
+
 }
