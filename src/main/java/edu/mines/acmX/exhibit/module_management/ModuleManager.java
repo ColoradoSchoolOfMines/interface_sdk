@@ -24,12 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 import edu.mines.acmX.exhibit.module_management.module_executors.*;
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +59,7 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 public class ModuleManager implements ModuleManagerRemote {
 
 	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
+	private Stack<ModuleExecutor> moduleStack = new Stack<>();
 
 	/**
 	 * Singleton instance of ModuleManager This is volatile in order to be safe
@@ -82,7 +78,6 @@ public class ModuleManager implements ModuleManagerRemote {
 	private ModuleMetaData nextModuleMetaData;
 	private ModuleMetaData currentModuleMetaData;
 	private ModuleMetaData defaultModuleMetaData;
-	private ModuleExecutor moduleExecutor;
 	private boolean loadDefault;
 	private Map<String, ModuleMetaData> moduleConfigs;
 	private Scanner in;
@@ -94,7 +89,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	 */
 	public static void configure(String moduleManifestPath)
 			throws ManifestLoadException {
-        metaData = loadModuleManagerConfig(moduleManifestPath);
+		metaData = loadModuleManagerConfig(moduleManifestPath);
 	}
 
 	// private static void configure(String defaultModule, String pathToModules)
@@ -483,15 +478,15 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	private void preModuleRuntime(ModuleMetaData mmd) throws ModuleLoadException {
 
-		this.moduleExecutor = new ModuleFrameExecutor(mmd.getPackageName()
+		moduleStack.push(new ModuleFrameExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
-				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
+				metaData.getPathToModules(), mmd.getJarFileName())).getPath()));
 		setCurrentModule(mmd);
 		logger.info("Loaded module " + mmd.getPackageName());
 	}
 
 	private void runCurrentModule() throws ModuleRuntimeException {
-		this.moduleExecutor.run();
+		this.moduleStack.peek().run();
 	}
 
 	private void postModuleRuntime() {
@@ -586,18 +581,18 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	}
 
-    /**
-     * This function allows for the current running module to get its own
-     * package name.
-     *
-     * TODO integrate this with Module Helper
-     */
+	/**
+	 * This function allows for the current running module to get its own
+	 * package name.
+	 *
+	 * TODO integrate this with Module Helper
+	 */
 	@Override
-    public String getCurrentModulePackageName() {
-        return currentModuleMetaData.getPackageName();
-    }
+	public String getCurrentModulePackageName() {
+		return currentModuleMetaData.getPackageName();
+	}
 
-    @Override
+	@Override
 	public String[] getAllAvailableModules() {
 		if (currentModuleMetaData.getOptionalAll()) {
 			return moduleConfigs.keySet().toArray(new String[0]);
@@ -696,19 +691,18 @@ public class ModuleManager implements ModuleManagerRemote {
 		return in.nextInt();
 	}
 
-    public static void destroyCurrentModule() {
-        try {
-            ModuleManager instance = getInstance();
-            if (instance.moduleExecutor instanceof ModuleFrameExecutor) {
-                ModuleFrameExecutor mfe = (ModuleFrameExecutor)instance.moduleExecutor;
-                mfe.close();
-            }
-        } catch(ManifestLoadException e) {
-            e.printStackTrace();
-        } catch(ModuleLoadException e) {
-            e.printStackTrace();
-        }
-    }
+	public static void destroyCurrentModule() {
+		try {
+			ModuleManager instance = getInstance();
+			while(!instance.moduleStack.empty()){
+				((ModuleFrameExecutor) instance.moduleStack.pop()).close();
+			}
+		} catch(ManifestLoadException e) {
+			e.printStackTrace();
+		} catch(ModuleLoadException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 }

@@ -48,7 +48,7 @@ public class KinectSDKDriver implements DriverInterface,
 	private GestureTracker gestureTracker;
 
 	public KinectSDKDriver(){
-	    loaded = false;
+		loaded = false;
 		device = null;
 		colorStream = null;
 		depthStream = null;
@@ -66,6 +66,8 @@ public class KinectSDKDriver implements DriverInterface,
 		if(!loaded) {
 			try{
 				load();
+			} catch (COMException e) {
+			   System.out.println(e.getStackTrace()[0]);
 			} catch (Throwable t){
 				// logger do something
 				return false;
@@ -291,13 +293,25 @@ public class KinectSDKDriver implements DriverInterface,
 				Kernel32.INSTANCE.WaitForMultipleObjects(handles.length, handles, false, Kernel32.INFINITE);
 
 				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextSkeletonFrame, 0))
-					processSkeleton();
+					try {
+						processSkeleton();
+					} catch (Throwable t) {
+						System.out.println(t.getStackTrace()[0]);
+					}
 
 				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextDepthImageFrame, 0))
-					processDepth();
+					try {
+						processDepth();
+					}catch (Throwable t) {
+						System.out.println(t.getStackTrace()[0]);
+					}
 
 				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextInteractionFrame, 0))
-					processInteraction();
+					try {
+						processInteraction();
+					} catch (Throwable t) {
+						System.out.println(t.getStackTrace()[0]);
+					}
 			}
 		}
 	}
