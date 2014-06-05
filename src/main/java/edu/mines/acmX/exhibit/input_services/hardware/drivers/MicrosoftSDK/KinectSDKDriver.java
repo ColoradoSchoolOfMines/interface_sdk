@@ -67,7 +67,7 @@ public class KinectSDKDriver implements DriverInterface,
 			try{
 				load();
 			} catch (COMException e) {
-			   System.out.println("COMException");
+			   System.out.println(e.getMessage());
 			} catch (Throwable t){
 				// logger do something
 				return false;

@@ -697,6 +697,8 @@ public class ModuleManager implements ModuleManagerRemote {
 			while(!instance.moduleStack.empty()){
 				((ModuleFrameExecutor) instance.moduleStack.pop()).close();
 			}
+            instance.setDefault(true);
+            instance.run();
 		} catch(ManifestLoadException e) {
 			e.printStackTrace();
 		} catch(ModuleLoadException e) {

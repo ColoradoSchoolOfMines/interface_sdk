@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 
 public class ModuleFrame extends JFrame {
-    PApplet resident;
+    private volatile PApplet resident;
 
     public ModuleFrame(PApplet resident){
         super();
@@ -26,8 +26,5 @@ public class ModuleFrame extends JFrame {
         //setSize(env.getMaximumWindowBounds().getSize());
         setExtendedState(Frame.MAXIMIZED_BOTH);
         resident.setBounds(insets.left, insets.top, getWidth(), getHeight());
-
-        //setLocation(500, 200);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 }
