@@ -117,9 +117,14 @@ public class INuiInteractionStream extends Unknown {
 	/// INuiSensor status failure code if NUI sensor associated with stream is no longer connected.
 	/// </returns>
 	public HRESULT GetNextFrame(DWORD dwMillisecondsToWait, NUI_INTERACTION_FRAME pInteractionFrame){
-		return (HRESULT) this._invokeNativeObject(6,
-				new Object[] { this.getPointer(), dwMillisecondsToWait, pInteractionFrame },
-				HRESULT.class);
+        try {
+            return (HRESULT) this._invokeNativeObject(6,
+                    new Object[]{this.getPointer(), dwMillisecondsToWait, pInteractionFrame},
+                    HRESULT.class);
+        } catch (Throwable t) {
+            System.out.println("Error in GetNextFrame");
+            return null;
+        }
 	}
 
 	/// <summary>

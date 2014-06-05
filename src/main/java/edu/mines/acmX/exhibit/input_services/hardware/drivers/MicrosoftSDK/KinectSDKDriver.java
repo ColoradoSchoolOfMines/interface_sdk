@@ -67,7 +67,7 @@ public class KinectSDKDriver implements DriverInterface,
 			try{
 				load();
 			} catch (COMException e) {
-			   System.out.println(e.getStackTrace()[0]);
+			   System.out.println("COMException");
 			} catch (Throwable t){
 				// logger do something
 				return false;
@@ -296,21 +296,21 @@ public class KinectSDKDriver implements DriverInterface,
 					try {
 						processSkeleton();
 					} catch (Throwable t) {
-						System.out.println(t.getStackTrace()[0]);
+						System.out.println("Error in processSkeleton");
 					}
 
 				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextDepthImageFrame, 0))
 					try {
 						processDepth();
 					}catch (Throwable t) {
-						System.out.println(t.getStackTrace()[0]);
+						System.out.println("Error in processDepth");
 					}
 
 				if (WinBase.WAIT_OBJECT_0 == Kernel32.INSTANCE.WaitForSingleObject(nextInteractionFrame, 0))
 					try {
 						processInteraction();
 					} catch (Throwable t) {
-						System.out.println(t.getStackTrace()[0]);
+						System.out.println("Error in processInteraction");
 					}
 			}
 		}

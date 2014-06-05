@@ -218,6 +218,12 @@ public class ModuleHelper implements ModuleInterface {
 	public DeviceDataInterface getInitialDriver(String functionality) throws RemoteException,
 			BadFunctionalityRequestException, UnknownDriverRequest, InvalidConfigurationFileException,
 			BadDeviceFunctionalityRequestException {
-		return getHardware().getInitialDriver(functionality);
+        try {
+            return getHardware().getInitialDriver(functionality);
+        } catch (Exception e) { //If we have any problem getting the driver, try again
+            System.out.println("Retrying getting the driver in ModuleHelper");
+            ((HardwareManager)getHardware()).resetAllDrivers();
+            return getHardware().getInitialDriver(functionality);
+        } //TODO preferably something other than this method
 	}
 }
