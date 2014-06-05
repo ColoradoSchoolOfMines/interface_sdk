@@ -1,6 +1,7 @@
 package edu.mines.acmX.exhibit.module_management.module_executors;
 
 import edu.mines.acmX.exhibit.module_management.modules.ModuleFrame;
+import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 import edu.mines.acmX.exhibit.module_management.modules.ProcessingModule;
 import processing.core.PApplet;
 
@@ -16,9 +17,10 @@ import java.util.Stack;
 import java.util.concurrent.Semaphore;
 
 public class ModuleFrameExecutor extends ModuleExecutor{
-    final private static Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
 
     protected volatile ModuleFrame moduleFrame;
+    protected volatile ModuleInterface module;
+    final Semaphore executorSemaphore = new Semaphore(1);
 
     public ModuleFrameExecutor(String fullyQualifiedModuleName, String jarPath) {
         super(fullyQualifiedModuleName, jarPath);
@@ -40,64 +42,12 @@ public class ModuleFrameExecutor extends ModuleExecutor{
     @Override
     public void run() throws ModuleRuntimeException {
         try {
-            // Freeze active module, if any
-            /*if(!moduleStack.empty()){
-                moduleStack.peek().pause();
-            }*/
-            // Disallow more than 6 JFrames on the stack
-            if(moduleStack.size() > 6){
-                return;
-            }
             // Create a new instance of incoming module
             Class modClass = Class.forName(fullyQualifiedModuleName);
-            moduleStack.push((ProcessingModule) modClass.newInstance());
-            moduleFrame = new ModuleFrame(moduleStack.peek());
-            //moduleStack.peek().frame = moduleFrame;
-            final Semaphore executorSemaphore = new Semaphore(1);
+            module = ((ModuleInterface) modClass.newInstance());
+            moduleFrame = new ModuleFrame((ProcessingModule)module);
             executorSemaphore.acquire();
-            moduleFrame.addWindowListener(new WindowListener() {
-                @Override
-                public void windowOpened(WindowEvent e) {
-                    // nop?
-                }
-
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    moduleStack.pop();
-                    if(!moduleStack.empty()){
-                        moduleStack.peek().execute();
-                    }
-                    if(moduleStack.empty()){
-                        executorSemaphore.release();
-                    }
-                }
-
-                @Override
-                public void windowIconified(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowActivated(WindowEvent e) {
-                    // nop
-                }
-
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-                    // nop
-                }
-            });
-            moduleStack.peek().execute();
+            ((ProcessingModule)module).execute();
             executorSemaphore.acquire();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -115,6 +65,7 @@ public class ModuleFrameExecutor extends ModuleExecutor{
         if(moduleFrame != null) {
             moduleFrame.setVisible(false);
             moduleFrame.dispose();
+            executorSemaphore.release();
         }
     }
 
