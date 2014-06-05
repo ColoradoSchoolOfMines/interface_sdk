@@ -18,7 +18,7 @@ import java.util.concurrent.Semaphore;
 public class ModuleFrameExecutor extends ModuleExecutor{
     final private static Stack<ProcessingModule> moduleStack = new Stack<ProcessingModule>();
 
-    protected ModuleFrame moduleFrame;
+    protected volatile ModuleFrame moduleFrame;
 
     public ModuleFrameExecutor(String fullyQualifiedModuleName, String jarPath) {
         super(fullyQualifiedModuleName, jarPath);
@@ -111,9 +111,11 @@ public class ModuleFrameExecutor extends ModuleExecutor{
         }
     }
 
-    public void close() {
-        moduleFrame.setVisible(false);
-        moduleFrame.dispose();
+    public synchronized void close() {
+        if(moduleFrame != null) {
+            moduleFrame.setVisible(false);
+            moduleFrame.dispose();
+        }
     }
 
 }
