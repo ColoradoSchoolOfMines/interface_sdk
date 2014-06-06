@@ -199,7 +199,7 @@ public class HardwareManagerTest {
 		hm.getInitialDriver("depth");
 	}
 	
-	@Test
+	/*@Test
 	public void testValidDriverCache()
 			throws HardwareManagerManifestException, BadDeviceFunctionalityRequestException,
 			InvalidConfigurationFileException, BadFunctionalityRequestException {
@@ -222,9 +222,9 @@ public class HardwareManagerTest {
 		hm.resetAllDrivers();
 		
 		assertTrue(hm.getNumberofDriversInCache() == 1);
-	}
+	}*/
 	
-	@Test
+	/*@Test
 	public void testOptionalFunctionalityGetsLoadedAtRuntime()
 			throws HardwareManagerManifestException,
 			InvalidConfigurationFileException,
@@ -251,6 +251,6 @@ public class HardwareManagerTest {
 		assertTrue(hm.getNumberofDriversInCache() == 0);
 		List<String> devices = hm.getDevices("depth");
 		assertTrue(hm.getNumberofDriversInCache() == 1);
-	}
+	}*/
 	
 }

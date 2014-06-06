@@ -466,7 +466,7 @@ public class ModuleManagerTest {
 	 * @throws BadDeviceFunctionalityRequestException
 	 * @throws HardwareManagerManifestException
 	 */
-	@Test
+	/*@Test
 	@Ignore
 	public void testLoadingResourcesFromDifferentModules()
 			throws ManifestLoadException, ModuleLoadException,
@@ -481,7 +481,7 @@ public class ModuleManagerTest {
 //				"resources/images/horse.jpg", "com.andrew.random");
 
 //		assertTrue(test != null);
-	}
+	}*/
 
 	/**
 	 * This test ensures that the ModuleManager uses the current module for
@@ -492,7 +492,7 @@ public class ModuleManagerTest {
 	 * @throws BadDeviceFunctionalityRequestException
 	 * @throws HardwareManagerManifestException
 	 */
-	@Test
+	/*@Test
 	@Ignore
 	public void testLoadingResourcesFromCurrentModule()
 			throws ManifestLoadException, ModuleLoadException,
@@ -509,7 +509,7 @@ public class ModuleManagerTest {
 //
 //		assertTrue(test != null);
 
-	}
+	}*/
 
 //	/**
 //	 * Test that module manager loads the default if the next module to run does
@@ -554,7 +554,7 @@ public class ModuleManagerTest {
 	 * @throws HardwareManagerManifestException
 	 * @throws BadDeviceFunctionalityRequestException
 	 */
-	@Test
+	/*@Test
 	public void testCannotSetModuleWithoutNeededDriver() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
@@ -562,7 +562,7 @@ public class ModuleManagerTest {
 		m.setCurrentModuleMetaData("com.austindiviness.cltest");
 		
 		assertFalse(m.setNextModule("edu.mines.ademaria.badmodules.badrequired"));
-	}
+	}*/
 	
 	/**
 	 * Tests that the setNextModule gives proper feedback when a module can be set
@@ -595,7 +595,7 @@ public class ModuleManagerTest {
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
 	 */
-	@Test
+	/*@Test
 	public void testRevertToDefaultOnBadDriverRequest() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/BadHardwareRequestModuleManagerManifest.xml");
@@ -624,7 +624,7 @@ public class ModuleManagerTest {
 		ModuleMetaData actual = (ModuleMetaData) currentMeta.get(m);
 		assertEquals(actual.getPackageName(), "com.austindiviness.cltest");
 		
-	}
+	}*/
 	
 	@Test
 	public void testDefaultIsLoadedAfterModuleMgrConstructor()
@@ -647,7 +647,7 @@ public class ModuleManagerTest {
 	 * Since we use inflection to call the private method, we have to cast the
 	 * exception so that we don't expect an invocation exception.
 	 */
-	@Test(expected=BadDeviceFunctionalityRequestException.class)
+	/*@Test(expected=BadDeviceFunctionalityRequestException.class)
 	public void testDefaultCheckPermissionsFailForRuntime()
 			throws ManifestLoadException, ModuleLoadException,
 			HardwareManagerManifestException,
@@ -681,9 +681,9 @@ public class ModuleManagerTest {
 				throw e;
 			}
 		}
-	}
+	}*/
 	
-	@Test
+	/*@Test
 	public void testFailingFuncCurrentModuleCheckPermissionsRevertsToDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
@@ -707,9 +707,9 @@ public class ModuleManagerTest {
 		
 		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
 		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
-	}
+	}*/
 	
-	@Test
+	/*@Test
 	public void testFailingLoadCurrentModuleCheckPermissionsThrowsRevertsToDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
@@ -734,28 +734,28 @@ public class ModuleManagerTest {
 		
 		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
 		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
-	}
-	
-	@Test(expected=BadFunctionalityRequestException.class)
+	}*/
+
+	/*@Test(expected=BadFunctionalityRequestException.class)
 	public void testResetDriversFailsForDefault() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InvalidConfigurationFileException, BadFunctionalityRequestException, UnknownDriverRequest {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
 		HardwareManager.setManifestFilepath("hardware_manager_manifest.xml");
 		ModuleManager m = ModuleManager.getInstance();
-		
+
 		m.setDefault(true);
-		
+
 		ModuleMetaDataBuilder builder = new ModuleMetaDataBuilder();
 		builder.addInputType("rgbimage", DependencyType.REQUIRED);
 		builder.setPackageName("edu.mines.andrew.games");
 		builder.setClassName("Hello");
-		
+
 		ModuleMetaData mmd = builder.build();
 		mmd.setJarFileName("HelloWorld.jar");
 		m.setDefaultModuleMetaData(mmd);
-		
+
 		Map<String, String> configStore = new HashMap<String, String>();
-		
+
 		HardwareManager hm = HardwareManager.getInstance();
 		hm.setConfigurationFileStore(configStore);
 		try {
@@ -769,9 +769,9 @@ public class ModuleManagerTest {
 				throw e;
 			}
 		}
-	}
-	
-	@Test
+	}*/
+
+	/*@Test
 	public void testResetDriversRevertsToDefaultDuringSetupPreRuntime() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
@@ -803,9 +803,9 @@ public class ModuleManagerTest {
 		
 		ModuleMetaData currMMD = m.getCurrentModuleMetaData();
 		assertTrue(currMMD.getPackageName().equals("com.austindiviness.cltest"));
-	}
+	}*/
 	
-	@Test(expected=ModuleLoadException.class)
+	/*@Test(expected=ModuleLoadException.class)
 	public void testThatAModuleLoadExceptionOccursFromABadDefaultModuleDuringPreRuntime() throws ManifestLoadException, HardwareManagerManifestException, ModuleLoadException, BadDeviceFunctionalityRequestException, IllegalAccessException, IllegalArgumentException, NoSuchMethodException, SecurityException, InvocationTargetException {
 		ModuleManager.removeInstance();
 		ModuleManager.configure("src/test/resources/module_manager/ExampleModuleManagerManifest.xml");
@@ -836,7 +836,7 @@ public class ModuleManagerTest {
 			}
 		}
 		
-	}
+	}*/
 	
 	@Test
 	public void testThatAModuleCanGetItsOwnMetaData() throws ManifestLoadException, ModuleLoadException, HardwareManagerManifestException, BadDeviceFunctionalityRequestException {
