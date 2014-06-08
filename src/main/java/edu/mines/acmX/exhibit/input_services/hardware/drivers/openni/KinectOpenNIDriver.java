@@ -288,6 +288,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 				context.stopGeneratingAll();
 
 				handsGen.dispose();
+
 				String[] strs = gestureGen.enumerateAllGestures();
 				for(String s: strs){
 					gestureGen.removeGesture(s);
@@ -308,6 +309,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 				EventManager.getInstance().removeReceivers(EventType.HAND_CREATED);
 				EventManager.getInstance().removeReceivers(EventType.HAND_UPDATED);
 				EventManager.getInstance().removeReceivers(EventType.HAND_DESTROYED);
+				EventManager.getInstance().removeReceivers(EventType.GESTURE_RECOGNIZED);
 
 				loaded = false;
 			} catch (StatusException e) {
