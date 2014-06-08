@@ -46,6 +46,7 @@ import edu.mines.acmX.exhibit.input_services.hardware.BadFunctionalityRequestExc
 import edu.mines.acmX.exhibit.input_services.hardware.UnknownDriverRequest;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DeviceDataInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.InvalidConfigurationFileException;
+import edu.mines.acmX.exhibit.module_management.ModuleManager;
 import edu.mines.acmX.exhibit.module_management.modules.implementation.ModuleRMIHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,14 +67,14 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 	 */
     private final ModuleInterface moduleHelper;
     
-    private Frame frame;
+    public Frame frame;
     
     public static String IMAGES_LOCATION = "images/";
     
     public ProcessingModule() {
         super();
-        moduleHelper = new ModuleRMIHelper();
-        frame = new Frame();
+        moduleHelper = new ModuleHelper();
+//        frame = new Frame();
     }
 
 	/**
@@ -162,19 +163,20 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
      */
     @Override
     public void execute(){
-    	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
-    	frame.setUndecorated(true); //disable bordering
-    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
-        frame.addWindowListener( new WindowAdapter() {
-            public void windowClosing( WindowEvent e ) {
-                exit(); //exit the specific moduleHelper when the window is closed, not ModuleManager
-            }
-        });
-        
-        frame.setVisible(true); //get correct screen size for Windows
-    	frame.add(this);
-    	frame.setVisible(true);
+//        frame.dispose(); // Dispose the window to make it undisplayable and be able to change its properties
+//    	frame.setExtendedState(Frame.MAXIMIZED_BOTH); //maximize the window
+//    	frame.setUndecorated(true); //disable bordering
+//    	GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//    	frame.setSize(env.getMaximumWindowBounds().getSize()); //set window size to maximum for maximized windows
+//        frame.addWindowListener( new WindowAdapter() {
+//            public void windowClosing( WindowEvent e ) {
+//                exit(); //exit the specific moduleHelper when the window is closed, not ModuleManager
+//            }
+//        });
+//
+//        frame.setVisible(true); //get correct screen size for Windows
+//    	frame.add(this);
+//    	frame.setVisible(true);
         super.init();
     }
 
@@ -234,6 +236,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		return img;
 	}
 
+    @Override
+    public void destroy() {
+        ModuleManager.destroyCurrentModule();
+        super.destroy();
+    }
 
 
 

@@ -24,14 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleSimpleExecutor;
+import edu.mines.acmX.exhibit.module_management.module_executors.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,9 +39,6 @@ import edu.mines.acmX.exhibit.module_management.metas.CheckType;
 import edu.mines.acmX.exhibit.module_management.metas.DependencyType;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleManagerMetaData;
 import edu.mines.acmX.exhibit.module_management.metas.ModuleMetaData;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleExecutor;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleProcessExecutor;
-import edu.mines.acmX.exhibit.module_management.module_executors.ModuleRuntimeException;
 import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 
 /**
@@ -67,6 +59,7 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 public class ModuleManager implements ModuleManagerRemote {
 
 	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
+	private Stack<ModuleExecutor> moduleStack = new Stack<>();
 
 	/**
 	 * Singleton instance of ModuleManager This is volatile in order to be safe
@@ -85,7 +78,6 @@ public class ModuleManager implements ModuleManagerRemote {
 	private ModuleMetaData nextModuleMetaData;
 	private ModuleMetaData currentModuleMetaData;
 	private ModuleMetaData defaultModuleMetaData;
-	private ModuleExecutor moduleExecutor;
 	private boolean loadDefault;
 	private Map<String, ModuleMetaData> moduleConfigs;
 	private Scanner in;
@@ -446,7 +438,7 @@ public class ModuleManager implements ModuleManagerRemote {
 	 */
 	public void run() throws
 			ModuleLoadException {
-		while (true) {
+		//while (true) {
 			// create a new Module Executor
 			setupPreRuntime();
 			try {
@@ -457,7 +449,7 @@ public class ModuleManager implements ModuleManagerRemote {
 				loadDefault = true;
 			}
 			postModuleRuntime();
-		}
+		//}
 	}
 
 	private void setupPreRuntime() throws
@@ -486,15 +478,15 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	private void preModuleRuntime(ModuleMetaData mmd) throws ModuleLoadException {
 
-		this.moduleExecutor = new ModuleProcessExecutor(mmd.getPackageName()
+		moduleStack.push(new ModuleFrameExecutor(mmd.getPackageName()
 				+ "." + mmd.getClassName(), (new File(
-				metaData.getPathToModules(), mmd.getJarFileName())).getPath());
+				metaData.getPathToModules(), mmd.getJarFileName())).getPath()));
 		setCurrentModule(mmd);
 		logger.info("Loaded module " + mmd.getPackageName());
 	}
 
 	private void runCurrentModule() throws ModuleRuntimeException {
-		this.moduleExecutor.run();
+		this.moduleStack.peek().run();
 	}
 
 	private void postModuleRuntime() {
@@ -589,18 +581,18 @@ public class ModuleManager implements ModuleManagerRemote {
 
 	}
 
-    /**
-     * This function allows for the current running module to get its own
-     * package name.
-     *
-     * TODO integrate this with Module Helper
-     */
+	/**
+	 * This function allows for the current running module to get its own
+	 * package name.
+	 *
+	 * TODO integrate this with Module Helper
+	 */
 	@Override
-    public String getCurrentModulePackageName() {
-        return currentModuleMetaData.getPackageName();
-    }
+	public String getCurrentModulePackageName() {
+		return currentModuleMetaData.getPackageName();
+	}
 
-    @Override
+	@Override
 	public String[] getAllAvailableModules() {
 		if (currentModuleMetaData.getOptionalAll()) {
 			return moduleConfigs.keySet().toArray(new String[0]);
@@ -697,6 +689,21 @@ public class ModuleManager implements ModuleManagerRemote {
 	@Override
 	public int nextInt() throws InputMismatchException, NoSuchElementException {
 		return in.nextInt();
+	}
+
+	public static void destroyCurrentModule() {
+		try {
+			ModuleManager instance = getInstance();
+			while(!instance.moduleStack.empty()){
+				((ModuleFrameExecutor) instance.moduleStack.pop()).close();
+			}
+            instance.setDefault(true);
+            instance.run();
+		} catch(ManifestLoadException e) {
+			e.printStackTrace();
+		} catch(ModuleLoadException e) {
+			e.printStackTrace();
+		}
 	}
 
 
