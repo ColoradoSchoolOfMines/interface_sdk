@@ -1,0 +1,6 @@
+* text=auto
+
+*.png binary
+*.jar binary
+*.jar.bak binary
+*.dia binary
