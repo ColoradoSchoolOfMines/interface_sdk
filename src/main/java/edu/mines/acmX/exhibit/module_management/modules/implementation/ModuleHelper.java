@@ -68,7 +68,7 @@ public class ModuleHelper implements ModuleInterface {
 
 	private static Logger log = LogManager.getLogger(ModuleHelper.class);
 
-    private boolean hardwareFirstRun = true;
+    private static boolean hardwareFirstRun = true;
 
 	public ModuleHelper() {
 		// no op
@@ -90,7 +90,7 @@ public class ModuleHelper implements ModuleInterface {
 
 	}
 
-	protected HardwareManagerRemote getHardware() throws HardwareManagerCommunicationException,
+	protected synchronized HardwareManagerRemote getHardware() throws HardwareManagerCommunicationException,
 			ModuleManagerCommunicationException, BadDeviceFunctionalityRequestException,
 			InvalidConfigurationFileException, BadFunctionalityRequestException {
 		try {

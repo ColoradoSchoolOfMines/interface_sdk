@@ -37,6 +37,7 @@
             <provides name="rgbimage" />
             <provides name="depth" />
             <provides name="handtracking" />
+            <provides name="gesturetracking" />
         </device>
 	</devices>
 

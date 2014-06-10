@@ -29,7 +29,7 @@ public class ModuleFrame extends JFrame {
 
     public ModuleFrame(PApplet resident){
         super();
-        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        //GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         setUndecorated(true);
 
         //resident.init();

@@ -206,4 +206,7 @@ public class KinectOpenNI2Driver implements DriverInterface,
 		DriverHelper.checkLoaded(this);
 		return imageHeight;
 	}
+
+	@Override
+	public void clearAllHands() {}
 }

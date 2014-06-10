@@ -82,7 +82,7 @@ public class HardwareManager implements HardwareManagerRemote {
 	private HardwareManagerMetaData metaData;
 	private Map<String, DependencyType> currentModuleInputTypes;
 
-	private static HardwareManager instance = null;
+	private volatile static HardwareManager instance = null;
 	private static String manifest_path = DEFAULT_MANIFEST_PATH;
 
 	private Map<String, List<String>> devices; // available list of devices
@@ -114,7 +114,7 @@ public class HardwareManager implements HardwareManagerRemote {
 	 * @return A HardwareManager instance
 	 * @throws HardwareManagerManifestException
 	 */
-	public static HardwareManager getInstance()
+	public synchronized static HardwareManager getInstance()
 			throws HardwareManagerManifestException {
 		if (instance == null) {
 			instance = new HardwareManager();
@@ -571,7 +571,6 @@ public class HardwareManager implements HardwareManagerRemote {
 	public DeviceDataInterface getInitialDriver(String functionality)
 			throws BadFunctionalityRequestException, UnknownDriverRequest,
 			InvalidConfigurationFileException {
-		
 		List<String> drivers = getDevices(functionality);
 		// TODO check into get(0) -> underflow exception possible?
 		return inflateDriver(drivers.get(0), functionality);

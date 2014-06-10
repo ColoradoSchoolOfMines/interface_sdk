@@ -397,4 +397,7 @@ public class KinectOpenNIDriver implements DriverInterface,
 		EventManager.getInstance().registerReceiver(
 				EventType.VIEWPORT_DIMENSION, r);
 	}
+
+	@Override
+	public void clearAllHands() {}
 }

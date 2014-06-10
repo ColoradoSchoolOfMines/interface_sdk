@@ -46,5 +46,6 @@ public interface HandTrackerInterface extends DeviceDataInterface {
 	public void registerHandUpdated(InputReceiver r);
 
 	public void registerHandDestroyed(InputReceiver r);
-	
+
+	public void clearAllHands();
 }

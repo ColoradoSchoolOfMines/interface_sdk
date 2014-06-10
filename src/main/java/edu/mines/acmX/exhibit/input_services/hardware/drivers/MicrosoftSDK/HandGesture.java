@@ -22,14 +22,16 @@ import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.stdlib.graphics.Coordinate3D;
 import edu.mines.acmX.exhibit.stdlib.graphics.HandPosition;
-import edu.mines.acmX.exhibit.stdlib.input_processing.tracking.HandTrackingUtilities;
+import edu.mines.acmX.exhibit.stdlib.input_processing.receivers.Gesture;
 
 public class HandGesture {
 
 	// odd left, even right
 	private int wave = 0;
 	private float lastX = 0;
-	private long lastUpdate;
+	private Coordinate3D lastPushCoord;
+	private long lastPushUpdate;
+	private long lastWaveUpdate;
 	private int id;
 	private NUI_HAND_TYPE handType;
 
@@ -48,7 +50,8 @@ public class HandGesture {
 
 	public void destroy(){
 		EventManager.getInstance().fireEvent(EventType.HAND_DESTROYED, handID);
-		handID = id = 0;
+		//handID = id = 0;
+		handID = 0;
 	}
 
 	public void update(KinectDevice device, long timestamp, float x, float y, float z, int id, NUI_HAND_TYPE handType){
@@ -65,7 +68,7 @@ public class HandGesture {
 
 			x *= 640;
 			y *= 480;
-
+			checkPush(timestamp, new Coordinate3D(x, y, z));
 			HandPosition pos = new HandPosition(handID, new Coordinate3D(x, y, z));
 			EventManager.getInstance().fireEvent(EventType.HAND_UPDATED, pos);
 
@@ -76,53 +79,67 @@ public class HandGesture {
 			case 0:
 				if(lastX == 0) {
 					lastX = x;
-					lastUpdate = timestamp;
-				} else if(timestamp - lastUpdate > 1000) {
+					lastWaveUpdate = timestamp;
+				} else if(timestamp - lastWaveUpdate > 1000) {
 					lastX = 0;
 				} else if(Math.abs(x - lastX) > .3) {
 					wave = x > lastX ? 1 : 2;
 					lastX = x;
-					lastUpdate = timestamp;
+					lastWaveUpdate = timestamp;
 				}
 				break;
 			case 1:
-				if(timestamp - lastUpdate > 1000) {
+				if(timestamp - lastWaveUpdate > 1000) {
 					wave = 0;
 					lastX = 0;
 				} else if(x - lastX < -.3){
 					wave++;
 					lastX = x;
-					lastUpdate = timestamp;
+					lastWaveUpdate = timestamp;
 				}
 				break;
 			case 2:
-				if(timestamp - lastUpdate > 1000) {
+				if(timestamp - lastWaveUpdate > 1000) {
 					wave = 0;
 					lastX = 0;
 				} else if(x - lastX > .3){
 					wave++;
 					lastX = x;
-					lastUpdate = timestamp;
+					lastWaveUpdate = timestamp;
 				}
 				break;
 			case 3:
-				if(timestamp - lastUpdate > 1000) {
+				if(timestamp - lastWaveUpdate > 1000) {
 					wave = 0;
 					lastX = 0;
 				} else if(x - lastX < -.3){
 					wave++;
 					lastX = x;
-					lastUpdate = timestamp;
+					lastWaveUpdate = timestamp;
 				}
 				break;
 			case 4:
 				wave = 0;
 				lastX = 0;
-				lastUpdate = timestamp;
+				lastWaveUpdate = timestamp;
 
 				HandPosition pos = new HandPosition(handID = ++currentID, new Coordinate3D(x, y, z));
 				EventManager.getInstance().fireEvent(EventType.HAND_CREATED, pos);
 				break;
+		}
+	}
+
+	public void checkPush(long timestamp, Coordinate3D coord) {
+		if(lastPushCoord == null) {
+			lastPushCoord = coord;
+			lastPushUpdate = timestamp;
+		} else if(timestamp - lastPushUpdate > 500) {
+			lastPushCoord = null;
+		} else if(coord.getZ() - lastPushCoord.getZ() > lastPushCoord.getZ() * 0.65) {
+			System.out.println("push");
+			lastPushCoord = null;
+			lastWaveUpdate = 0;
+			EventManager.getInstance().fireEvent(EventType.GESTURE_RECOGNIZED, new Gesture("push", lastPushCoord, coord));
 		}
 	}
 }

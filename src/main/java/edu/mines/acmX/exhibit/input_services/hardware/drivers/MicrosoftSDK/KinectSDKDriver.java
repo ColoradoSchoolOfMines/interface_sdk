@@ -28,6 +28,7 @@ import edu.mines.acmX.exhibit.input_services.events.EventManager;
 import edu.mines.acmX.exhibit.input_services.events.EventType;
 import edu.mines.acmX.exhibit.input_services.events.InputReceiver;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.DepthImageInterface;
+import edu.mines.acmX.exhibit.input_services.hardware.devicedata.GestureTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.RGBImageInterface;
 import edu.mines.acmX.exhibit.input_services.hardware.drivers.DriverException;
@@ -50,7 +51,7 @@ import static com.sun.jna.platform.win32.W32Errors.FAILED;
  */
 
 public class KinectSDKDriver implements DriverInterface,
-		DepthImageInterface, RGBImageInterface, HandTrackerInterface {
+		DepthImageInterface, RGBImageInterface, HandTrackerInterface, GestureTrackerInterface {
 
 	private boolean loaded;
 
@@ -364,6 +365,11 @@ public class KinectSDKDriver implements DriverInterface,
 	}
 
 	@Override
+	public void clearAllHands() {
+		gestureTracker.clearAllHands();
+	}
+
+	@Override
 	public ByteBuffer getVisualData() {
 		Kernel32.INSTANCE.WaitForSingleObject(nextColorImageFrame, Kernel32.INFINITE);
 		NUI_IMAGE_FRAME imageFrame = new NUI_IMAGE_FRAME();
@@ -410,6 +416,10 @@ public class KinectSDKDriver implements DriverInterface,
 	@Override
 	public int getDepthImageHeight() {
 		return 480;
+	}
+
+	public void registerGestureRecognized(InputReceiver r) {
+		EventManager.getInstance().registerReceiver(EventType.GESTURE_RECOGNIZED, r);
 	}
 
 	public static void checkRC(HRESULT hr) {

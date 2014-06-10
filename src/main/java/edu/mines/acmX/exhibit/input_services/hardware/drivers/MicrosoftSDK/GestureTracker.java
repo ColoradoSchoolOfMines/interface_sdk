@@ -90,10 +90,15 @@ public class GestureTracker {
 			hands.put(key, gest = new HandGesture(id, handType));
 
 		if(Math.abs(x - .5) > 3.5 || Math.abs(y - .5) > 3.5) {
-			hands.remove(key);
 			gest.destroy();
 		}
 
 		gest.update(device, timestamp, x, y, z, id, handType);
+	}
+
+	public void clearAllHands() {
+		for(KeyType key : hands.keySet()) {
+			hands.get(key).destroy();
+		}
 	}
 }
