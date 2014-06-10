@@ -43,7 +43,6 @@ public class ScoreSaverPanel extends JPanel {
 	private float handX = 0, handY = 0;
 	private HandTrackerInterface driver;
 	private HashSet<HoverClickRectangle> allClickables;
-	ArrayList<String> names = null;
 	private int score;
 	private int currentUserPositionStart = 0;
 	private int numUsers;
@@ -59,6 +58,8 @@ public class ScoreSaverPanel extends JPanel {
 	private Rectangle scoreRectangle = null;
 	private HoverClickRectangle submitButton = null;
 	private Rectangle instructionArea = null;
+
+	private Font textFont = null;
 
 	public ScoreSaverPanel(ScoreSaver saver, int score, int handID, HandTrackerInterface driver) {
 		this.saver = saver;
@@ -77,15 +78,16 @@ public class ScoreSaverPanel extends JPanel {
 		shapesGenerated = true;
 		generateSelectionPanelShapes();
 		generateOtherShapes();
+		textFont = new Font("TimesRoman", Font.PLAIN, getHeight() / 36);
 	}
 
 	private void generateSelectionPanelShapes() {
 		selectionPanelUserRectangles = new HoverClickRectangle[5];
 
 		selectionPanelFineScrollUp = new HoverClickRectangle(getWidth() / 12, getHeight() / 12, getWidth() / 4, getHeight() / 12);
-		selectionPanelFineScrollUp.addHC(200);
+		selectionPanelFineScrollUp.addHC(300);
 		selectionPanelFineScrollDown = new HoverClickRectangle(getWidth() / 12, 7 * getHeight() / 12, getWidth() / 4, getHeight() / 12);
-		selectionPanelFineScrollDown.addHC(200);
+		selectionPanelFineScrollDown.addHC(300);
 
 		selectionPanelUserRectangles[0] = new HoverClickRectangle(getWidth() / 12, getHeight() / 6, getWidth() / 4, getHeight() / 12);
 		selectionPanelUserRectangles[0].addHC(400);
@@ -119,9 +121,6 @@ public class ScoreSaverPanel extends JPanel {
 		drawSelectionPanel(g);
 		drawOtherPanels(g);
 		drawText(g);
-		//TODO show selected name with HoverClick
-		//TODO show score
-		//TODO show submit button with HoverClick, call ScoreSaver add score
 		//TODO show instructions
 		if(handID == -1); //TODO show wave to continue
 		else {
@@ -139,7 +138,6 @@ public class ScoreSaverPanel extends JPanel {
 		g.setColor(Color.BLUE);
 		drawRect(selectionPanelOutsideRectangle, g);
 		drawRect(selectionPanelScrollRectangle, g);
-		drawNames(g);
 	}
 
 	private void drawOtherPanels(Graphics g) {
@@ -160,7 +158,7 @@ public class ScoreSaverPanel extends JPanel {
 		int textHeight = (int)(rect.getHeight());
 		int textWidth  = (int)(rect.getWidth());
 		int x = r.x + (r.width - textWidth) / 2;
-		int y = r.y + (r.height - textHeight) / 2;
+		int y = r.y + (r.height - textHeight) / 2 + fm.getAscent();
 		g.drawString(s, x, y);
 	}
 
@@ -168,15 +166,11 @@ public class ScoreSaverPanel extends JPanel {
 		drawCenteredText(g, s, hcr.r);
 	}
 
-	private void drawNames(Graphics g) {
-		g.setColor(Color.BLACK);
-		names = saver.getUsers(currentUserPositionStart, 5);
-	}
-
 	private void drawText(Graphics g) {
-		if(names != null) {
+		g.setFont(textFont);
+		if(saver.getUsers(currentUserPositionStart, 5) != null) {
 			for (int i = 0; i < 5; i++) {
-				drawCenteredText(g, names.get(i), selectionPanelUserRectangles[i]);
+				drawCenteredText(g, saver.getUsers(currentUserPositionStart, 5).get(i), selectionPanelUserRectangles[i]);
 			}
 		}
 		drawCenteredText(g, "Submit", submitButton);
@@ -185,13 +179,11 @@ public class ScoreSaverPanel extends JPanel {
 		drawCenteredText(g, Integer.toString(score), scoreRectangle);
 	}
 
-
-
 	private void checkScrollBar() {
 		if(selectionPanelScrollRectangle.contains(handX, handY)) {
-			int temp = (int)((handY - (getHeight() / 6)) * 2 / getHeight() * (numUsers - 5)) + 1;
-			temp = temp < 1 ? 1 : temp;
-			temp = temp > numUsers - 4 ? numUsers - 4 : temp;
+			int temp = (int)((handY - (getHeight() / 6)) * 12 / 5 / getHeight() * (numUsers - 5));
+			temp = temp < 0 ? 0 : temp;
+			temp = temp > numUsers - 5 ? numUsers - 5 : temp;
 			currentUserPositionStart = temp;
 		}
 	}
@@ -199,22 +191,21 @@ public class ScoreSaverPanel extends JPanel {
 	private void checkClickables() {
 		int millis = (int)(Calendar.getInstance().getTimeInMillis());
 		if(selectionPanelFineScrollDown.hc.durationCompleted(millis)) {
-			currentUserPositionStart += (currentUserPositionStart == numUsers - 4) ? 0 : 1;
+			currentUserPositionStart += (currentUserPositionStart == numUsers - 5) ? 0 : 1;
 		} else if(selectionPanelFineScrollUp.hc.durationCompleted(millis)) {
 			currentUserPositionStart -= (currentUserPositionStart == 1) ? 0 : 1;
-			saver.addNewScore(score); // TODO move
+		} else if(submitButton.hc.durationCompleted(millis)) {
+			saver.addNewScore(score);
+		} else if(selectedNamePanel.hc.durationCompleted((millis))) {
+			saver.setSelectedUser("Guest");
 		} else {
 			for(int i = 0; i < 5; i++ ) {
 				if(selectionPanelUserRectangles[i].hc.durationCompleted(millis)) {
-					if(names != null) saver.setSelectedUser(names.get(i));
+					ArrayList<String> temp = saver.getUsers(currentUserPositionStart, 5);
+					if(temp != null) saver.setSelectedUser(temp.get(i));
 				}
 			}
 		}
-
-
-
-
-
 	}
 
 	private class MyHandReceiver extends HandReceiver {

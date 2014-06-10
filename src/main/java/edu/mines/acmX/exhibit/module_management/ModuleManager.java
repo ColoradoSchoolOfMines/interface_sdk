@@ -163,7 +163,6 @@ public class ModuleManager implements ModuleManagerRemote {
 				}
 			}
 		}
-
 		return instance;
 	}
 
@@ -706,5 +705,7 @@ public class ModuleManager implements ModuleManagerRemote {
 		}
 	}
 
-
+	public String getModulePath() {
+		return metaData.getPathToModules();
+	}
 }

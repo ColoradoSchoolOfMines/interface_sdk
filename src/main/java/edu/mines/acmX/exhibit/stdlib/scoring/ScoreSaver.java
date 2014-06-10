@@ -19,11 +19,15 @@
 package edu.mines.acmX.exhibit.stdlib.scoring;
 
 import edu.mines.acmX.exhibit.input_services.hardware.devicedata.HandTrackerInterface;
+import edu.mines.acmX.exhibit.module_management.ModuleManager;
+import edu.mines.acmX.exhibit.module_management.loaders.ManifestLoadException;
+import edu.mines.acmX.exhibit.module_management.loaders.ModuleLoadException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -34,7 +38,7 @@ import java.util.Scanner;
 public class ScoreSaver {
     public enum ScorePattern {HIGH_BEST, LOW_BEST}
     private File saveFile;
-	private int numUsers = 0;
+	private int numUsers = -1;
 	private String selectedUser = "Guest";
 	private ActionListener listener = null;
 	private volatile ScoreSaverPanel panel = null;
@@ -42,7 +46,27 @@ public class ScoreSaver {
 	private UserCache cache = new UserCache();
 
     public ScoreSaver(String game) {
-        saveFile = new File("modules/scores/" + game + ".txt");
+		String path = null;
+		try {
+			path = ModuleManager.getInstance().getPathToModules();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (ManifestLoadException e) {
+			e.printStackTrace();
+		} catch (ModuleLoadException e) {
+			e.printStackTrace();
+		}
+		if(path != null) {
+			File moduleDir = new File(path + "/scores");
+			if(!moduleDir.exists()) {
+				try {
+					moduleDir.mkdir();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		saveFile = new File(path + "/scores/" + game + ".txt");
     }
 
 	public synchronized ArrayList<String> getUsersDB(int start, int count) {
@@ -64,7 +88,7 @@ public class ScoreSaver {
 			String sql;
 			sql = "SELECT first, last FROM users ORDER BY first";
 			if (start != -1 && count != -1)
-				sql+=" "+"LIMIT"+count+"OFFSET"+start;
+				sql+=" "+" LIMIT "+count+" OFFSET "+start;
 			ResultSet rs = stmt.executeQuery(sql);
 
 			//STEP 5: Extract data from result set
@@ -108,8 +132,10 @@ public class ScoreSaver {
             return -1;
         }
         int best = -1;
-        while(is.hasNext()) {
-            int next = is.nextInt();
+        while(is.hasNextLine()) {
+			String line = is.nextLine();
+			String[] split = line.split(" ");
+            int next = Integer.parseInt(split[0]);
             if(best == -1) best = next;
             else if(sp == ScorePattern.HIGH_BEST) best = next > best ? next : best;
             else if(sp == ScorePattern.LOW_BEST) best = next < best ? next : best;
@@ -126,7 +152,7 @@ public class ScoreSaver {
         } catch (FileNotFoundException e) {
             return false;
         }
-        pw.println(score);
+        pw.println(score + " " + selectedUser);
         pw.flush();
         pw.close();
 		if(panel != null) {
@@ -146,13 +172,14 @@ public class ScoreSaver {
 		if(numUsers != -1) return numUsers;
 		else {
 			numUsers = getUsersDB(-1,-1).size();
-			return 0;
+			return numUsers;
 		}
 	}
 
 	public synchronized void setSelectedUser(String user) {
 		selectedUser = user;
 	}
+
 	public String getSelectedUser() { return selectedUser; }
 
 	public synchronized ArrayList<String> getUsers(int start, int count) {
@@ -163,7 +190,9 @@ public class ScoreSaver {
 
 		else {
 			cache.lastResult = getUsersDB(start, count);
-			return null;
+			cache.lastStart = start;
+			cache.lastCount = count;
+			return cache.lastResult;
 		}
 	}
 
