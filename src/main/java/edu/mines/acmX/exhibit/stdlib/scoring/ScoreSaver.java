@@ -34,6 +34,7 @@ public class ScoreSaver {
     public enum ScorePattern {HIGH_BEST, LOW_BEST}
     private File saveFile;
 	private int numUsers = 0;
+	private String selectedUser = "Guest";
 	private ActionListener listener = null;
 	private volatile ScoreSaverPanel panel = null;
 	private JFrame frame = null;
@@ -93,6 +94,11 @@ public class ScoreSaver {
 		}
 	}
 
+	public synchronized void setSelectedUser(String user) {
+		selectedUser = user;
+	}
+	public String getSelectedUser() { return selectedUser; }
+
 	public synchronized ArrayList<String> getUsers(int start, int count) {
 		if(cache.lastStart == start && cache.lastCount == count) return cache.lastResult;
 		if(numUsers == -1) getNumUsers();
@@ -115,7 +121,6 @@ public class ScoreSaver {
 		panel.setBackground(Color.ORANGE);
 		this.frame.add(panel);
 		this.frame.setVisible(true);
-		//panel.setPreferredSize(frame.getSize());
 	}
 
 	private class UserCache {
