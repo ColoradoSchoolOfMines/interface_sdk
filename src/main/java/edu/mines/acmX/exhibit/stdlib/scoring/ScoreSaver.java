@@ -24,6 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -43,6 +44,61 @@ public class ScoreSaver {
     public ScoreSaver(String game) {
         saveFile = new File("modules/scores/" + game + ".txt");
     }
+
+	public synchronized ArrayList<String> getUsersDB(int start, int count) {
+		final String DB_URL = "jdbc:mysql://cousinit.mines.edu/CS_CONNECT";
+		final String USER = "connectSummer";
+		final String PASS = "connectme";
+		ArrayList<String> newResults = new ArrayList<String>();
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			//STEP 2: Register JDBC driver
+			Class.forName("com.mysql.jdbc.Driver");
+
+			//STEP 3: Open a connection
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+			//STEP 4: Execute a query
+			stmt = conn.createStatement();
+			String sql;
+			sql = "SELECT first, last FROM users ORDER BY first";
+			if (start != -1 && count != -1)
+				sql+=" "+"LIMIT"+count+"OFFSET"+start;
+			ResultSet rs = stmt.executeQuery(sql);
+
+			//STEP 5: Extract data from result set
+			while (rs.next()) {
+				String first = rs.getString("first");
+				String last = rs.getString("last");
+				newResults.add(first+" "+last);
+			}
+			//STEP 6: Clean-up environment
+			rs.close();
+			stmt.close();
+			conn.close();
+		} catch (SQLException se) {
+			//Handle errors for JDBC
+			se.printStackTrace();
+		} catch (Exception e) {
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		} finally {
+			//finally block used to close resources
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException se2) {
+			}// nothing we can do
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+		return newResults;
+	}
 
     public synchronized int getBestScore(ScorePattern sp) {
         Scanner is = null;
@@ -89,8 +145,8 @@ public class ScoreSaver {
 	public synchronized int getNumUsers() {
 		if(numUsers != -1) return numUsers;
 		else {
+			numUsers = getUsersDB(-1,-1).size();
 			return 0;
-			//TODO Database Query
 		}
 	}
 
@@ -106,9 +162,8 @@ public class ScoreSaver {
 		else if(count > numUsers - start) return null;
 
 		else {
+			cache.lastResult = getUsersDB(start, count);
 			return null;
-			//TODO Database Query
-			//cache.lastResult = newResult
 		}
 	}
 
