@@ -28,6 +28,7 @@ import edu.mines.acmX.exhibit.stdlib.input_processing.tracking.HoverClick;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,13 +54,17 @@ public class ScoreSaverPanel extends JPanel {
 	private HoverClickRectangle selectionPanelFineScrollDown = null;
 	private Rectangle selectionPanelOutsideRectangle = null;
 	private Rectangle selectionPanelScrollRectangle = null;
+	private Rectangle selectionPanelScrollIndicator = null;
 
 	private HoverClickRectangle selectedNamePanel = null;
 	private Rectangle scoreRectangle = null;
 	private HoverClickRectangle submitButton = null;
 	private Rectangle instructionArea = null;
+	private UpDownTriangle scrollUpArrow = null;
+	private UpDownTriangle scrollDownArrow = null;
 
 	private Font textFont = null;
+	private enum TriangleDirection { UP, DOWN };
 
 	public ScoreSaverPanel(ScoreSaver saver, int score, int handID, HandTrackerInterface driver) {
 		this.saver = saver;
@@ -102,6 +107,7 @@ public class ScoreSaverPanel extends JPanel {
 
 		selectionPanelOutsideRectangle = new Rectangle(getWidth() / 12, getHeight() / 12, getWidth() / 3, 7 * getHeight() / 12);
 		selectionPanelScrollRectangle = new Rectangle(getWidth() / 3, getHeight() / 12, getWidth() / 12, 7 * getHeight() / 12);
+		selectionPanelScrollIndicator = new Rectangle(getWidth() / 3, getHeight() / 6, getWidth() / 12, getHeight() / 60);
 	}
 
 	private void generateOtherShapes() {
@@ -111,6 +117,8 @@ public class ScoreSaverPanel extends JPanel {
 		submitButton = new HoverClickRectangle(3 * getWidth() / 4, 3 * getHeight() / 4, getWidth() / 6, getHeight() / 6);
 		submitButton.addHC(400);
 		instructionArea = new Rectangle(getWidth() / 2, getHeight() / 12, 5 * getWidth() / 12, 7 * getHeight() / 12);
+		scrollUpArrow = new UpDownTriangle(getWidth() / 4, 3 * getHeight() / 24, getWidth() / 12, getHeight() / 24, TriangleDirection.UP);
+		scrollDownArrow = new UpDownTriangle(getWidth() / 4, 15 * getHeight() / 24, getWidth() / 12, getHeight() / 24, TriangleDirection.DOWN);
 	}
 
 	@Override
@@ -133,11 +141,23 @@ public class ScoreSaverPanel extends JPanel {
 		for(HoverClickRectangle hcr : selectionPanelUserRectangles) {
 			hcr.draw(g);
 		}
-		selectionPanelFineScrollUp.fill(g, Color.CYAN);
-		selectionPanelFineScrollDown.fill(g, Color.CYAN);
+		selectionPanelFineScrollUp.draw(g)/*.fill(g, Color.CYAN)*/;
+		selectionPanelFineScrollDown.draw(g)/*.fill(g, Color.CYAN)*/;
 		g.setColor(Color.BLUE);
 		drawRect(selectionPanelOutsideRectangle, g);
 		drawRect(selectionPanelScrollRectangle, g);
+		drawArrows(g);
+	}
+
+	private void drawArrows(Graphics g) {
+		selectionPanelScrollIndicator.y = currentUserPositionStart * 5 * getHeight() / numUsers / 12 + (getHeight() / 6);
+		System.out.println(currentUserPositionStart + "   " + selectionPanelScrollIndicator.y);
+		g.setColor(Color.MAGENTA);
+		fillRect(selectionPanelScrollIndicator, g);
+		g.setColor(Color.BLACK);
+		g.fillPolygon(scrollUpArrow);
+		g.fillPolygon(scrollDownArrow);
+		g.fillPolygon(new UpDownTriangle(20, 20, 10, 10, TriangleDirection.DOWN.UP));
 	}
 
 	private void drawOtherPanels(Graphics g) {
@@ -150,6 +170,9 @@ public class ScoreSaverPanel extends JPanel {
 
 	private void drawRect(Rectangle r, Graphics g) {
 		g.drawRect(r.x, r.y, r.width, r.height);
+	}
+	private void fillRect(Rectangle r, Graphics g) {
+		g.fillRect(r.x, r.y, r.width, r.height);
 	}
 
 	private void drawCenteredText(Graphics g, String s, Rectangle r) {
@@ -168,9 +191,10 @@ public class ScoreSaverPanel extends JPanel {
 
 	private void drawText(Graphics g) {
 		g.setFont(textFont);
-		if(saver.getUsers(currentUserPositionStart, 5) != null) {
+		String[] temp = saver.getUsers(currentUserPositionStart, 5);
+		if(temp != null) {
 			for (int i = 0; i < 5; i++) {
-				drawCenteredText(g, saver.getUsers(currentUserPositionStart, 5).get(i), selectionPanelUserRectangles[i]);
+				drawCenteredText(g, temp[i], selectionPanelUserRectangles[i]);
 			}
 		}
 		drawCenteredText(g, "Submit", submitButton);
@@ -185,6 +209,7 @@ public class ScoreSaverPanel extends JPanel {
 			temp = temp < 0 ? 0 : temp;
 			temp = temp > numUsers - 5 ? numUsers - 5 : temp;
 			currentUserPositionStart = temp;
+			repaint();
 		}
 	}
 
@@ -201,8 +226,8 @@ public class ScoreSaverPanel extends JPanel {
 		} else {
 			for(int i = 0; i < 5; i++ ) {
 				if(selectionPanelUserRectangles[i].hc.durationCompleted(millis)) {
-					ArrayList<String> temp = saver.getUsers(currentUserPositionStart, 5);
-					if(temp != null) saver.setSelectedUser(temp.get(i));
+					String[] temp = saver.getUsers(currentUserPositionStart, 5);
+					if(temp != null) saver.setSelectedUser(temp[i]);
 				}
 			}
 		}
@@ -257,5 +282,35 @@ public class ScoreSaverPanel extends JPanel {
 
 	public HandTrackerInterface getDriver() {
 		return driver;
+	}
+
+	private class UpDownTriangle extends Polygon {
+		//private int centerX, centerY, width, height;
+		//private TriangleDirection td;
+		public UpDownTriangle(int centerX, int centerY, int width, int height, TriangleDirection td) {
+			npoints = 3;
+			xpoints = new int[npoints];
+			ypoints = new int[npoints];
+			xpoints[0] = centerX - width / 2;
+			xpoints[1] = centerX;
+			xpoints[2] = centerX + width / 2;
+			switch(td) {
+				case UP:
+					xpoints[0] = centerY + height / 2;
+					xpoints[1] = centerY - height / 2;
+					xpoints[2] = centerY + height / 2;
+					break;
+				case DOWN:
+					xpoints[0] = centerY - height / 2;
+					xpoints[1] = centerY + height / 2;
+					xpoints[2] = centerY - height / 2;
+					break;
+			}
+			/*this.centerX = centerX;
+			this.centerY = centerY;
+			this.width = width;
+			this.height = height;
+			this.td = td;*/
+		}
 	}
 }

@@ -43,7 +43,8 @@ public class ScoreSaver {
 	private ActionListener listener = null;
 	private volatile ScoreSaverPanel panel = null;
 	private JFrame frame = null;
-	private UserCache cache = new UserCache();
+	private String recentScore = null;
+	private ArrayList<String> cache = null;
 
     public ScoreSaver(String game) {
 		String path = null;
@@ -57,16 +58,18 @@ public class ScoreSaver {
 			e.printStackTrace();
 		}
 		if(path != null) {
+			new File(path + "/scores/").mkdir();
 			saveFile = new File(path + "/scores/" + game + ".txt");
-			saveFile.mkdirs();
 		}
+		cacheUsersDB();
+		getNumUsers();
     }
 
-	public ArrayList<String> getUsersDB(int start, int count) {
-		final String DB_URL = "jdbc:mysql:"+System.getenv("DB_URL");
+	private void cacheUsersDB() {
+		final String DB_URL = "jdbc:mysql://"+System.getenv("DB_URL");
 		final String USER = System.getenv("DB_USER");
 		final String PASS = System.getenv("DB_PASS");
-		ArrayList<String> newResults = new ArrayList<String>();
+		ArrayList<String> newResults = new ArrayList<>();
 		Connection conn = null;
 		Statement stmt = null;
 		try {
@@ -80,15 +83,14 @@ public class ScoreSaver {
 			stmt = conn.createStatement();
 			String sql;
 			sql = "SELECT first, last FROM users ORDER BY first";
-			if (start != -1 && count != -1)
-				sql+=" "+" LIMIT "+count+" OFFSET "+start;
+			//if (start != -1 && count != -1)
+			//sql+=" "+" LIMIT "+count+" OFFSET "+start;
 			ResultSet rs = stmt.executeQuery(sql);
 
 			//STEP 5: Extract data from result set
 			while (rs.next()) {
-				String first = rs.getString("first");
-				String last = rs.getString("last");
-				newResults.add(first+" "+last);
+				String name = rs.getString("first") + " " + rs.getString("last");
+				newResults.add(name.length() <= 20 ? name : name.substring(0, 20));
 			}
 			//STEP 6: Clean-up environment
 			rs.close();
@@ -114,48 +116,73 @@ public class ScoreSaver {
 				se.printStackTrace();
 			}//end finally try
 		}//end try
-		return newResults;
+		cache = newResults;
 	}
 
-    public synchronized int getBestScore(ScorePattern sp) {
+    public String getBestScoreString(ScorePattern sp) {
+		if(recentScore != null) return recentScore;
         Scanner is = null;
+		int bestScore = -1;
+		String best = null;
         try {
             is = new Scanner(saveFile);
         } catch (FileNotFoundException e) {
-            return -1;
+            return null;
         }
-        int best = -1;
         while(is.hasNextLine()) {
 			String line = is.nextLine();
 			String[] split = line.split(" ");
             int next = Integer.parseInt(split[0]);
-            if(best == -1) best = next;
-            else if(sp == ScorePattern.HIGH_BEST) best = next > best ? next : best;
-            else if(sp == ScorePattern.LOW_BEST) best = next < best ? next : best;
+            if(bestScore == -1) {
+				bestScore = next;
+				best = line;
+			} else if(sp == ScorePattern.HIGH_BEST) {
+				if(next > bestScore) {
+					bestScore = next;
+					best = line;
+				}
+			} else if(sp == ScorePattern.LOW_BEST) {
+				if(next < bestScore) {
+					bestScore = next;
+					best = line;
+				}
+			}
         }
         is.close();
-        return best;
+        return best != null ? best : "N/A";
     }
 
+	public int getBestScore(ScorePattern sp) {
+		try {
+			return Integer.parseInt(getBestScoreString(sp).split(" ")[0]);
+		} catch (NumberFormatException e) {
+			return -1;
+		}
+	}
+
     public synchronized boolean addNewScore(int score) {
-        PrintWriter pw = null;
+        FileWriter fw = null;
         try {
 			//TODO Save into database
-            pw = new PrintWriter(new FileOutputStream(saveFile));
-        } catch (FileNotFoundException e) {
+            fw = new FileWriter(saveFile, true);
+			fw.write(score + " " + selectedUser + "\n");
+			fw.flush();
+			fw.close();
+        } catch (IOException e) {
+			e.printStackTrace();
             return false;
-        }
-        pw.println(score + " " + selectedUser);
-        pw.flush();
-        pw.close();
-		closePanel();
+        } finally {
+			closePanel();
+			recentScore = null;
+		}
         return true;
     }
 
 	public synchronized int getNumUsers() {
+		if(cache == null) cacheUsersDB();
 		if(numUsers != -1) return numUsers;
 		else {
-			numUsers = getUsersDB(-1,-1).size();
+			numUsers = cache.size();
 			return numUsers;
 		}
 	}
@@ -166,17 +193,16 @@ public class ScoreSaver {
 
 	public String getSelectedUser() { return selectedUser; }
 
-	public synchronized ArrayList<String> getUsers(int start, int count) {
-		if(cache.lastStart == start && cache.lastCount == count) return cache.lastResult;
-		if(numUsers == -1) getNumUsers();
+	public synchronized String[] getUsers(int start, int count) {
+		if(numUsers == -1) numUsers = getNumUsers();
 		if(start > numUsers) return null;
 		else if(count > numUsers - start) return null;
-
 		else {
-			cache.lastResult = getUsersDB(start, count);
-			cache.lastStart = start;
-			cache.lastCount = count;
-			return cache.lastResult;
+			String[] toReturn = new String[count];
+			for(int i = 0; i < count; i++) {
+				toReturn[i] = cache.get(start + i);
+			}
+			return toReturn;
 		}
 	}
 
@@ -189,12 +215,6 @@ public class ScoreSaver {
 		panel.setBackground(Color.ORANGE);
 		this.frame.add(panel);
 		this.frame.setVisible(true);
-	}
-
-	private class UserCache {
-		public int lastStart = -1;
-		public int lastCount = -1;
-		public ArrayList<String> lastResult = null;
 	}
 
 	private void closePanel() {
