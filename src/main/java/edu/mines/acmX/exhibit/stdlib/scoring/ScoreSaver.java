@@ -62,10 +62,10 @@ public class ScoreSaver {
 		}
     }
 
-	public synchronized ArrayList<String> getUsersDB(int start, int count) {
-		final String DB_URL = "jdbc:mysql://cousinit.mines.edu/CS_CONNECT";
-		final String USER = "connectSummer";
-		final String PASS = "connectme";
+	public ArrayList<String> getUsersDB(int start, int count) {
+		final String DB_URL = "jdbc:mysql:"+System.getenv("DB_URL");
+		final String USER = System.getenv("DB_USER");
+		final String PASS = System.getenv("DB_PASS");
 		ArrayList<String> newResults = new ArrayList<String>();
 		Connection conn = null;
 		Statement stmt = null;
