@@ -83,8 +83,6 @@ public class ScoreSaver {
 			stmt = conn.createStatement();
 			String sql;
 			sql = "SELECT first, last FROM users ORDER BY first";
-			//if (start != -1 && count != -1)
-			//sql+=" "+" LIMIT "+count+" OFFSET "+start;
 			ResultSet rs = stmt.executeQuery(sql);
 
 			//STEP 5: Extract data from result set

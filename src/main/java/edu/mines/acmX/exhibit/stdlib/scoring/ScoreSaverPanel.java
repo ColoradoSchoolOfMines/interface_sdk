@@ -60,11 +60,8 @@ public class ScoreSaverPanel extends JPanel {
 	private Rectangle scoreRectangle = null;
 	private HoverClickRectangle submitButton = null;
 	private Rectangle instructionArea = null;
-	private UpDownTriangle scrollUpArrow = null;
-	private UpDownTriangle scrollDownArrow = null;
 
 	private Font textFont = null;
-	private enum TriangleDirection { UP, DOWN };
 
 	public ScoreSaverPanel(ScoreSaver saver, int score, int handID, HandTrackerInterface driver) {
 		this.saver = saver;
@@ -117,8 +114,6 @@ public class ScoreSaverPanel extends JPanel {
 		submitButton = new HoverClickRectangle(3 * getWidth() / 4, 3 * getHeight() / 4, getWidth() / 6, getHeight() / 6);
 		submitButton.addHC(400);
 		instructionArea = new Rectangle(getWidth() / 2, getHeight() / 12, 5 * getWidth() / 12, 7 * getHeight() / 12);
-		scrollUpArrow = new UpDownTriangle(getWidth() / 4, 3 * getHeight() / 24, getWidth() / 12, getHeight() / 24, TriangleDirection.UP);
-		scrollDownArrow = new UpDownTriangle(getWidth() / 4, 15 * getHeight() / 24, getWidth() / 12, getHeight() / 24, TriangleDirection.DOWN);
 	}
 
 	@Override
@@ -155,14 +150,11 @@ public class ScoreSaverPanel extends JPanel {
 		g.setColor(Color.MAGENTA);
 		fillRect(selectionPanelScrollIndicator, g);
 		g.setColor(Color.BLACK);
-		g.fillPolygon(scrollUpArrow);
-		g.fillPolygon(scrollDownArrow);
-		g.fillPolygon(new UpDownTriangle(20, 20, 10, 10, TriangleDirection.DOWN.UP));
 	}
 
 	private void drawOtherPanels(Graphics g) {
 		g.setColor(Color.BLACK);
-		selectedNamePanel.draw(g);
+		selectedNamePanel.fill(g, Color.CYAN);
 		submitButton.draw(g);
 		drawRect(scoreRectangle, g);
 		drawRect(instructionArea, g);
@@ -282,35 +274,5 @@ public class ScoreSaverPanel extends JPanel {
 
 	public HandTrackerInterface getDriver() {
 		return driver;
-	}
-
-	private class UpDownTriangle extends Polygon {
-		//private int centerX, centerY, width, height;
-		//private TriangleDirection td;
-		public UpDownTriangle(int centerX, int centerY, int width, int height, TriangleDirection td) {
-			npoints = 3;
-			xpoints = new int[npoints];
-			ypoints = new int[npoints];
-			xpoints[0] = centerX - width / 2;
-			xpoints[1] = centerX;
-			xpoints[2] = centerX + width / 2;
-			switch(td) {
-				case UP:
-					xpoints[0] = centerY + height / 2;
-					xpoints[1] = centerY - height / 2;
-					xpoints[2] = centerY + height / 2;
-					break;
-				case DOWN:
-					xpoints[0] = centerY - height / 2;
-					xpoints[1] = centerY + height / 2;
-					xpoints[2] = centerY - height / 2;
-					break;
-			}
-			/*this.centerX = centerX;
-			this.centerY = centerY;
-			this.width = width;
-			this.height = height;
-			this.td = td;*/
-		}
 	}
 }
