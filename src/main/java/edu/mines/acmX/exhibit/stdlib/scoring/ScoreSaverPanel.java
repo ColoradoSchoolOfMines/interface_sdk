@@ -63,6 +63,17 @@ public class ScoreSaverPanel extends JPanel {
 
 	private Font textFont = null;
 
+	private final String[] instructions = {
+			"Select your name on the left to submit your score.",
+			"The scroll bar on the left lets you scroll fast, ",
+			"the blue bars at the top and bottom let you scroll",
+			"more slowly. Hovering over the selected name",
+			"at the bottom will reset it to Guest",
+			"If your name does not appear, please sign up at:",
+			"connect.mines.edu"
+	};
+	private Rectangle[] instructionSubdivisions = null;
+
 	public ScoreSaverPanel(ScoreSaver saver, int score, int handID, HandTrackerInterface driver) {
 		this.saver = saver;
 		this.handID = handID;
@@ -76,35 +87,42 @@ public class ScoreSaverPanel extends JPanel {
 		allClickables = new HashSet<>();
 	}
 
-	public void generateShapes() {
-		shapesGenerated = true;
+	private void generateShapes() {
 		generateSelectionPanelShapes();
 		generateOtherShapes();
 		textFont = new Font("TimesRoman", Font.PLAIN, getHeight() / 36);
+		shapesGenerated = true;
 	}
 
 	private void generateSelectionPanelShapes() {
 		selectionPanelUserRectangles = new HoverClickRectangle[5];
 
-		selectionPanelFineScrollUp = new HoverClickRectangle(getWidth() / 12, getHeight() / 12, getWidth() / 4, getHeight() / 12);
+		selectionPanelFineScrollUp = new HoverClickRectangle(getWidth() / 6, getHeight() / 12, getWidth() / 4, getHeight() / 12);
 		selectionPanelFineScrollUp.addHC(300);
-		selectionPanelFineScrollDown = new HoverClickRectangle(getWidth() / 12, 7 * getHeight() / 12, getWidth() / 4, getHeight() / 12);
+		selectionPanelFineScrollDown = new HoverClickRectangle(getWidth() / 6, 7 * getHeight() / 12, getWidth() / 4, getHeight() / 12);
 		selectionPanelFineScrollDown.addHC(300);
 
-		selectionPanelUserRectangles[0] = new HoverClickRectangle(getWidth() / 12, getHeight() / 6, getWidth() / 4, getHeight() / 12);
-		selectionPanelUserRectangles[0].addHC(400);
-		selectionPanelUserRectangles[1] = new HoverClickRectangle(getWidth() / 12, getHeight() / 4, getWidth() / 4, getHeight() / 12);
-		selectionPanelUserRectangles[1].addHC(400);
-		selectionPanelUserRectangles[2] = new HoverClickRectangle(getWidth() / 12, getHeight() / 3, getWidth() / 4, getHeight() / 12);
-		selectionPanelUserRectangles[2].addHC(400);
-		selectionPanelUserRectangles[3] = new HoverClickRectangle(getWidth() / 12, 5 * getHeight() / 12, getWidth() / 4, getHeight() / 12);
-		selectionPanelUserRectangles[3].addHC(400);
-		selectionPanelUserRectangles[4] = new HoverClickRectangle(getWidth() / 12, getHeight() / 2, getWidth() / 4, getHeight() / 12);
-		selectionPanelUserRectangles[4].addHC(400);
+		selectionPanelUserRectangles[0] = new HoverClickRectangle(getWidth() / 6, getHeight() / 6, getWidth() / 4, getHeight() / 12);
+		selectionPanelUserRectangles[0].addHC(600);
+		selectionPanelUserRectangles[1] = new HoverClickRectangle(getWidth() / 6, getHeight() / 4, getWidth() / 4, getHeight() / 12);
+		selectionPanelUserRectangles[1].addHC(600);
+		selectionPanelUserRectangles[2] = new HoverClickRectangle(getWidth() / 6, getHeight() / 3, getWidth() / 4, getHeight() / 12);
+		selectionPanelUserRectangles[2].addHC(600);
+		selectionPanelUserRectangles[3] = new HoverClickRectangle(getWidth() / 6, 5 * getHeight() / 12, getWidth() / 4, getHeight() / 12);
+		selectionPanelUserRectangles[3].addHC(600);
+		selectionPanelUserRectangles[4] = new HoverClickRectangle(getWidth() / 6, getHeight() / 2, getWidth() / 4, getHeight() / 12);
+		selectionPanelUserRectangles[4].addHC(600);
 
 		selectionPanelOutsideRectangle = new Rectangle(getWidth() / 12, getHeight() / 12, getWidth() / 3, 7 * getHeight() / 12);
-		selectionPanelScrollRectangle = new Rectangle(getWidth() / 3, getHeight() / 12, getWidth() / 12, 7 * getHeight() / 12);
-		selectionPanelScrollIndicator = new Rectangle(getWidth() / 3, getHeight() / 6, getWidth() / 12, getHeight() / 60);
+		selectionPanelScrollRectangle = new Rectangle(getWidth() / 12, getHeight() / 12, getWidth() / 12, 7 * getHeight() / 12);
+		selectionPanelScrollIndicator = new Rectangle(getWidth() / 12, getHeight() / 6, getWidth() / 12, getHeight() / 60);
+	}
+
+	private void generateInstructionSubdivisions() {
+		instructionSubdivisions = new Rectangle[instructions.length];
+		for(int i = 0; i < instructions.length; i++) {
+			instructionSubdivisions[i] = new Rectangle(instructionArea.x, instructionArea.y + instructionArea.height * i / instructions.length, instructionArea.width, instructionArea.height / instructions.length);
+		}
 	}
 
 	private void generateOtherShapes() {
@@ -114,6 +132,7 @@ public class ScoreSaverPanel extends JPanel {
 		submitButton = new HoverClickRectangle(3 * getWidth() / 4, 3 * getHeight() / 4, getWidth() / 6, getHeight() / 6);
 		submitButton.addHC(400);
 		instructionArea = new Rectangle(getWidth() / 2, getHeight() / 12, 5 * getWidth() / 12, 7 * getHeight() / 12);
+		generateInstructionSubdivisions();
 	}
 
 	@Override
@@ -136,26 +155,25 @@ public class ScoreSaverPanel extends JPanel {
 		for(HoverClickRectangle hcr : selectionPanelUserRectangles) {
 			hcr.draw(g);
 		}
-		selectionPanelFineScrollUp.draw(g)/*.fill(g, Color.CYAN)*/;
-		selectionPanelFineScrollDown.draw(g)/*.fill(g, Color.CYAN)*/;
+		selectionPanelFineScrollUp.fill(g, Color.CYAN);
+		selectionPanelFineScrollDown.fill(g, Color.CYAN);
 		g.setColor(Color.BLUE);
 		drawRect(selectionPanelOutsideRectangle, g);
 		drawRect(selectionPanelScrollRectangle, g);
-		drawArrows(g);
+		drawIndicator(g);
 	}
 
-	private void drawArrows(Graphics g) {
+	private void drawIndicator(Graphics g) {
 		selectionPanelScrollIndicator.y = currentUserPositionStart * 5 * getHeight() / numUsers / 12 + (getHeight() / 6);
-		System.out.println(currentUserPositionStart + "   " + selectionPanelScrollIndicator.y);
 		g.setColor(Color.MAGENTA);
 		fillRect(selectionPanelScrollIndicator, g);
 		g.setColor(Color.BLACK);
 	}
 
 	private void drawOtherPanels(Graphics g) {
+		submitButton.fill(g, Color.GREEN);
 		g.setColor(Color.BLACK);
-		selectedNamePanel.fill(g, Color.CYAN);
-		submitButton.draw(g);
+		selectedNamePanel.draw(g);
 		drawRect(scoreRectangle, g);
 		drawRect(instructionArea, g);
 	}
@@ -182,6 +200,7 @@ public class ScoreSaverPanel extends JPanel {
 	}
 
 	private void drawText(Graphics g) {
+		g.setColor(Color.BLACK);
 		g.setFont(textFont);
 		String[] temp = saver.getUsers(currentUserPositionStart, 5);
 		if(temp != null) {
@@ -191,8 +210,14 @@ public class ScoreSaverPanel extends JPanel {
 		}
 		drawCenteredText(g, "Submit", submitButton);
 		drawCenteredText(g, saver.getSelectedUser(), selectedNamePanel);
-		drawCenteredText(g, "Instructions", instructionArea);
 		drawCenteredText(g, Integer.toString(score), scoreRectangle);
+		drawInstructions(g);
+	}
+
+	private void drawInstructions(Graphics g) {
+		for(int i = 0; i < instructions.length; i++) {
+			drawCenteredText(g, instructions[i], instructionSubdivisions[i]);
+		}
 	}
 
 	private void checkScrollBar() {
