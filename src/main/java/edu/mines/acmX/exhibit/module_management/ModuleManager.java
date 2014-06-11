@@ -59,7 +59,7 @@ import edu.mines.acmX.exhibit.module_management.modules.ModuleInterface;
 public class ModuleManager implements ModuleManagerRemote {
 
 	static Logger logger = LogManager.getLogger(ModuleManager.class.getName());
-	private Stack<ModuleExecutor> moduleStack = new Stack<>();
+	private volatile Stack<ModuleExecutor> moduleStack = new Stack<>();
 
 	/**
 	 * Singleton instance of ModuleManager This is volatile in order to be safe
@@ -693,11 +693,13 @@ public class ModuleManager implements ModuleManagerRemote {
 	public static void destroyCurrentModule() {
 		try {
 			ModuleManager instance = getInstance();
-			while(!instance.moduleStack.empty()){
-				((ModuleFrameExecutor) instance.moduleStack.pop()).close();
+			synchronized(instance) {
+				while(!instance.moduleStack.empty()){
+					((ModuleFrameExecutor) instance.moduleStack.pop()).close();
+				}
+				instance.setDefault(true);
+				instance.run();
 			}
-            instance.setDefault(true);
-            instance.run();
 		} catch(ManifestLoadException e) {
 			e.printStackTrace();
 		} catch(ModuleLoadException e) {

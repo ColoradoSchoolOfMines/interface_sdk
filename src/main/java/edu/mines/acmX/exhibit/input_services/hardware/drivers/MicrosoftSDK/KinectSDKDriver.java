@@ -257,7 +257,7 @@ public class KinectSDKDriver implements DriverInterface,
 		checkRC(device.NuiImageStreamReleaseFrame(depthStream, imageFrame));
 	}
 
-	private void processInteraction(){
+	private synchronized void processInteraction(){
 		NUI_INTERACTION_FRAME interactionFrame = new NUI_INTERACTION_FRAME();
 		checkRC(interactionStream.GetNextFrame(new DWORD(0), interactionFrame));
 

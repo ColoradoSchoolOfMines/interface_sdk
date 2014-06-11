@@ -37,7 +37,7 @@ import java.util.Scanner;
  */
 public class ScoreSaver {
     public enum ScorePattern {HIGH_BEST, LOW_BEST}
-    private File saveFile;
+    private File saveFile = null;
 	private int numUsers = -1;
 	private String selectedUser = "Guest";
 	private ActionListener listener = null;
@@ -57,16 +57,9 @@ public class ScoreSaver {
 			e.printStackTrace();
 		}
 		if(path != null) {
-			File moduleDir = new File(path + "/scores");
-			if(!moduleDir.exists()) {
-				try {
-					moduleDir.mkdir();
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				}
-			}
+			saveFile = new File(path + "/scores/" + game + ".txt");
+			saveFile.mkdirs();
 		}
-		saveFile = new File(path + "/scores/" + game + ".txt");
     }
 
 	public synchronized ArrayList<String> getUsersDB(int start, int count) {
@@ -105,8 +98,8 @@ public class ScoreSaver {
 			//Handle errors for JDBC
 			se.printStackTrace();
 		} catch (Exception e) {
-			//Handle errors for Class.forName
 			e.printStackTrace();
+			closePanel();
 		} finally {
 			//finally block used to close resources
 			try {
@@ -155,16 +148,7 @@ public class ScoreSaver {
         pw.println(score + " " + selectedUser);
         pw.flush();
         pw.close();
-		if(panel != null) {
-			frame.remove(panel);
-			frame.setVisible(false);
-			frame.dispose();
-			panel.getDriver().clearAllHands();
-			if(listener != null) listener.actionPerformed(null);
-			this.frame = null;
-			this.panel = null;
-			this.listener = null;
-		}
+		closePanel();
         return true;
     }
 
@@ -211,5 +195,18 @@ public class ScoreSaver {
 		public int lastStart = -1;
 		public int lastCount = -1;
 		public ArrayList<String> lastResult = null;
+	}
+
+	private void closePanel() {
+		if(panel != null) {
+			frame.remove(panel);
+			frame.setVisible(false);
+			frame.dispose();
+			panel.getDriver().clearAllHands();
+			if(listener != null) listener.actionPerformed(null);
+			this.frame = null;
+			this.panel = null;
+			this.listener = null;
+		}
 	}
 }

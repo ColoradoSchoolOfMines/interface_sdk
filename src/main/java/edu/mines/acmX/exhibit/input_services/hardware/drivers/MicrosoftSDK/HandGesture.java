@@ -135,10 +135,10 @@ public class HandGesture {
 			lastPushUpdate = timestamp;
 		} else if(timestamp - lastPushUpdate > 500) {
 			lastPushCoord = null;
-		} else if(coord.getZ() - lastPushCoord.getZ() > lastPushCoord.getZ() * 0.65) {
+		} else if(coord.getZ() - lastPushCoord.getZ() > lastPushCoord.getZ() * 0.55) {
+			EventManager.getInstance().fireEvent(EventType.GESTURE_RECOGNIZED, new Gesture("push", lastPushCoord, coord));
 			lastPushCoord = null;
 			lastWaveUpdate = 0;
-			EventManager.getInstance().fireEvent(EventType.GESTURE_RECOGNIZED, new Gesture("push", lastPushCoord, coord));
 		}
 	}
 }

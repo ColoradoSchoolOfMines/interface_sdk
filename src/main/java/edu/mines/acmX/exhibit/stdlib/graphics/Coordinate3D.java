@@ -62,4 +62,8 @@ public class Coordinate3D {
 		return Z;
 	}
 
+	@Override
+	public String toString() {
+		return "x: " + X + ", y: " + Y + ", z: " + Z;
+	}
 }
