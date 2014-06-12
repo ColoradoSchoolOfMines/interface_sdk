@@ -143,7 +143,6 @@ public class ScoreSaverPanel extends JPanel {
 		drawSelectionPanel(g);
 		drawOtherPanels(g);
 		drawText(g);
-		//TODO show instructions
 		if(handID == -1); //TODO show wave to continue
 		else {
 			g.fillOval((int)handX, (int)handY, 10, 10);
