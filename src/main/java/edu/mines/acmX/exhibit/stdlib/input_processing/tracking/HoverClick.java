@@ -56,4 +56,21 @@ public class HoverClick {
 	public void updateShape(Shape area) {
 		this.area = area;
 	}
+
+	public float getX(){
+		return (float) area.getBounds().getX();
+	}
+
+	public float getY(){
+		return (float) area.getBounds().getY();
+	}
+
+	public float getWidth(){
+		return (float) area.getBounds().getWidth();
+	}
+
+	public float getHeight(){
+		return (float) area.getBounds().getHeight();
+	}
+
 }
