@@ -712,8 +712,6 @@ public class ModuleManager implements ModuleManagerRemote {
 		} catch(ModuleLoadException e) {
 			e.printStackTrace();
 		}
-		System.out.println("At end");
-
 	}
 
 	public String getModulePath() {
