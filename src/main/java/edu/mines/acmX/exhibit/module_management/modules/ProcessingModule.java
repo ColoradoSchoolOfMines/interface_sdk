@@ -244,11 +244,6 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 		ModuleManager.destroyCurrentModule();
 		//System.out.println("After destroyCurrentModule");
     }
-
-
-
-
-
 }
 
 

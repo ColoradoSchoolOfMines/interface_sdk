@@ -49,9 +49,11 @@ public class HandGesture {
 	}
 
 	public void destroy(){
-		EventManager.getInstance().fireEvent(EventType.HAND_DESTROYED, handID);
+		if(handID != 0) {
+			EventManager.getInstance().fireEvent(EventType.HAND_DESTROYED, handID);
+			handID = 0;
+		}
 		//handID = id = 0;
-		handID = 0;
 	}
 
 	public void update(KinectDevice device, long timestamp, float x, float y, float z, int id, NUI_HAND_TYPE handType){
