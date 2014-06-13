@@ -44,7 +44,8 @@ public class ScoreSaver {
 	private volatile ScoreSaverPanel panel = null;
 	private JFrame frame = null;
 	private String recentScore = null;
-	private ArrayList<String> cache = null;
+	private static ArrayList<String> cache = null;
+	private String lastSubmission = null;
 
     public ScoreSaver(String game) {
 		String path = null;
@@ -66,6 +67,7 @@ public class ScoreSaver {
     }
 
 	private void cacheUsersDB() {
+		if(cache != null) return;
 		final String DB_URL = "jdbc:mysql://"+System.getenv("DB_URL");
 		final String USER = System.getenv("DB_USER");
 		final String PASS = System.getenv("DB_PASS");
@@ -125,7 +127,7 @@ public class ScoreSaver {
         try {
             is = new Scanner(saveFile);
         } catch (FileNotFoundException e) {
-            return null;
+            return "N/A";
         }
         while(is.hasNextLine()) {
 			String line = is.nextLine();
@@ -159,13 +161,13 @@ public class ScoreSaver {
 	}
 
     public synchronized boolean addNewScore(int score) {
-        FileWriter fw = null;
+        PrintWriter pw = null;
         try {
 			//TODO Save into database
-            fw = new FileWriter(saveFile, true);
-			fw.write(score + " " + selectedUser + "\n");
-			fw.flush();
-			fw.close();
+            pw = new PrintWriter(new FileWriter(saveFile, true));
+			pw.println(lastSubmission = score + " " + selectedUser);
+			pw.flush();
+			pw.close();
         } catch (IOException e) {
 			e.printStackTrace();
             return false;
@@ -176,7 +178,7 @@ public class ScoreSaver {
         return true;
     }
 
-	public synchronized int getNumUsers() {
+	public int getNumUsers() {
 		if(cache == null) cacheUsersDB();
 		if(numUsers != -1) return numUsers;
 		else {
@@ -226,5 +228,9 @@ public class ScoreSaver {
 			this.panel = null;
 			this.listener = null;
 		}
+	}
+
+	public String getLastSubmission() {
+		return lastSubmission != null ? lastSubmission : "N/A";
 	}
 }
