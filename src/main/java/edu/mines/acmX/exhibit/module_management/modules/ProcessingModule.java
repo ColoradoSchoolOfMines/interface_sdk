@@ -238,8 +238,11 @@ public abstract class ProcessingModule extends PApplet implements ModuleInterfac
 
     @Override
     public void destroy() {
-        ModuleManager.destroyCurrentModule();
-        super.destroy();
+		//System.out.println("In processing module destroy");
+		super.destroy();
+		//System.out.println("After destroy");
+		ModuleManager.destroyCurrentModule();
+		//System.out.println("After destroyCurrentModule");
     }
 
 

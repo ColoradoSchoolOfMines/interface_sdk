@@ -691,20 +691,29 @@ public class ModuleManager implements ModuleManagerRemote {
 	}
 
 	public static void destroyCurrentModule() {
+		//System.out.println("In DestroyCurrentModlue");
 		try {
 			ModuleManager instance = getInstance();
-			synchronized(instance) {
+			//System.out.println("After Get instance");
+			//synchronized(instance) {
 				while(!instance.moduleStack.empty()){
-					((ModuleFrameExecutor) instance.moduleStack.pop()).close();
+					synchronized (instance.moduleStack) {
+						((ModuleFrameExecutor) instance.moduleStack.pop()).close();
+					}
 				}
+				//System.out.println("After clear stack");
 				instance.setDefault(true);
 				instance.run();
-			}
+				//System.out.println("After run");
+
+			//}
 		} catch(ManifestLoadException e) {
 			e.printStackTrace();
 		} catch(ModuleLoadException e) {
 			e.printStackTrace();
 		}
+		System.out.println("At end");
+
 	}
 
 	public String getModulePath() {
