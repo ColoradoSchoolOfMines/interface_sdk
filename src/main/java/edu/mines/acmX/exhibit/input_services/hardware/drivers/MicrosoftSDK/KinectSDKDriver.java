@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.sun.jna.platform.win32.W32Errors.FAILED;
+import static com.sun.jna.platform.win32.W32Errors.HRESULT_CODE;
 
 /**
  * Kinect driver that provides depth and rgb image functionality. Uses
@@ -257,9 +258,21 @@ public class KinectSDKDriver implements DriverInterface,
 		checkRC(device.NuiImageStreamReleaseFrame(depthStream, imageFrame));
 	}
 
-	private synchronized void processInteraction(){
+	private void processInteraction(){
 		NUI_INTERACTION_FRAME interactionFrame = new NUI_INTERACTION_FRAME();
-		checkRC(interactionStream.GetNextFrame(new DWORD(0), interactionFrame));
+		HRESULT hr = interactionStream.GetNextFrame(new DWORD(0), interactionFrame);
+
+		if(FAILED(hr)){
+
+			// this happens when we did not process the data in the 1/30 of second required by the sdk
+			// because we are in java we can sometimes run slow enough to hit this boundary
+			// we can safely ignore this and as our code gets faster it will happen less
+			if(hr.intValue() == KinectLibrary.E_NUI_FRAME_NO_DATA){
+				return;
+			}
+
+			checkRC(hr);
+		}
 
 		// get a list of all skeletons and hands with information
 		List<Integer> ids = new ArrayList<>();
