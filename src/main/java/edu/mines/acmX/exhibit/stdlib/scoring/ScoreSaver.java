@@ -41,7 +41,7 @@ public class ScoreSaver {
 	private int numUsers = -1;
 	private String selectedUser = "Guest";
 	private ActionListener listener = null;
-	private volatile ScoreSaverPanel panel = null;
+	private ScoreSaverPanel panel = null;
 	private JFrame frame = null;
 	private String recentScore = null;
 	private static ArrayList<String> cache = null;
@@ -91,7 +91,6 @@ public class ScoreSaver {
 			se.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-			closePanel();
 		} finally {
 			//finally block used to close resources
 			try {
@@ -138,7 +137,7 @@ public class ScoreSaver {
 			}
         }
         is.close();
-        return best != null ? best : "N/A";
+        return best != null ? recentScore = best : "N/A";
     }
 
 	public int getBestScore(ScorePattern sp) {
@@ -149,20 +148,23 @@ public class ScoreSaver {
 		}
 	}
 
-    public synchronized boolean addNewScore(int score) {
+    public boolean addNewScore(int score) {
         PrintWriter pw = null;
+		boolean failed = false;
         try {
 			//TODO Save into database
             pw = new PrintWriter(new FileWriter(saveFile, true));
-			pw.println(lastSubmission = score + " " + selectedUser);
+			lastSubmission = score + " " + selectedUser;
+			pw.println(lastSubmission);
 			pw.flush();
 			pw.close();
         } catch (IOException e) {
 			e.printStackTrace();
-            return false;
+            failed = true;
         } finally {
-			closePanel();
+			closeFrame();
 			recentScore = null;
+			if(failed) return false;
 		}
         return true;
     }
@@ -195,8 +197,9 @@ public class ScoreSaver {
 		}
 	}
 
-	public synchronized void showPanel(ActionListener listener, int score, int handID, HandTrackerInterface driver) {
-		panel = new ScoreSaverPanel(this, score, handID, driver);
+	public void showPanel(ActionListener listener, int score, int handID, HandTrackerInterface driver) {
+		if(panel == null) panel = new ScoreSaverPanel(this, score, handID, driver);
+		else panel.setup(score, handID, driver);
 		this.listener = listener;
 		this.frame = new JFrame();
 		frame.setUndecorated(true);
@@ -206,15 +209,14 @@ public class ScoreSaver {
 		this.frame.setVisible(true);
 	}
 
-	private void closePanel() {
-		if(panel != null) {
+	private void closeFrame() {
+		if(frame != null) {
 			frame.remove(panel);
 			frame.setVisible(false);
 			frame.dispose();
 			panel.getDriver().clearAllHands();
 			if(listener != null) listener.actionPerformed(null);
 			this.frame = null;
-			this.panel = null;
 			this.listener = null;
 		}
 	}

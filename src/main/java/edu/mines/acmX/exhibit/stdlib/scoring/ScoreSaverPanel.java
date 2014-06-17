@@ -87,6 +87,13 @@ public class ScoreSaverPanel extends JPanel {
 		allClickables = new HashSet<>();
 	}
 
+	public void setup(int score, int handID, HandTrackerInterface driver) {
+		this.score = score;
+		this.handID = handID;
+		this.driver = driver;
+		//TODO whis will eventually have to redo its receiver, right now it will still be registered
+	}
+
 	private void generateShapes() {
 		generateSelectionPanelShapes();
 		generateOtherShapes();
