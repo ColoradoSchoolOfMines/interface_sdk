@@ -48,19 +48,16 @@ public class ScoreSaver {
 	private String lastSubmission = null;
 
     public ScoreSaver(String game) {
-		String path = null;
 		try {
-			path = ModuleManager.getInstance().getPathToModules();
+			String path = ModuleManager.getInstance().getPathToModules();
+			new File(path + "/scores/").mkdir();
+			saveFile = new File(path + "/scores/" + game + ".txt");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (ManifestLoadException e) {
 			e.printStackTrace();
 		} catch (ModuleLoadException e) {
 			e.printStackTrace();
-		}
-		if(path != null) {
-			new File(path + "/scores/").mkdir();
-			saveFile = new File(path + "/scores/" + game + ".txt");
 		}
 		cacheUsersDB();
 		getNumUsers();
